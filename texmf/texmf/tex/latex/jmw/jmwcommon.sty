@@ -1,0 +1,163 @@
+\ProvidesPackage{jmwcommon}
+\newif\ifjmwsetup\jmwsetupfalse
+\newif\ifjmwmdthm\jmwmdthmfalse
+\newif\ifjmwcolorlinks\jmwcolorlinksfalse
+\newif\ifjmwsecthm\jmwsecthmfalse
+\newif\ifjmwmmthm\jmwmmthmfalse
+
+\DeclareOption{sexy}{\jmwsetuptrue\jmwmdthmtrue\jmwcolorlinkstrue}
+\ProcessOptions\relax
+%%%%%%%%%%%%%%%% Basics %%%%%%%%%%%%%%%%
+
+
+
+%%%% Package %%%%
+% Packages to be used unconditionally. These are chosen so that they hopefully
+% do not clash with any document classes. 
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathrsfs} % them sexyy scripts *ohhhh*
+\PassOptionsToPackage{usenames,svgnames,dvipsnames}{xcolor}
+\usepackage{xcolor}
+  \definecolor{lightred}{rgb}{0.5,0,0}
+\ifjmwcolorlinks
+  \usepackage[colorlinks=true]{hyperref}
+  \hypersetup{urlcolor=RubineRed,linkcolor=RoyalBlue,citecolor=ForestGreen}
+\else
+  \usepackage{hyperref}
+\fi
+\usepackage{graphicx}
+
+
+
+%%%% Environment %%%%
+%% Misc
+\newenvironment{objects}{{\bf Object:}\begin{itemize}}{\end{itemize}}
+\newenvironment{lecture}[1]{\section{Lecture #1}}{\vfill\eject}
+\newtheorem{claim}{Claim}
+
+%% Metamath-like syntax
+\ifjmwmmthm
+  \newtheorem{@mmp}{\tt\color{red}\scalebox{1.2}{\colorbox{cyan}{\$p}}} % "Metamath dollar p"
+  \newtheorem{@mma}{\tt\color{blue}\scalebox{1.2}{\colorbox{lightred}{\$a}}} % "Metamath dollar a"
+  \newenvironment{mmp}[1]{\begin{@mmp}[\tt #1]\label{#1}}{\end{@mmp}}
+  \newenvironment{mma}[1]{\begin{@mma}[\tt #1]\label{#1}}{\end{@mma}}
+  \newcommand{\mmref}[1]{\hyperref[#1]{\tt #1}}
+\else\fi  
+
+
+%%%% Macro %%%%
+%% Misc
+\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
+\newcommand{\CC}{\ensuremath{\mathbb{C}}} 
+\newcommand{\RR}{\ensuremath{\mathbb{R}}}
+\newcommand{\QQ}{\ensuremath{\mathbb{Q}}}
+\newcommand{\ZZ}{\ensuremath{\mathbb{Z}}}
+\newcommand{\FF}{\ensuremath{\mathbb{F}}}
+\newcommand{\PP}{\ensuremath{\mathbb{P}}}
+\newcommand{\NN}{\ensuremath{\mathbb{N}}}
+\renewcommand{\SS}{\ensuremath{\mathbb{S}}} % sphere
+\newcommand{\eps}{\ensuremath{\epsilon}}
+\newcommand{\dt}{\ensuremath{\delta}}
+\newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} % "Define equals"
+\newcommand{\del}{\partial} 
+\DeclareMathOperator{\Ob}{Ob} % Objects of a category
+
+%% From MIT 18.701/2
+\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} % "Inner product"
+\DeclareMathOperator{\Tr}{Tr} % "Trace"
+\newcommand{\iso}{\ensuremath{\equiv}} % "Isomorphic to"
+\let\Im\relax
+\DeclareMathOperator{\Im}{Im} % "Image"
+\renewcommand{\phi}{\varphi}
+\newcommand{\revimplies}{\Longleftarrow} % "Reverse implies"
+\DeclareMathOperator{\GL}{GL} % General Linear Group
+\newcommand{\degrees}{^\circ} % "degrees"
+\newcommand{\cbrt}{\sqrt[3]} % "cube root"
+\newcommand{\id}{\mathrm{id}} % Identity map
+
+%% From MIT 18.335
+\newcommand{\epsm}{\ensuremath{\eps_{\mbox{mach}}}} % "Machine epsilon"
+\DeclareMathOperator{\fl}{fl} % "Floating point"
+\newcommand{\vx}{\ensuremath{\mathbf{x}}} % "Vector x"
+\newcommand{\vy}{\ensuremath{\mathbf{y}}} % "Vector y"
+\newcommand{\vq}{\ensuremath{\mathbf{q}}} % "Vector q"
+\newcommand{\norm}[1]{\ensuremath{\left\|#1\right\|}}
+
+%% From MIT 6.046
+\renewcommand{\Pr}[1]{\ensuremath{\Pr[#1]}}
+
+%% From MIT 18.675 %%
+\DeclareMathOperator{\supp}{supp} % Support of a measure
+\DeclareMathOperator{\li}{li} % Logarithmic integral
+\DeclareMathOperator{\Pois}{Pois} % Logarithmic integral
+\newcommand{\floor}[1]{\ensuremath{\left\lfloor #1\right\rfloor}}
+\newcommand{\scrB}{\ensuremath{\mathscr{B}}} % Borel algebra
+\newcommand{\scrF}{\ensuremath{\mathscr{F}}} % Sigma algebra 1
+\newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
+\renewcommand{\d}[1]{\ensuremath{\mathrm{d}{#1}}}
+\newcommand{\EE}{\ensuremath{\mathbb{E}}} % expected value
+\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+\newcommand{\LHS}{\ensuremath{\mathrm{LHS}}} 
+\newcommand{\probto}{\xrightarrow{p}}
+\newcommand{\asto}{\xrightarrow{a.s.}}
+\newcommand{\distto}{\xrightarrow{d}}
+\newcommand{\Gauss}{\mathcal{N}}
+\newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}} 
+\newcommand{\meet}{\wedge}
+
+%% From MIT 18.101 %%
+\newcommand{\abs}[1]{\ensuremath{\left| #1\right|}}
+\DeclareMathOperator{\D}{D} % total derivative (Jacobian)
+
+%%%% Misc %%%%
+%% Style
+\setlength{\parskip}{0.5\baselineskip}
+\setlength{\parindent}{0pt}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%% Specifics %%%%%%%%%%%%%%%%
+%%%% Theorem %%%%
+\ifjmwsetup
+  \ifjmwmdthm
+    \usepackage{amsthm}
+    \usepackage{thmtools}
+    \usepackage[framemethod=TikZ]{mdframed}
+  
+    \mdfdefinestyle{mdbluebox}{%
+    	roundcorner = 10pt,
+    	linewidth=1pt,
+    	skipabove=12pt,
+    	innerbottommargin=9pt,
+    	skipbelow=2pt,
+    	linecolor=blue,
+    	nobreak=true,
+    	backgroundcolor=TealBlue!5,
+    }
+    \declaretheoremstyle[
+    	headfont=\sffamily\bfseries\color{MidnightBlue},
+    	mdframed={style=mdbluebox},
+    	headpunct={\\[3pt]},
+    	postheadspace={0pt}
+    ]{thmbluebox}
+  
+    \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+    \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+  \else
+    \newtheorem{theorem}{Theorem}[section]
+    \newtheorem{lemma}[theorem]{Lemma}
+  \fi
+\else\fi  
+%%%% Document %%%%
+\@ifundefined{KOMAClassName}
+{}
+{
+  \setkomafont{author}{\Large\scshape}
+  \setkomafont{date}{\Large\normalsize}
+}
+

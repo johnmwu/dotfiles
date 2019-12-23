@@ -1,0 +1,7 @@
+[user]
+	name = John Michael Wu
+	email = johnmichaelwu@gmail.com
+[core]
+        # env variable GIT_EDITOR should override this
+	editor = emacs 
+        
