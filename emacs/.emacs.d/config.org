@@ -1,64 +1,7 @@
+* org
+Related to =org-mode=. 
+
 #+BEGIN_SRC emacs-lisp
-;;;;;;;; MODE / PACKAGE ;;;;;;;;
-(require 'package)
-(package-initialize)
-(ignore-errors
-  (column-number-mode 1)
-  (size-indication-mode 1)
-  (menu-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
-  (tool-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
-  (scroll-bar-mode 0)
-  (winner-mode 1))
-
-
-
-
-;;;; auctex ;;;;
-(setq TeX-view-program-selection
-      (quote
-       (((output-dvi has-no-display-manager)
-         "dvi2tty")
-        ((output-dvi style-pstricks)
-         "dvips and gv")
-        (output-dvi "xdvi")
-        (output-pdf "Okular")
-        (output-html "xdg-open"))))
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(setq font-latex-fontify-script nil)
-
-
-
-;;;; ido-mode ;;;; 
-(ido-mode 'buffers) ;; only buffers because of bug 36435
-(setq ido-create-new-buffer 'always)
-(setq ido-enable-flex-maatching t)
-(defadvice ido-switch-buffer (around no-confirmation activate)
-  (let ((confirm-nonexistent-file-or-buffer nil))
-    ad-do-it))
-
-
-
-;;;; elpy ;;;;
-(use-package elpy
-  :ensure t
-  :defer t
-  :init
-  (advice-add 'python-mode :before 'elpy-enable))
-
-
-
-
-;;;; buffer-move ;;;;
-(global-set-key (kbd "<C-S-up>")     'buf-move-up)
-(global-set-key (kbd "<C-S-down>")   'buf-move-down)
-(global-set-key (kbd "<C-S-left>")   'buf-move-left)
-(global-set-key (kbd "<C-S-right>")  'buf-move-right)
-
-
-
-;;;; org-mode ;;;;
 (require 'org)
 (global-set-key "\C-cl" 'org-store-link) 
 (global-set-key "\C-ca" 'org-agenda)
@@ -112,7 +55,6 @@
 (setq org-habit-show-habits-only-for-today nil)
 (setq org-mark-ring-length 16)
 (setq org-use-speed-commands t)
-
 ;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
 					      ;; display
 (defun jmw-org-refile (&optional arg default-buffer rfloc msg)
@@ -183,25 +125,72 @@ goto."
  '((python . t)
    (C . t)))
 (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
+#+END_SRC
+* pkg
+Related to an emacs package. 
+** =package.el=
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(package-initialize)
+#+END_SRC
+** auctex
+#+BEGIN_SRC emacs-lisp
+(setq TeX-view-program-selection
+      (quote
+       (((output-dvi has-no-display-manager)
+         "dvi2tty")
+        ((output-dvi style-pstricks)
+         "dvips and gv")
+        (output-dvi "xdvi")
+        (output-pdf "Okular")
+        (output-html "xdg-open"))))
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(setq font-latex-fontify-script nil)
 
+#+END_SRC
+** ido
+#+BEGIN_SRC emacs-lisp
+(ido-mode 'buffers) ;; only buffers because of bug 36435
+(setq ido-create-new-buffer 'always)
+(setq ido-enable-flex-maatching t)
+(defadvice ido-switch-buffer (around no-confirmation activate)
+  (let ((confirm-nonexistent-file-or-buffer nil))
+    ad-do-it))
+#+END_SRC
+** elpy
+#+BEGIN_SRC emacs-lisp
+(use-package elpy
+  :ensure t
+  :defer t
+  :init
+  (advice-add 'python-mode :before 'elpy-enable))
+#+END_SRC
+** buffer-move
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<C-S-up>")     'buf-move-up)
+(global-set-key (kbd "<C-S-down>")   'buf-move-down)
+(global-set-key (kbd "<C-S-left>")   'buf-move-left)
+(global-set-key (kbd "<C-S-right>")  'buf-move-right)
 
-
-;;;; bash-completion ;;;;
+#+END_SRC
+** bash-completion
+#+BEGIN_SRC emacs-lisp
 (require 'bash-completion)
 (bash-completion-setup)
 
-
-
-;;;; ein ;;;;
+#+END_SRC
+** ein
+#+BEGIN_SRC emacs-lisp
 (ignore-errors 
  (require 'ein)
  (require 'ein-notebook)
  (require 'ein-subpackages))
 
-
-
-;;;; emms ;;;;
-; recommended
+#+END_SRC
+** emms
+#+BEGIN_SRC emacs-lisp
 (require 'emms-setup)
 (emms-all)
 (emms-default-players)
@@ -219,53 +208,43 @@ goto."
                           "/chills"))
 (emms-shuffle)
 
-
-
-;;;; comint-mode ;;;;
+#+END_SRC
+** ffap
+#+BEGIN_SRC emacs-lisp
+(ffap-bindings)
+#+END_SRC
+** cc-mode
+(add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
+** hexl
+#+BEGIN_SRC emacs-lisp
+(global-set-key "\C-x\C-h" 'hexl-find-file)
+#+END_SRC
+* mode
+Related to a mode, minor or major. 
+** comint-mode
+#+BEGIN_SRC emacs-lisp
 (add-hook 'comint-mode-hook ;; don't want line wrapping in REPLs
       (lambda () (setq auto-fill-function '())))
-
-
-
-;;;; text-mode ;;;;
+#+END_SRC
+** text-mode
+#+BEGIN_SRC emacs-lisp
 (add-hook 'text-mode-hook
 	  (lambda () (setq fill-column 72)))
+#+END_SRC
+** other
+#+BEGIN_SRC emacs-lisp
+(ignore-errors
+  (column-number-mode 1)
+  (size-indication-mode 1)
+  (menu-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
+  (tool-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
+  (scroll-bar-mode 0)
+  (winner-mode 1))
 
-
-
-;;;; xref ;;;;
-;; (setq tags-table-list '("/home/michael/extra/mind/glibc"))
-
-
-
-;;;; ffap ;;;;
-(ffap-bindings)
-
-
-
-;;;; cc-mode ;;;;
-(add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
-
-
-
-;;;;;;;; KEY SEQUENCE ;;;;;;;;
-(global-set-key (kbd "C-c j w") 'jmw-wander)
-(global-set-key (kbd "C-c j s") 'jmw-safe)
-(global-set-key (kbd "C-;") 'other-window)
-(global-set-key "\C-x\C-h" 'hexl-find-file)
-(global-set-key (kbd "C-c t s") 'jmw-run-with-timer)
-(global-set-key (kbd "C-c t c") 'jmw-cancel-timer)
-(global-set-key (kbd "C-c t d") 'jmw-time-left) ;; "display"
-
-
-
-
-
-
-
-
-;;;;;;;; STARTUP ;;;;;;;;
-;; startup set of buffers and windows
+#+END_SRC
+* startup
+Look and feel of emacs upon completion of startup. 
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'default-frame-alist '(fullscreen . fullboth))
 (add-to-list 'display-buffer-alist
              `(,(regexp-quote "*shell")
@@ -284,12 +263,17 @@ goto."
             (split-window-right)
             (balance-windows)
 	    ))
-
-
-
-
-
-
+#+END_SRC
+* other
+Default case. As of [2019-12-24 Tue], not too organized. 
+#+BEGIN_SRC emacs-lisp
+;;;;;;;; KEY SEQUENCE ;;;;;;;;
+(global-set-key (kbd "C-c j w") 'jmw-wander)
+(global-set-key (kbd "C-c j s") 'jmw-safe)
+(global-set-key (kbd "C-;") 'other-window)
+(global-set-key (kbd "C-c t s") 'jmw-run-with-timer)
+(global-set-key (kbd "C-c t c") 'jmw-cancel-timer)
+(global-set-key (kbd "C-c t d") 'jmw-time-left) ;; "display"
 
 ;;;;;;;; OTHER ;;;;;;;;
 ;;;; variable ;;;;
@@ -321,9 +305,6 @@ goto."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-
-
 ;;;; other ;;;;
 (server-start) 
 (defun jmw-7z (zfile file outfile)
