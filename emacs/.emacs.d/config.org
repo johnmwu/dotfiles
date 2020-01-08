@@ -93,17 +93,25 @@ The =org-clock= feature.
 	      (recenter-top-bottom 18)))
 
 #+END_SRC
+
+A formalization of pushing a task onto the stack. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-push-task (task-name)
+    "Push a task onto the stack."
+    (interactive "sTask name: ")
+    (org-clock-goto)
+    (org-insert-todo-heading-respect-content)
+    (org-do-demote)
+    (move-end-of-line 1)
+    (insert task-name)
+    (org-clock-in))
+  (global-set-key (kbd "C-c o p") 'jmw-push-task)
+#+END_SRC
 *** other
    :PROPERTIES:
    :created:  2020-01-08 20:33:25 CST
    :END:
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-push-task ()
-    "Push a task onto the stack."
-    (interactive)
-    (org-insert-todo-heading-respect-content)
-    (org-do-demote))
-  (global-set-key (kbd "C-c o p") 'jmw-push-task)
   (defun jmw-org-todo ()
     "Redefinition of `org-todo`."
     (interactive)
@@ -178,6 +186,14 @@ The =org-clock= feature.
     (when (equal arg '(4))
       (org-mark-ring-push))
     (org-refile arg default-buffer rfloc msg))
+#+END_SRC
+
+Insert creation time as a property when creating a headline. This is
+useful for determining when tasks were created. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-insert-creation ()
+    (org-set-property "created" (format-time-string "%F %T %Z")))
+  (add-hook 'org-insert-heading-hook 'jmw-org-insert-creation)
 #+END_SRC
 * pkg
 Related to an emacs package. 
