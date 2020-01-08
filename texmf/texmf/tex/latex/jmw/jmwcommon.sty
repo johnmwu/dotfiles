@@ -16,7 +16,7 @@
 % do not clash with any document classes. 
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{mathrsfs} % them sexyy scripts *ohhhh*
+\usepackage{mathrsfs} 
 \PassOptionsToPackage{usenames,svgnames,dvipsnames}{xcolor}
 \usepackage{xcolor}
   \definecolor{lightred}{rgb}{0.5,0,0}
@@ -27,6 +27,7 @@
   \usepackage{hyperref}
 \fi
 \usepackage{graphicx}
+\usepackage{siunitx}
 
 
 
@@ -62,6 +63,7 @@
 \newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} % "Define equals"
 \newcommand{\del}{\partial} 
 \DeclareMathOperator{\Ob}{Ob} % Objects of a category
+
 
 %% From MIT 18.701/2
 \newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} % "Inner product"
@@ -108,7 +110,7 @@
 
 %% From MIT 18.101 %%
 \newcommand{\abs}[1]{\ensuremath{\left| #1\right|}}
-\DeclareMathOperator{\D}{D} % total derivative (Jacobian)
+\DeclareMathOperator{\D}{D} % Jacobian
 
 %%%% Misc %%%%
 %% Style

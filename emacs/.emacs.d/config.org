@@ -2,129 +2,145 @@
 Related to =org-mode=. 
 
 #+BEGIN_SRC emacs-lisp
-(require 'org)
-(global-set-key "\C-cl" 'org-store-link) 
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cc" 'org-capture)
-(global-set-key "\C-cb" 'org-switchb)
-(global-set-key (kbd "C-c o o") 'jmw-org-clock-out-up)
-(global-set-key (kbd "C-c o p") 'jmw-push-task)
-(define-key org-mode-map
-  (kbd "C-c C-w")
-  'jmw-org-refile)
-(add-hook 'org-mode-hook 'turn-on-org-cdlatex)
-(setq org-capture-templates
-      '(("e"
-         "Computer error"
-         entry
-         (file "~/core/mind/ob/thm/cs/soft/err-log.org")
-         "* %U %?\n %i")
-        ("i"
-         "interesting thought"
-         entry
-         (file+headline "~/core/mind/sys/short/proc/main.org"
-                        "interesting thought")
-         "* %U %?\n %i")))
-(setq org-refile-targets '((nil . (:maxlevel . 3))))
-(setq org-agenda-window-setup 'other-window)
-(setq org-agenda-restore-windows-after-quit t)
-(setq org-entities-user ; special symbols
-      '(("scrB" "\\scrB" t "&#x212C;" "B" "B" "ℬ") ; "script B"
-        ("scrS" "\\scrS" t "&#x1D4AE;" "S" "S" "𝒮") 
-        ("scrF" "\\scrF" t "&#x2131;" "F" "F" "ℱ") 
-        ("RR" "\\RR" t "&#x211D;" "R" "R" "ℝ") 
-        ("ZZ" "\\ZZ" t "&#x2124;" "Z" "Z" "ℤ") 
-        ("CC" "\\CC" t "&#x2102;" "C" "C" "ℂ") 
-        ("PP" "\\PP" t "&#x2119;" "P" "P" "ℙ") ; prob
-        ("EE" "\\EE" t "&#x1D53C;" "E" "E" "𝔼") ; e.v.
-        ("eps" "\\eps" t "&#x03B5;" "e" "e" "ε") 
-        ("iff" "\\iff" t "&#x21D4;" "<->" "<->" "⇔") 
-        ("imp" "\\imp" t "&#x21D2;" "->" "->" "⇒") 
-        ("del" "\\del" t "&#x2202;" "d" "d" "∂") 
-        ))
-(setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
-(setq org-cycle-include-plain-lists 'integrate)
-(setq org-blank-before-new-entry 
-      '((heading . nil)
-	(plain-list-item . nil))) 
-(setq org-startup-truncated nil)
-(setq org-M-RET-may-split-line
-      '((headline . nil)
-	(item . nil)))
-(setq org-agenda-span 10)
-(setq org-habit-show-habits-only-for-today nil)
-(setq org-mark-ring-length 16)
-(setq org-use-speed-commands t)
-;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
-					      ;; display
-(defun jmw-org-refile (&optional arg default-buffer rfloc msg)
-  "Redefinition of `org-refile` that places the previous location
-of point on the org mark ring if using the refile interface as a
-goto."
-  (interactive "P")
-  (when (equal arg '(4))
-    (org-mark-ring-push))
-  (org-refile arg default-buffer rfloc msg))
-;; org-clock ;;
-(require 'org-clock) ;; The functions here are autoloaded, but I load it
-		     ;; now to add 'org-clock-out-if-current
-(setq org-clock-history-length 35)
-(setq org-clock-mode-line-total 'today)
-(defun jmw-org-clock-out-up ()
-  "Clock out and go up a process in the stack."
-  (interactive)
-  (when (org-clocking-p)
-    (let ((org-log-note-clock-out nil)
-	  (org-clock-out-switch-to-state nil))
-      (org-clock-out)))
-  (pop org-clock-history)
-  (let* ((marker (pop org-clock-history))
-	 (buf (marker-buffer marker)))
-    (switch-to-buffer buf)
-    (goto-char marker)
-    (org-clock-in)))
-;; code copied from ~org-clock-out-if-current~
-(defun jmw-org-clock-out-if-current ()
-  (when (and (org-clocking-p)
-	     org-clock-out-when-done
-	     (marker-buffer org-clock-marker)
-	     (or (and (eq t org-clock-out-when-done)
-		      (member org-state org-done-keywords))
-		 (and (listp org-clock-out-when-done)
-		      (member org-state org-clock-out-when-done)))
-	     (equal (or (buffer-base-buffer (org-clocking-buffer))
-			(org-clocking-buffer))
-		    (or (buffer-base-buffer (current-buffer))
-			(current-buffer)))
-	     (< (point) org-clock-marker)
-	     (> (save-excursion (outline-next-heading) (point))
-		org-clock-marker))
-    (org-auto-repeat-maybe org-state)
-    (jmw-org-clock-out-up)))
-(add-hook 'org-after-todo-state-change-hook
-	  'jmw-org-clock-out-if-current)
-(remove-hook 'org-after-todo-state-change-hook
-	     'org-clock-out-if-current)
-(add-hook 'org-clock-goto-hook
-	  (lambda ()
-	    (recenter-top-bottom 18)))
-(defun jmw-org-clock-goto ()
-  (interactive)
-  (org-overview)
-  (org-clock-goto))
-(global-set-key (kbd "C-c j g")
-		'jmw-org-clock-goto)
-(defun jmw-push-task ()
-  "Push a task onto the stack."
-  (interactive)
-  (org-insert-todo-heading-respect-content)
-  (org-do-demote))
-;; org-babel ;;
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)
-   (C . t)))
-(org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
+  (require 'org)
+  (global-set-key "\C-cl" 'org-store-link) 
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-cb" 'org-switchb)
+  (global-set-key (kbd "C-c o o") 'jmw-org-clock-out-up)
+  (global-set-key (kbd "C-c o p") 'jmw-push-task)
+  (global-set-key (kbd "C-c o h") 'jmw-org-make-habit)
+  (define-key org-mode-map (kbd "C-c C-w") 'jmw-org-refile)
+  (define-key org-mode-map (kbd "C-c C-t") 'jmw-org-todo)
+  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+  (setq org-capture-templates
+	'(("e"
+	   "Computer error"
+	   entry
+	   (file "~/core/mind/ob/thm/cs/soft/err-log.org")
+	   "* %U %?\n %i")
+	  ("i"
+	   "interesting thought"
+	   entry
+	   (file+headline "~/core/mind/sys/short/proc/main.org"
+			  "interesting thought")
+	   "* %U %?\n %i")))
+  (setq org-refile-targets '((nil . (:maxlevel . 3))))
+  (setq org-agenda-window-setup 'other-window)
+  (setq org-agenda-restore-windows-after-quit t)
+  (setq org-entities-user ; special symbols
+	'(("scrB" "\\scrB" t "&#x212C;" "B" "B" "ℬ") ; "script B"
+	  ("scrS" "\\scrS" t "&#x1D4AE;" "S" "S" "𝒮") 
+	  ("scrF" "\\scrF" t "&#x2131;" "F" "F" "ℱ") 
+	  ("RR" "\\RR" t "&#x211D;" "R" "R" "ℝ") 
+	  ("ZZ" "\\ZZ" t "&#x2124;" "Z" "Z" "ℤ") 
+	  ("CC" "\\CC" t "&#x2102;" "C" "C" "ℂ") 
+	  ("PP" "\\PP" t "&#x2119;" "P" "P" "ℙ") ; prob
+	  ("EE" "\\EE" t "&#x1D53C;" "E" "E" "𝔼") ; e.v.
+	  ("eps" "\\eps" t "&#x03B5;" "e" "e" "ε") 
+	  ("iff" "\\iff" t "&#x21D4;" "<->" "<->" "⇔") 
+	  ("imp" "\\imp" t "&#x21D2;" "->" "->" "⇒") 
+	  ("del" "\\del" t "&#x2202;" "d" "d" "∂") 
+	  ))
+  (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
+  (setq org-cycle-include-plain-lists 'integrate)
+  (setq org-blank-before-new-entry 
+	'((heading . nil)
+	  (plain-list-item . nil))) 
+  (setq org-startup-truncated nil)
+  (setq org-M-RET-may-split-line
+	'((headline . nil)
+	  (item . nil)))
+  (setq org-agenda-span 10)
+  (setq org-habit-show-habits-only-for-today nil)
+  (setq org-mark-ring-length 16)
+  (setq org-use-speed-commands t)
+  ;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
+						;; display
+  (defun jmw-org-refile (&optional arg default-buffer rfloc msg)
+    "Redefinition of `org-refile` that places the previous location
+  of point on the org mark ring if using the refile interface as a
+  goto."
+    (interactive "P")
+    (when (equal arg '(4))
+      (org-mark-ring-push))
+    (org-refile arg default-buffer rfloc msg))
+  (defun jmw-org-make-habit ()
+    "Turn the following heading into a habit. Schedules it for
+  today with .+1d/2d repeater interval."
+    (interactive)
+    (let ((time (concat
+		 "<"
+		 (format-time-string "%F") ;; yyyy-mm-dd
+		 " .+1d/2d")))
+      (org-set-property "STYLE" "habit")
+      (org-schedule '(1) time)))
+  (defun jmw-org-todo ()
+    "Redefinition of `org-todo`."
+    (interactive)
+    (org-todo)
+    (org-clock-goto))
+
+  ;; org-clock ;;
+  (require 'org-clock) ;; The functions here are autoloaded, but I load it
+		       ;; now to add 'org-clock-out-if-current
+  (setq org-clock-history-length 35)
+  (setq org-clock-mode-line-total 'today)
+  (defun jmw-org-clock-out-up ()
+    "Clock out and go up a process in the stack."
+    (interactive)
+    (when (org-clocking-p)
+      (let ((org-log-note-clock-out nil)
+	    (org-clock-out-switch-to-state nil))
+	(org-clock-out)))
+    (pop org-clock-history)
+    (let* ((marker (pop org-clock-history))
+	   (buf (marker-buffer marker)))
+      (switch-to-buffer buf)
+      (goto-char marker)
+      (org-clock-in)))
+  ;; code copied from ~org-clock-out-if-current~
+  (defun jmw-org-clock-out-if-current ()
+    (when (and (org-clocking-p)
+	       org-clock-out-when-done
+	       (marker-buffer org-clock-marker)
+	       (or (and (eq t org-clock-out-when-done)
+			(member org-state org-done-keywords))
+		   (and (listp org-clock-out-when-done)
+			(member org-state org-clock-out-when-done)))
+	       (equal (or (buffer-base-buffer (org-clocking-buffer))
+			  (org-clocking-buffer))
+		      (or (buffer-base-buffer (current-buffer))
+			  (current-buffer)))
+	       (< (point) org-clock-marker)
+	       (> (save-excursion (outline-next-heading) (point))
+		  org-clock-marker))
+      (org-auto-repeat-maybe org-state)
+      (jmw-org-clock-out-up)))
+  (add-hook 'org-after-todo-state-change-hook
+	    'jmw-org-clock-out-if-current)
+  (remove-hook 'org-after-todo-state-change-hook
+	       'org-clock-out-if-current)
+  (add-hook 'org-clock-goto-hook
+	    (lambda ()
+	      (recenter-top-bottom 18)))
+  (defun jmw-org-clock-goto ()
+    (interactive)
+    (org-overview)
+    (org-clock-goto))
+  (global-set-key (kbd "C-c j g")
+		  'jmw-org-clock-goto)
+  (defun jmw-push-task ()
+    "Push a task onto the stack."
+    (interactive)
+    (org-insert-todo-heading-respect-content)
+    (org-do-demote))
+  ;; org-babel ;;
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (C . t)))
+  (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
 #+END_SRC
 * pkg
 Related to an emacs package. 
@@ -132,6 +148,11 @@ Related to an emacs package.
 #+BEGIN_SRC emacs-lisp
 (require 'package)
 (package-initialize)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/")
+             t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 #+END_SRC
 ** auctex
 #+BEGIN_SRC emacs-lisp
@@ -219,6 +240,18 @@ Related to an emacs package.
 #+BEGIN_SRC emacs-lisp
 (global-set-key "\C-x\C-h" 'hexl-find-file)
 #+END_SRC
+** pyim
+A Chinese input method. Installed because ibus pinyin wasn't working
+with fullscreen emacs.
+
+Copied and pasted from [[http://tumashu.github.io/pyim/][the main page]]:
+
+#+BEGIN_SRC emacs-lisp
+(require 'pyim)
+(require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
+(pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
+(setq default-input-method "pyim")
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -285,11 +318,6 @@ Default case. As of [2019-12-24 Tue], not too organized.
       ["black" "red3" "green3" "yellow3"
        "dodger blue" "magenta3" "cyan3" "gray90"])
 (setq ansi-color-map (ansi-color-make-color-map))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/")
-             t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
