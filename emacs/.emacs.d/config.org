@@ -1,7 +1,12 @@
 * org
 Related to =org-mode=. 
 
-First, make sure it's loaded. There's no point in delaying. 
+First, add the modules we use:
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-modules 'org-habit)
+#+END_SRC
+
+Now, load it. There's no point in delaying. 
 #+BEGIN_SRC emacs-lisp
   (require 'org)
 #+END_SRC
@@ -22,6 +27,8 @@ The main key sequence is
   (global-set-key "\C-ca" 'org-agenda)
 #+END_SRC
 
+I use the habit subsystem:
+
 Other:
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-window-setup 'other-window)
@@ -40,7 +47,6 @@ Other:
       (org-set-property "STYLE" "habit")
       (org-schedule '(1) time)))
   (global-set-key (kbd "C-c o h") 'jmw-org-make-habit)
-
 #+END_SRC
 *** org-clock
    :PROPERTIES:
@@ -62,7 +68,7 @@ The =org-clock= feature.
     (pop org-clock-history)
     (let* ((marker (pop org-clock-history))
 	   (buf (marker-buffer marker)))
-      (switch-to-buffer buf)
+      (select-window (jmw-main-sched-window))
       (goto-char marker)
       (org-clock-in)))
   (global-set-key (kbd "C-c o o") 'jmw-org-clock-out-up)
@@ -118,6 +124,8 @@ A formalization of pushing a task onto the stack.
     (org-todo)
     (org-clock-goto))
   (define-key org-mode-map (kbd "C-c C-t") 'jmw-org-todo)
+  (defun jmw-main-sched-window ()
+    (get-buffer-window "main.org"))
 
 #+END_SRC
 ** org-babel
@@ -351,6 +359,9 @@ Look and feel of emacs upon completion of startup.
 	    ))
 #+END_SRC
 * other
+  :LOGBOOK:
+  CLOCK: [2020-01-09 Thu 16:30]--[2020-01-09 Thu 16:31] =>  0:01
+  :END:
 Default case. As of [2019-12-24 Tue], not too organized. 
 #+BEGIN_SRC emacs-lisp
 ;;;;;;;; KEY SEQUENCE ;;;;;;;;
