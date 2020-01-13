@@ -48,6 +48,13 @@ Other:
       (org-schedule '(1) time)))
   (global-set-key (kbd "C-c o h") 'jmw-org-make-habit)
 #+END_SRC
+
+TODO keywords:
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keyword-faces
+	'(("CANCEL" . (:foreground "red" :weight bold))
+	  ("WAIT" . (:foreground "yellow" :weight bold))))
+#+END_SRC
 *** org-clock
    :PROPERTIES:
    :created:  2020-01-08 20:31:18 CST
@@ -100,7 +107,14 @@ The =org-clock= feature.
 
 #+END_SRC
 
-A formalization of pushing a task onto the stack. 
+A formalization of pushing a task onto the stack. Semantically, pushing
+a task is saying: the following is required, or at least relevant, to
+completing the current task. This can be viewed as a special, important
+case of inserting a TODO item. 
+
+As of [2020-01-10 Fri], there is no symmetric notion for queueing a
+task, because queueing a task can be done using ordinary insertion of a
+TODO item. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-push-task (task-name)
     "Push a task onto the stack."
@@ -112,6 +126,15 @@ A formalization of pushing a task onto the stack.
     (insert task-name)
     (org-clock-in))
   (global-set-key (kbd "C-c o p") 'jmw-push-task)
+#+END_SRC
+
+=org-clock-goto= from anywhere:
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-clock-goto ()
+    (interactive)
+    (select-window (jmw-main-sched-window))
+    (org-clock-goto))
+  (global-set-key (kbd "C-c o g") 'jmw-org-clock-goto)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -138,7 +161,11 @@ A formalization of pushing a task onto the stack.
    '((python . t)
      (C . t)))
   (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
+#+END_SRC
 
+Don't prompt for confirmation when executing code blocks. 
+#+BEGIN_SRC emacs-lisp 
+  (setq org-confirm-babel-evaluate nil)
 #+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
@@ -146,7 +173,6 @@ A formalization of pushing a task onto the stack.
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-cb" 'org-switchb)
   (define-key org-mode-map (kbd "C-c C-w") 'jmw-org-refile)
-  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
   (setq org-capture-templates
 	'(("e"
 	   "Computer error"
@@ -203,17 +229,23 @@ useful for determining when tasks were created.
     (org-set-property "created" (format-time-string "%F %T %Z")))
   (add-hook 'org-insert-heading-hook 'jmw-org-insert-creation)
 #+END_SRC
+
+I had this, but I don't really use CDLaTeX
+#+BEGIN_SRC emacs-lisp :tangle no
+  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+#+END_SRC
+
 * pkg
 Related to an emacs package. 
 ** =package.el=
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(package-initialize)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/")
-             t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/"))
+  (require 'package)
+  (when (< emacs-major-version 27) (package-initialize))
+  (add-to-list 'package-archives
+	       '("melpa" . "https://melpa.org/packages/")
+	       t)
+  (add-to-list 'package-archives
+	       '("melpa-stable" . "https://stable.melpa.org/packages/"))
 #+END_SRC
 ** auctex
 #+BEGIN_SRC emacs-lisp
@@ -242,6 +274,7 @@ Related to an emacs package.
     ad-do-it))
 #+END_SRC
 ** elpy
+Copied and pasted. 
 #+BEGIN_SRC emacs-lisp
 (use-package elpy
   :ensure t
