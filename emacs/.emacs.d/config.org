@@ -49,7 +49,8 @@ Other:
   (global-set-key (kbd "C-c o h") 'jmw-org-make-habit)
 #+END_SRC
 
-TODO keywords:
+**** todo keyword
+Better colors:
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keyword-faces
 	'(("CANCEL" . (:foreground "red" :weight bold))
@@ -119,6 +120,7 @@ TODO item.
   (defun jmw-push-task (task-name)
     "Push a task onto the stack."
     (interactive "sTask name: ")
+    (select-window (jmw-main-sched-window))
     (org-clock-goto)
     (org-insert-todo-heading-respect-content)
     (org-do-demote)
@@ -136,17 +138,21 @@ TODO item.
     (org-clock-goto))
   (global-set-key (kbd "C-c o g") 'jmw-org-clock-goto)
 #+END_SRC
+
+Marking a task done:
+#+BEGIN_SRC emacs-lisp
+(defun jmw-org-done ()
+  (interactive)
+  (jmw-org-clock-goto)
+  (org-todo "DONE")
+  (org-clock-goto))
+(define-key org-mode-map (kbd "C-c o d") 'jmw-org-done)
+#+END_SRC
 *** other
    :PROPERTIES:
    :created:  2020-01-08 20:33:25 CST
    :END:
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-todo ()
-    "Redefinition of `org-todo`."
-    (interactive)
-    (org-todo)
-    (org-clock-goto))
-  (define-key org-mode-map (kbd "C-c C-t") 'jmw-org-todo)
   (defun jmw-main-sched-window ()
     (get-buffer-window "main.org"))
 
@@ -199,6 +205,7 @@ Don't prompt for confirmation when executing code blocks.
 	  ("iff" "\\iff" t "&#x21D4;" "<->" "<->" "⇔") 
 	  ("imp" "\\imp" t "&#x21D2;" "->" "->" "⇒") 
 	  ("del" "\\del" t "&#x2202;" "d" "d" "∂") 
+	  ("NN" "\\NN" t "&#x2115;" "N" "N" "ℕ") 
 	  ))
   (setq org-cycle-include-plain-lists 'integrate)
   (setq org-blank-before-new-entry 
