@@ -369,6 +369,17 @@ Add lorem ipsum filler text to emacs.
 
 I don't use the default bindings because it conflicts with org-mode's
 ~C-c l~.
+** vterm
+   :PROPERTIES:
+   :created:  2020-01-29 19:03:53 CST
+   :END:
+A terminal emulator within emacs that
+- allows curses based applications
+- ignores certain shortcuts like ~C-x C-f~. 
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vterm)
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -404,24 +415,23 @@ to save in a different file, which I don't load.
 * startup
 Look and feel of emacs upon completion of startup. 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'default-frame-alist '(fullscreen . fullboth))
-(add-to-list 'display-buffer-alist
-             `(,(regexp-quote "*shell")
-             display-buffer-same-window))
-(set-default-font "Ubuntu Mono-12")
-(setq inhibit-startup-screen t)
-(add-hook 'window-setup-hook
-	  (lambda ()
-	    (find-file (concat (getenv "PROC_DIR")
-                               "/main.org"))
-            (set-window-dedicated-p (get-buffer-window "main.org")
-                                    t) 
-	    (split-window-right) ; a hack. Shouldn't have to be here.
-            (windmove-right)
-            (shell)
-            (split-window-right)
-            (balance-windows)
-	    ))
+  (add-to-list 'default-frame-alist '(fullscreen . fullboth))
+  (add-to-list 'display-buffer-alist
+	       `(,(regexp-quote "*shell")
+	       display-buffer-same-window))
+  (set-default-font "Ubuntu Mono-12")
+  (setq inhibit-startup-screen t)
+  (add-hook 'window-setup-hook
+	    (lambda ()
+	      (find-file (concat (getenv "PROC_DIR")
+				 "/main.org"))
+	      (set-window-dedicated-p (get-buffer-window "main.org")
+				      t) 
+	      (split-window-right) ; a hack. Shouldn't have to be here.
+	      (windmove-right)
+	      (vterm)
+	      (split-window-right)
+	      (balance-windows)))
 #+END_SRC
 ** theme
    :PROPERTIES:
