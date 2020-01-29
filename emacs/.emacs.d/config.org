@@ -381,6 +381,15 @@ Related to a mode, minor or major.
 (add-hook 'text-mode-hook
 	  (lambda () (setq fill-column 72)))
 #+END_SRC
+** custom
+   :PROPERTIES:
+   :created:  2020-01-29 18:33:43 CST
+   :END:
+I don't like having Custom litter my =init.el= with stuff. This sets it
+to save in a different file, which I don't load. 
+#+BEGIN_SRC emacs-lisp 
+  (setq custom-file (concat user-emacs-directory "/custom.el"))
+#+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
 (ignore-errors
