@@ -141,12 +141,12 @@ TODO item.
 
 Marking a task done:
 #+BEGIN_SRC emacs-lisp
-(defun jmw-org-done ()
-  (interactive)
-  (jmw-org-clock-goto)
-  (org-todo "DONE")
-  (org-clock-goto))
-(define-key org-mode-map (kbd "C-c o d") 'jmw-org-done)
+  (defun jmw-org-done ()
+    (interactive)
+    (jmw-org-clock-goto)
+    (org-todo "DONE")
+    (org-clock-goto))
+  (global-set-key (kbd "C-c o d") 'jmw-org-done)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -244,32 +244,40 @@ I had this, but I don't really use CDLaTeX
 
 * pkg
 Related to an emacs package. 
-** =package.el=
+** use-package
+   :PROPERTIES:
+   :created:  2020-01-29 11:36:05 CST
+   :END:
+Wehn I open emacs for the first time on a new machine, the packages I
+use should automatically be downloaded. This is the recommended method.
 #+BEGIN_SRC emacs-lisp
-  (require 'package)
-  (when (< emacs-major-version 27) (package-initialize))
-  (add-to-list 'package-archives
-	       '("melpa" . "https://melpa.org/packages/")
-	       t)
-  (add-to-list 'package-archives
-	       '("melpa-stable" . "https://stable.melpa.org/packages/"))
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
 #+END_SRC
 ** auctex
-#+BEGIN_SRC emacs-lisp
-(setq TeX-view-program-selection
-      (quote
-       (((output-dvi has-no-display-manager)
-         "dvi2tty")
-        ((output-dvi style-pstricks)
-         "dvips and gv")
-        (output-dvi "xdvi")
-        (output-pdf "Okular")
-        (output-html "xdg-open"))))
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(setq font-latex-fontify-script nil)
+#+BEGIN_SRC emacs-lisp 
+  (use-package tex
+    :config
+    (setq TeX-view-program-selection
+	  (quote
+	   (((output-dvi has-no-display-manager)
+	     "dvi2tty")
+	    ((output-dvi style-pstricks)
+	     "dvips and gv")
+	    (output-dvi "xdvi")
+	    (output-pdf "Okular")
+	    (output-html "xdg-open"))))
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (setq font-latex-fontify-script nil)
 
+    :defer t
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+    :ensure auctex)
 #+END_SRC
 ** ido
 #+BEGIN_SRC emacs-lisp
@@ -284,60 +292,58 @@ Related to an emacs package.
 Copied and pasted. 
 #+BEGIN_SRC emacs-lisp
 (use-package elpy
-  :ensure t
   :defer t
   :init
   (advice-add 'python-mode :before 'elpy-enable))
 #+END_SRC
 ** buffer-move
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<C-S-up>")     'buf-move-up)
-(global-set-key (kbd "<C-S-down>")   'buf-move-down)
-(global-set-key (kbd "<C-S-left>")   'buf-move-left)
-(global-set-key (kbd "<C-S-right>")  'buf-move-right)
-
+  (use-package buffer-move
+    :bind
+    (("<C-S-up>" . 'buf-move-up)
+     ("<C-S-down>" . 'buf-move-down)
+     ("<C-S-left>" . 'buf-move-left)
+     ("<C-S-right>" . 'buf-move-right)))
 #+END_SRC
 ** bash-completion
 #+BEGIN_SRC emacs-lisp
-(require 'bash-completion)
-(bash-completion-setup)
-
-#+END_SRC
-** ein
-#+BEGIN_SRC emacs-lisp
-(ignore-errors 
- (require 'ein)
- (require 'ein-notebook)
- (require 'ein-subpackages))
-
+  (use-package bash-completion
+    :config
+    (bash-completion-setup))
 #+END_SRC
 ** emms
 #+BEGIN_SRC emacs-lisp
-(require 'emms-setup)
-(emms-all)
-(emms-default-players)
-; settings
-(setq emms-source-file-default-directory "~/core/mind/env/ext")
-(setq emms-repeat-playlist t)
-(emms-mode-line 0)
-(emms-playing-time 0)
-; key bindings
-; C-c e will be the emms prefix key
-(global-set-key (kbd "C-c e <SPC>") 'emms-pause)
-; setup to begin playing "chills"
-(emms-add-directory-tree (concat
-                          emms-source-file-default-directory
-                          "/chills"))
-(emms-shuffle)
+  (use-package emms-setup
+    :config
+    (emms-all)
+    (emms-default-players)
+    ;; settings
+    (setq emms-source-file-default-directory "~/core/mind/env/ext")
+    (setq emms-repeat-playlist t)
+    (emms-mode-line 0)
+    (emms-playing-time 0)
+    (emms-add-directory-tree (concat
+			      emms-source-file-default-directory
+			      "/chills"))
+    (emms-shuffle)
 
+    :bind
+    (("C-c e <SPC>" . 'emms-pause))
+
+    :ensure emms)
 #+END_SRC
 ** ffap
+Smart ~C-x C-f~ based on context around point. 
 #+BEGIN_SRC emacs-lisp
 (ffap-bindings)
 #+END_SRC
 ** cc-mode
+Use "line comment style", i.e =//= style comments. 
+#+BEGIN_SRC emacs-lisp
 (add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
+#+END_SRC
 ** hexl
+Emacs's built-in hex editor. 
 #+BEGIN_SRC emacs-lisp
 (global-set-key "\C-x\C-h" 'hexl-find-file)
 #+END_SRC
@@ -345,14 +351,24 @@ Copied and pasted.
 A Chinese input method. Installed because ibus pinyin wasn't working
 with fullscreen emacs.
 
-Copied and pasted from [[http://tumashu.github.io/pyim/][the main page]]:
-
 #+BEGIN_SRC emacs-lisp
-(require 'pyim)
-(require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
-(pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
-(setq default-input-method "pyim")
+  (use-package pyim
+    :config
+    (require 'pyim-basedict)
+    (pyim-basedict-enable)
+    (setq default-input-method "pyim"))
 #+END_SRC
+** lorem ipsum
+   :PROPERTIES:
+   :created:  2020-01-29 12:20:45 CST
+   :END:
+Add lorem ipsum filler text to emacs. 
+#+BEGIN_SRC emacs-lisp
+  (use-package lorem-ipsum)
+#+END_SRC
+
+I don't use the default bindings because it conflicts with org-mode's
+~C-c l~.
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -398,6 +414,15 @@ Look and feel of emacs upon completion of startup.
             (balance-windows)
 	    ))
 #+END_SRC
+** theme
+   :PROPERTIES:
+   :created:  2020-01-28 22:45:41 CST
+   :END:
+[2020-01-28 Tue] I haven't given this much thought. =manoj-dark= is
+permissible.
+#+BEGIN_SRC emacs-lisp
+  (load-theme 'manoj-dark)
+#+END_SRC
 * other
   :LOGBOOK:
   CLOCK: [2020-01-09 Thu 16:30]--[2020-01-09 Thu 16:31] =>  0:01
@@ -422,21 +447,7 @@ Default case. As of [2019-12-24 Tue], not too organized.
       ["black" "red3" "green3" "yellow3"
        "dodger blue" "magenta3" "cyan3" "gray90"])
 (setq ansi-color-map (ansi-color-make-color-map))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (manoj-dark)))
- '(package-selected-packages
-   (quote
-    (cdlatex htmlize emms elpy lorem-ipsum bash-completion ace-window ein w3m google-this magit utop tuareg haskell-mode julia-mode julia-repl buffer-move python-mode sage-shell-mode auctex md4rd racket-mode markdown-mode proof-general))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
 ;;;; other ;;;;
 (server-start) 
 (defun jmw-7z (zfile file outfile)
