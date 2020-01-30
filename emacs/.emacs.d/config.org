@@ -378,7 +378,9 @@ A terminal emulator within emacs that
 - ignores certain shortcuts like ~C-x C-f~. 
 
 #+BEGIN_SRC emacs-lisp
-  (use-package vterm)
+    (use-package vterm
+      :config
+      (setq vterm-min-window-width 50))
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
@@ -423,15 +425,17 @@ Look and feel of emacs upon completion of startup.
   (setq inhibit-startup-screen t)
   (add-hook 'window-setup-hook
 	    (lambda ()
+	      (split-window-right) 
+	      (split-window-right)
+	      (balance-windows)
 	      (find-file (concat (getenv "PROC_DIR")
 				 "/main.org"))
 	      (set-window-dedicated-p (get-buffer-window "main.org")
 				      t) 
-	      (split-window-right) ; a hack. Shouldn't have to be here.
 	      (windmove-right)
 	      (vterm)
-	      (split-window-right)
-	      (balance-windows)))
+	      (windmove-right)
+	      (vterm)))
 #+END_SRC
 ** theme
    :PROPERTIES:
