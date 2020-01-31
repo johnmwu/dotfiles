@@ -242,6 +242,24 @@ I had this, but I don't really use CDLaTeX
   (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
 #+END_SRC
 
+Allow more newlines in an emphasis. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]]. 
+#+BEGIN_SRC emacs-lisp
+  (setf (car (nthcdr 4 org-emphasis-regexp-components)) 10)
+  (org-set-emph-re 'org-emphasis-regexp-components
+		   org-emphasis-regexp-components)
+#+END_SRC
+
+More visible emphasis. According to [[https://www.mail-archive.com/emacs-orgmode@gnu.org/msg115307.html][this]] message, adding different
+characters is not going to happen.
+#+BEGIN_SRC emacs-lisp
+  (setq org-emphasis-alist
+	'(("*" (bold :foreground "Yellow")) ;; like highlighting
+	  ("/" italic)
+	  ("_" underline)
+	  ("=" org-verbatim verbatim)
+	  ("~" org-code verbatim)
+	  ("+" (:strike-through t))))
+#+END_SRC
 * pkg
 Related to an emacs package. 
 ** use-package
