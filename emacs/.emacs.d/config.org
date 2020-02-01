@@ -1,3 +1,4 @@
+#+PROPERTY: header-args    :results silent
 * org
 Related to =org-mode=. 
 
@@ -267,9 +268,12 @@ buffer to appear in the original window.
   (setq org-src-window-setup 'current-window)
 #+END_SRC
 
+*** books
 Sometimes, I will download books as text files and read them in
-org-mode. The following function adds a comment. The precise
-implementation may change with my aesthetic preferences. 
+org-mode. 
+
+Adds a comment. The implementation may change with aesthetic
+preferences.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-comment ()
     (interactive)
@@ -277,6 +281,20 @@ implementation may change with my aesthetic preferences.
     (org-time-stamp-inactive '(16))
     (insert " JMW:* "))
   (global-set-key (kbd "C-c o c") 'jmw-org-comment)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-highlight-region (from to)
+    (interactive "r")
+    (when (use-region-p)
+      (save-excursion
+	(goto-char to)
+	(insert "*")
+	(goto-char from)
+	(insert "*"))
+      (deactivate-mark)
+      (fill-paragraph)))
+  (global-set-key (kbd "C-c o l") 'jmw-org-highlight-region)
 #+END_SRC
 * pkg
 Related to an emacs package. 
