@@ -273,8 +273,9 @@ implementation may change with my aesthetic preferences.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-comment ()
     (interactive)
-    (insert "**")
-    (backward-char))
+    (insert "*")
+    (org-time-stamp-inactive '(16))
+    (insert " JMW:* "))
   (global-set-key (kbd "C-c o c") 'jmw-org-comment)
 #+END_SRC
 * pkg
