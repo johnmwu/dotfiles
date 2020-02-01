@@ -11,6 +11,12 @@ Now, load it. There's no point in delaying.
 #+BEGIN_SRC emacs-lisp
   (require 'org)
 #+END_SRC
+
+Define the prefix key and bind it. 
+#+BEGIN_SRC emacs-lisp
+  (fset 'jmw-org-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c o") 'jmw-org-prefix)
+#+END_SRC
 ** sched
 My scheduling subsystem. As of [2020-01-08 Wed], described in
 =~/core/mind/sys/meta=. 
@@ -47,7 +53,7 @@ Other:
 		 " .+1d/2d")))
       (org-set-property "STYLE" "habit")
       (org-schedule '(1) time)))
-  (global-set-key (kbd "C-c o h") 'jmw-org-make-habit)
+  (define-key 'jmw-org-prefix "h" 'jmw-org-make-habit)
 #+END_SRC
 
 **** todo keyword
@@ -80,7 +86,8 @@ The =org-clock= feature.
       (select-window (jmw-main-sched-window))
       (goto-char marker)
       (org-clock-in)))
-  (global-set-key (kbd "C-c o o") 'jmw-org-clock-out-up)
+  (define-key 'jmw-org-prefix "o" 'jmw-org-clock-out-up)
+
   ;; code copied from ~org-clock-out-if-current~
   (defun jmw-org-clock-out-if-current ()
     (when (and (org-clocking-p)
@@ -106,7 +113,6 @@ The =org-clock= feature.
   (add-hook 'org-clock-goto-hook
 	    (lambda ()
 	      (recenter-top-bottom 18)))
-
 #+END_SRC
 
 A formalization of pushing a task onto the stack. Semantically, pushing
@@ -128,7 +134,7 @@ TODO item.
     (move-end-of-line 1)
     (insert task-name)
     (org-clock-in))
-  (global-set-key (kbd "C-c o p") 'jmw-push-task)
+  (define-key 'jmw-org-prefix "p" 'jmw-push-task)
 #+END_SRC
 
 =org-clock-goto= from anywhere:
@@ -137,7 +143,7 @@ TODO item.
     (interactive)
     (select-window (jmw-main-sched-window))
     (org-clock-goto))
-  (global-set-key (kbd "C-c o g") 'jmw-org-clock-goto)
+  (define-key 'jmw-org-prefix "g" 'jmw-org-clock-goto)
 #+END_SRC
 
 Marking a task done:
@@ -147,7 +153,7 @@ Marking a task done:
     (jmw-org-clock-goto)
     (org-todo "DONE")
     (org-clock-goto))
-  (global-set-key (kbd "C-c o d") 'jmw-org-done)
+  (define-key 'jmw-org-prefix "d" 'jmw-org-done)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -280,7 +286,7 @@ preferences.
     (insert "*")
     (org-time-stamp-inactive '(16))
     (insert " JMW:* "))
-  (global-set-key (kbd "C-c o c") 'jmw-org-comment)
+  (define-key 'jmw-org-prefix "c" 'jmw-org-comment)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -294,7 +300,7 @@ preferences.
 	(insert "*"))
       (deactivate-mark)
       (fill-paragraph)))
-  (global-set-key (kbd "C-c o l") 'jmw-org-highlight-region)
+  (define-key 'jmw-org-prefix "l" 'jmw-org-highlight-region)
 #+END_SRC
 * pkg
 Related to an emacs package. 
@@ -381,10 +387,17 @@ Copied and pasted.
 			      "/chills"))
     (emms-shuffle)
 
-    :bind
-    (("C-c e <SPC>" . 'emms-pause))
-
     :ensure emms)
+#+END_SRC
+
+Define my emms prefix
+#+BEGIN_SRC emacs-lisp
+  (fset 'jmw-emms-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c e") 'jmw-emms-prefix)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (define-key 'jmw-emms-prefix (kbd "<SPC>") 'emms-pause)
 #+END_SRC
 ** ffap
 Smart ~C-x C-f~ based on context around point. 
@@ -435,16 +448,17 @@ A terminal emulator within emacs that
   (use-package vterm
     :config
     (setq vterm-min-window-width 50)
-
-    :bind
-    (("C-c v" . 'jmw-vterm-prefix)))
 #+END_SRC
 
-Create a keymap for it
+Define my vterm prefix
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-vterm-prefix (let ((map (make-sparse-keymap)))
-			    (define-key map "b" 'vterm)
-			    map))
+  (fset 'jmw-vterm-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c v") 'jmw-vterm-prefix)
+#+END_SRC
+
+Bind functions
+#+BEGIN_SRC emacs-lisp
+  (define-key 'jmw-vterm-prefix "b" 'vterm)
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
@@ -515,17 +529,15 @@ permissible.
   CLOCK: [2020-01-09 Thu 16:30]--[2020-01-09 Thu 16:31] =>  0:01
   :END:
 Default case. As of [2019-12-24 Tue], not too organized. 
-#+BEGIN_SRC emacs-lisp
-;;;;;;;; KEY SEQUENCE ;;;;;;;;
-(global-set-key (kbd "C-c j w") 'jmw-wander)
-(global-set-key (kbd "C-c j s") 'jmw-safe)
-(global-set-key (kbd "C-;") 'other-window)
-(global-set-key (kbd "C-c t s") 'jmw-run-with-timer)
-(global-set-key (kbd "C-c t c") 'jmw-cancel-timer)
-(global-set-key (kbd "C-c t d") 'jmw-time-left) ;; "display"
 
-;;;;;;;; OTHER ;;;;;;;;
-;;;; variable ;;;;
+Define =jmw-prefix=. This is the prefix key for my personal stuff. 
+#+BEGIN_SRC emacs-lisp
+  (fset 'jmw-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c j") 'jmw-prefix)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-;") 'other-window)
 (setq make-backup-files nil)
 (setq-default fill-column 72)
 (setq scroll-preserve-screen-position t)
@@ -537,86 +549,132 @@ Default case. As of [2019-12-24 Tue], not too organized.
 
 ;;;; other ;;;;
 (server-start) 
-(defun jmw-7z (zfile file outfile)
-  (if (file-exists-p outfile)
-      (progn
-	(message "Preparing to compress")
-        (sit-for 0.25)
-	(call-process-shell-command
-	 (concat "7z a -p"
-		 (read-passwd "Password? " t)
-		 " "
-		 zfile
-		 " "
-		 outfile))
-	(call-process-shell-command
-	 (concat 
-	  "shred -u "
-	  outfile)))
-    (progn
-      (message "Preparing to extract")
-      (sit-for 0.25)
-      (unless (file-exists-p zfile)
-        (error (concat
-                "Archive file "
-                zfile
-                " does not exist.")))
-      (while (not (eq
-		   (call-process-shell-command
-		    (concat "7z e -p"
-			    (read-passwd "Password? ")
-			    " -o"
-			    (getenv "TEMP") ;; this could be an issue. Really, we want
-			    ;; the dir name
-			    " "
-			    zfile
-			    " "
-			    file))
-		   0))
-	(message "Incorrect Password. Try again.")
-	(sit-for 0.5))
-      (find-file outfile))))
-(defun jmw-wander ()
-  (interactive)
-  (jmw-7z (getenv "WANDER_ARCHIVE")
-	  "wander.txt"
-	  (concat (getenv "TEMP")
-		  "/wander.txt")))
-(defun jmw-safe ()
-  (interactive)
-  (jmw-7z (getenv "SAFE_ARCHIVE")
-	  "safe.txt"
-	  (concat (getenv "TEMP")
-		  "/safe.txt")))
-(defun jmw-times-up ()
-  "Single function run when timer expires"
-  (play-sound-file "~/core/prod/bin/other/alarm.wav"))
-(defun jmw-run-with-timer (durationspec)
-  (interactive "sDuration: ")
-  (setq jmw-timer
-	(run-with-timer (timer-duration durationspec)
-			0.5
-			'jmw-times-up)))
-(defun jmw-find-timer (timerlist)
-  (if timerlist
-      (if (equal (timer--function (car timerlist))
-		 'jmw-times-up)
-	  (car timerlist)
-	(jmw-find-timer (cdr timerlist)))
-    nil))
-(defun jmw-cancel-timer ()
-  (interactive)
-  (cancel-timer jmw-timer)
-  (let ((timer (jmw-find-timer timer-list)))
-    (if timer
-	(setq jmw-timer timer))))
-(defun jmw-time-left ()
-  "Timer info. May be expanded to more than just time remaining."
-  (interactive)
-  (let* ((time-diff (time-subtract (timer--time jmw-timer)
-				   (current-time)))
-	 (floats (float-time time-diff))
-	 (seconds (floor floats)))
-    (message "%ss" seconds)))
+#+END_SRC
 
+** 7z
+I use 7z as my default encryption format. This opens 7z files in the
+style I want: the file will be extracted to my temporary directory when
+first called, and then rearchived when called again. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-7z (zfile file outfile)
+    (if (file-exists-p outfile)
+	(progn
+	  (message "Preparing to compress")
+	  (sit-for 0.25)
+	  (call-process-shell-command
+	   (concat "7z a -p"
+		   (read-passwd "Password? " t)
+		   " "
+		   zfile
+		   " "
+		   outfile))
+	  (call-process-shell-command
+	   (concat 
+	    "shred -u "
+	    outfile)))
+      (progn
+	(message "Preparing to extract")
+	(sit-for 0.25)
+	(unless (file-exists-p zfile)
+	  (error (concat
+		  "Archive file "
+		  zfile
+		  " does not exist.")))
+	(while (not (eq
+		     (call-process-shell-command
+		      (concat "7z e -p"
+			      (read-passwd "Password? ")
+			      " -o"
+			      (getenv "TEMP") ;; this could be an issue. Really, we want
+			      ;; the dir name
+			      " "
+			      zfile
+			      " "
+			      file))
+		     0))
+	  (message "Incorrect Password. Try again.")
+	  (sit-for 0.5))
+	(find-file outfile))))
+
+#+END_SRC
+
+The wander archive is a kind of diary. I write in it about once a
+month. It's encrypted because it contains sensitive info.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-wander ()
+    (interactive)
+    (jmw-7z (getenv "WANDER_ARCHIVE")
+	    "wander.txt"
+	    (concat (getenv "TEMP")
+		    "/wander.txt")))
+  (define-key 'jmw-prefix "w" 'jmw-wander)
+#+END_SRC
+
+This contains passwords. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-safe ()
+    (interactive)
+    (jmw-7z (getenv "SAFE_ARCHIVE")
+	    "safe.txt"
+	    (concat (getenv "TEMP")
+		    "/safe.txt")))
+  (define-key 'jmw-prefix "s" 'jmw-safe)
+#+END_SRC
+** timer
+   :PROPERTIES:
+   :created:  2020-02-01 20:12:03 CST
+   :END:
+I use timers in my workflow. They're primarily used as end conditions of
+runs.
+
+Define the timer prefix, and bind it. 
+#+BEGIN_SRC emacs-lisp
+  (fset 'jmw-timer-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c t") 'jmw-timer-prefix)
+#+END_SRC
+
+This is how you create a timer. In the future, this should be extended
+to take in info about the current run. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-run-with-timer (durationspec)
+    (interactive "sDuration: ")
+    (setq jmw-timer
+	  (run-with-timer (timer-duration durationspec)
+			  0.5
+			  'jmw-times-up)))
+  (define-key 'jmw-timer-prefix "s" 'jmw-run-with-timer)
+#+END_SRC
+
+This is what happens when time is up. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-times-up ()
+    "Single function run when timer expires"
+    (play-sound-file "~/core/prod/bin/other/alarm.wav"))
+#+END_SRC
+
+The rest of these functions need serious work.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-find-timer (timerlist)
+    (if timerlist
+	(if (equal (timer--function (car timerlist))
+		   'jmw-times-up)
+	    (car timerlist)
+	  (jmw-find-timer (cdr timerlist)))
+      nil))
+  (defun jmw-cancel-timer ()
+    (interactive)
+    (cancel-timer jmw-timer)
+    (let ((timer (jmw-find-timer timer-list)))
+      (if timer
+	  (setq jmw-timer timer))))
+  (defun jmw-time-left ()
+    "Timer info. May be expanded to more than just time remaining."
+    (interactive)
+    (let* ((time-diff (time-subtract (timer--time jmw-timer)
+				     (current-time)))
+	   (floats (float-time time-diff))
+	   (seconds (floor floats)))
+      (message "%ss" seconds)))
+  (define-key 'jmw-timer-prefix "c" 'jmw-cancel-timer)
+  (define-key 'jmw-timer-prefix "d" 'jmw-time-left) ;; "display"
 #+END_SRC
