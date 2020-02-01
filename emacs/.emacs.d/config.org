@@ -266,6 +266,17 @@ buffer to appear in the original window.
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
+
+Sometimes, I will download books as text files and read them in
+org-mode. The following function adds a comment. The precise
+implementation may change with my aesthetic preferences. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-comment ()
+    (interactive)
+    (insert "**")
+    (backward-char))
+  (global-set-key (kbd "C-c o c") 'jmw-org-comment)
+#+END_SRC
 * pkg
 Related to an emacs package. 
 ** use-package
