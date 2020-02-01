@@ -1,0 +1,282 @@
+#+property: header-args    :tangle yes 
+#+property: header-args    :tangle .profile
+
+* common
+Common among all unix systems. 
+
+Source global definitions. My lenovo laptop doesn't have any. 
+#+BEGIN_SRC sh
+  if [ -f /etc/bashrc ]; then
+	  . /etc/bashrc
+  fi
+#+END_SRC
+** anaconda
+   :PROPERTIES:
+   :created:  2020-02-01 17:45:56 EST
+   :END:
+I did not write any of this code. I include it here so that subsequent
+tangling preserves its existence. In general, I dislike random stuff
+adding text to my bashrc. 
+#+BEGIN_SRC sh
+  # >>> conda initialize >>>
+  # !! Contents within this block are managed by 'conda init' !!
+  __conda_setup="$('/usr/users/johnmwu/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+  if [ $? -eq 0 ]; then
+      eval "$__conda_setup"
+  else
+      if [ -f "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh" ]; then
+	  . "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh"
+      else
+	  export PATH="/usr/users/johnmwu/anaconda3/bin:$PATH"
+      fi
+  fi
+  unset __conda_setup
+  # <<< conda initialize <<<
+#+END_SRC
+** file
+Specific, important files. 
+
+The root directory for "binary files". This contains the executables.
+#+BEGIN_SRC sh
+  export BIN_DIR="${HOME}/core/prod/bin"
+#+END_SRC
+
+Root dotfile directory.
+#+BEGIN_SRC sh
+  export ENV_STOW_DIR="${BIN_DIR}/env/stow"
+#+END_SRC
+
+Root data directory for the scheduling subsystem. 
+#+BEGIN_SRC sh
+  export PROC_DIR="${HOME}/core/mind/sys/short/proc"
+#+END_SRC
+
+The temporary directory. This is actually used by other programs,
+including
+- org-mode
+- firefox
+- pacman
+Semantically, it is a place where file permanence is not guaranteed. In
+practice, files are not deleted often. 
+#+BEGIN_SRC sh
+  export TEMP="${HOME}/other/temp"
+#+END_SRC
+
+These are important regular files for me
+#+BEGIN_SRC sh
+  export SAFE_ARCHIVE="${HOME}/core/state/env/safe.txt.7z"
+  export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
+  export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
+#+END_SRC
+
+For my UROP with MIT CSAIL's SLS group. 
+#+BEGIN_SRC sh
+  export SLSHOME="/usr/users/johnmwu"
+#+END_SRC
+** path
+   :PROPERTIES:
+   :created:  2020-02-02 00:44:00 CST
+   :END:
+Path alterations. 
+
+This contains personal scripts. 
+#+BEGIN_SRC sh
+  export PATH="${PATH}:${BIN_DIR}/bin" 
+#+END_SRC
+** other
+   :PROPERTIES:
+   :created:  2020-02-02 00:44:04 CST
+   :END:
+Vim or emacs? Both. I'm aliasing =emacsclient(1)= because =emacs(1)= is
+typically invoked just once at startup. 
+#+BEGIN_SRC sh
+  alias e="emacsclient"
+  alias v="vim"
+#+END_SRC
+
+More aliases
+#+BEGIN_SRC sh
+  alias python="python3"
+  alias ju="jupyter notebook &> /dev/null & disown"
+#+END_SRC
+
+Setup for colored =ls(1)= output. First, we alias the obvious. 
+#+BEGIN_SRC sh
+  alias ls="ls --color"
+#+END_SRC
+
+This sets the =LS_COLORS= environment variable according to my
+customizations.
+#+BEGIN_SRC sh
+  if [[ -f ~/.dircolors ]]; then
+      eval "$(env TERM=xterm dircolors ~/.dircolors)"
+  fi
+#+END_SRC
+
+These are also "environment" objects, so they need to be manually
+colored. See my =~/.dircolors=. The colors or definitions may change, so
+this block is liable to changing. 
+#+BEGIN_SRC sh
+  ENV_C="35;46;01"
+  LS_COLORS="${LS_COLORS}*profile=$ENV_C:"
+  LS_COLORS="${LS_COLORS}*dircolors=$ENV_C:"
+  LS_COLORS="${LS_COLORS}*gitconfig=$ENV_C:"
+  LS_COLORS="${LS_COLORS}*emacs=$ENV_C:"
+  LS_COLORS="${LS_COLORS}*emacs_bash=$ENV_C:"
+  LS_COLORS="${LS_COLORS}*vimrc=$ENV_C:"
+#+END_SRC
+
+Let =**= match zero or more directories and subdirectories. I'm not
+tangling, because I have almost never used this feature. 
+#+BEGIN_SRC sh
+  shopt -s globstar # Thu Feb  7 20:53:09 EST 2019
+#+END_SRC
+
+This function determines whether we're on a desktop machine. As is,
+we're literally just testing if we're using a x86 machine. 
+#+BEGIN_SRC sh 
+    function jmw_on_desktop () {
+	[[ $(uname -m) = x86* ]]
+    }
+#+END_SRC
+
+When run on my lenovo,
+#+BEGIN_SRC sh :results output :tangle no
+    function jmw_on_desktop () {
+	[[ $(uname -m) = x86* ]]
+    }
+    jmw_on_desktop
+    echo "$?"
+#+END_SRC
+
+#+RESULTS:
+: 0
+
+Similarly, to detect whether we're on mobile. It isn't very advanced.
+#+BEGIN_SRC sh 
+  function jmw_on_mobile () {
+      ! jmw_on_desktop
+  }
+#+END_SRC
+
+When run on my lenovo,
+#+BEGIN_SRC sh :results output :tangle no
+  function jmw_on_desktop () {
+      [[ $(uname -m) = x86* ]]
+  }
+  function jmw_on_mobile () {
+      ! jmw_on_desktop
+  }
+  jmw_on_mobile
+  echo "$?"
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+For some reason, I had this in my old config file. It's from my SLS
+UROP.
+#+BEGIN_SRC sh
+  export HDF5_USE_FILE_LOCKING=FALSE # See https://github.com/MPAS-Dev/MPAS-Analysis/issues/407
+#+END_SRC
+
+Main block for desktop-specific config stuff.
+#+BEGIN_SRC sh :noweb yes
+  if jmw_on_desktop; then
+      <<desktop>>
+  fi
+#+END_SRC
+
+Main block for mobile-specific config stuff. 
+#+BEGIN_SRC sh :noweb yes
+  if jmw_on_mobile; then
+      <<mobile>>
+  fi
+#+END_SRC
+* desktop
+  :PROPERTIES:
+  :created:  2020-02-01 17:05:38 EST
+  :header-args: :noweb-ref desktop 
+  :END:
+Desktop-specific configurations. 
+
+If I'm on desktop, I'll be using emacs. =emacsclient(1)= is a utility
+for connecting to an existing emacs server. 
+#+BEGIN_SRC sh 
+  export TEXT_EDITOR="emacsclient --alternate-editor=emacs" 
+#+END_SRC
+
+I had these additions to the path, but I kind of forget why. I'm not
+tangling them for now.
+#+BEGIN_SRC sh 
+  export PATH="${PATH}:/usr/local/texlive/2018/bin/x86_64-linux"
+  export PATH="${PATH}:${HOME}/.android/Android/Sdk/platform-tools"
+  export PATH="${PATH}:~/.local/bin"
+#+END_SRC
+
+Alias =o= to mean "open". The precise command used depends on the
+desktop environment.
+#+BEGIN_SRC sh
+  if [[ $XDG_SESSION_TYPE = "x11" ]]; then 
+      alias o="xdg-open 2>/dev/null"
+  else
+      alias o="gio open 2>/dev/null"
+  fi
+#+END_SRC
+
+This is a hack for a bug in GNOME whereby I cannot set ~C-S-<END>~ to
+take a screenshot. I hope it gets fixed. This code binds it. If it's not
+bound, run the bashrc again. 
+#+BEGIN_SRC sh
+  if type dconf; then
+      dconf write /org/gnome/settings-daemon/plugins/media-keys/area-screenshot-clip "['<Ctrl><Shift>End']"
+  fi &>/dev/null
+#+END_SRC
+** vterm
+   :PROPERTIES:
+   :created:  2020-02-01 17:44:13 EST
+   :END:
+This is copy-pasted from [[https://github.com/akermu/emacs-libvterm][github]]. 
+#+BEGIN_SRC sh
+  function vterm_printf(){
+      if [ -n "$TMUX" ]; then
+	  # tell tmux to pass the escape sequences through
+	  # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
+	  printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+      elif [ "${TERM%%-*}" = "screen" ]; then
+	  # GNU screen (screen, screen-256color, screen-256color-bce)
+	  printf "\eP\e]%s\007\e\\" "$1"
+      else
+	  printf "\e]%s\e\\" "$1"
+      fi
+  }
+  vterm_prompt_end(){
+      vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
+  }
+  PS1=$PS1'\[$(vterm_prompt_end)\]'
+#+END_SRC
+* mobile
+  :PROPERTIES:
+  :created:  2020-02-01 17:48:49 EST
+  :header-args: :noweb-ref mobile :tangle no
+  :END:
+I use the command line on my mobile device. I currently use termux. 
+
+Emacs doesn't make sense on mobile. Vim is workable.
+#+BEGIN_SRC sh
+  export TEXT_EDITOR="vim"
+#+END_SRC
+
+Setup the =o= alias.
+#+BEGIN_SRC sh
+  alias o="termux-open"
+#+END_SRC
+
+An oddity about my device as of [2020-02-01 Sat] is that I cannot mark
+new files executable. To execute personal scripts, I need to use
+=bash(1)=, which is a valid executable, as an interpreter. I can emulate
+the feel of how it used to be with aliases. 
+#+BEGIN_SRC sh
+  alias wander="bash wander"
+  alias safe="bash safe"
+#+END_SRC

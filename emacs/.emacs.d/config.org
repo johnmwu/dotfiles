@@ -34,8 +34,6 @@ The main key sequence is
   (global-set-key "\C-ca" 'org-agenda)
 #+END_SRC
 
-I use the habit subsystem:
-
 Other:
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-window-setup 'other-window)
@@ -171,8 +169,10 @@ Marking a task done:
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((python . t)
-     (C . t)))
+   '((emacs-lisp . t)
+     (python . t)
+     (C . t)
+     (sh . t)))
   (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
 #+END_SRC
 
