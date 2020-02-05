@@ -172,7 +172,8 @@ Marking a task done:
    '((emacs-lisp . t)
      (python . t)
      (C . t)
-     (sh . t)))
+     (shell . t)
+     (go . t)))
   (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
 #+END_SRC
 
@@ -460,6 +461,24 @@ Bind functions
 #+BEGIN_SRC emacs-lisp
   (define-key 'jmw-vterm-prefix "b" 'vterm)
 #+END_SRC
+
+Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/2708042/4019495][SO]]. 
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'vterm-mode-hook
+	    (lambda ()
+	      (set-process-query-on-exit-flag
+	       (get-buffer-process (current-buffer)) nil)))	  
+#+END_SRC
+** go-mode
+   :PROPERTIES:
+   :created:  2020-02-05 08:31:27 EST
+   :END:
+I've downloaded it. Haven't configured anything. 
+** ob-go
+   :PROPERTIES:
+   :created:  2020-02-05 08:31:42 EST
+   :END:
+Org-babel for go. 
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -551,6 +570,11 @@ Define =jmw-prefix=. This is the prefix key for my personal stuff.
 (server-start) 
 #+END_SRC
 
+Type ~y~ or ~n~ instead of yes/no. I've copied this from [[https://pages.sachachua.com/.emacs.d/Sacha.html#org2509ed6][Sacha Chua]]. One
+would think there was a better way of doing this. 
+#+BEGIN_SRC emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when
