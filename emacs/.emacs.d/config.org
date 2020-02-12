@@ -461,7 +461,7 @@ A terminal emulator within emacs that
 #+BEGIN_SRC emacs-lisp
   (use-package vterm
     :config
-    (setq vterm-min-window-width 50)
+    (setq vterm-min-window-width 50))
 #+END_SRC
 
 Define my vterm prefix
@@ -486,7 +486,17 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
    :PROPERTIES:
    :created:  2020-02-05 08:31:27 EST
    :END:
-I've downloaded it. Haven't configured anything. 
+#+BEGIN_SRC emacs-lisp
+  (use-package go-mode
+    :bind
+    (:map go-mode-map
+	  ("M-." . godef-jump)
+	  ("C-c C-d" . godoc-at-point))
+
+    )
+#+END_SRC
+
+
 ** ob-go
    :PROPERTIES:
    :created:  2020-02-05 08:31:42 EST
