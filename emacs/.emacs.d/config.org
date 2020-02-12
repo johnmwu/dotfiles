@@ -119,8 +119,9 @@ completing the current task. This can be viewed as a special, important
 case of inserting a TODO item. 
 
 As of [2020-01-10 Fri], there is no symmetric notion for queueing a
-task, because queueing a task can be done using ordinary insertion of a
-TODO item. 
+task. Queueing a task can be done using ordinary insertion of a TODO
+item. There is no notion of deferring a task (as in Go's =defer=
+keyword) because it can be done using ordinary TODO insertion. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-push-task (task-name)
     "Push a task onto the stack."
@@ -273,6 +274,18 @@ By default, editing org source reorganizes the frame. I want the new
 buffer to appear in the original window. 
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
+#+END_SRC
+
+Don't change window configuration during an =org-capture=. According to
+[[https://stackoverflow.com/q/21195327/4019495][SO]], there is no easy way to do this. The key offender is
+=delete-other-windows= in the function =org-capture-place-template=. We
+adopt the solution given on another [[https://stackoverflow.com/a/54251825/4019495][SO]] post. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-ad-org-capture-place-template (oldfun args)
+    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
+      (apply oldfun args)))      
+  (advice-add 'org-capture-place-template
+	      :around 'jmw-ad-org-capture-place-template)
 #+END_SRC
 
 *** books
