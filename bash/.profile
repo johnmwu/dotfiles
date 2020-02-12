@@ -94,6 +94,8 @@ if jmw_on_desktop; then
         vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
     }
     PS1=$PS1'\[$(vterm_prompt_end)\]'
+    export GOPATH="${HOME}/go"
+    export PATH="${PATH}:${GOPATH}/bin"
 fi
 
 if jmw_on_mobile; then

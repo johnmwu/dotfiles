@@ -492,6 +492,48 @@ I've downloaded it. Haven't configured anything.
    :created:  2020-02-05 08:31:42 EST
    :END:
 Org-babel for go. 
+** dumb-jump
+   :PROPERTIES:
+   :created:  2020-02-12 13:38:09 EST
+   :END:
+This is copied from [[https://github.com/jacktasia/dumb-jump][the main page]]. 
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :bind (
+	   ;; ("M-g o" . dumb-jump-go-other-window)
+	   ("M-g j" . dumb-jump-go)
+	   ("M-g b" . dumb-jump-back)
+	   ;; ("M-g i" . dumb-jump-go-prompt)
+	   ;; ("M-g x" . dumb-jump-go-prefer-external)
+	   ;; ("M-g z" . dumb-jump-go-prefer-external-other-window)
+	   )
+    :config
+    ;; (setq dumb-jump-selector 'ivy)
+    ;; (setq dumb-jump-selector 'helm)
+
+    )
+#+END_SRC
+
+I'm not sure what ~M-g~ is supposed to be. 
+#+BEGIN_SRC emacs-lisp :tangle no :results pp
+  (global-key-binding (kbd "M-g"))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+(keymap
+ (98 . dumb-jump-back)
+ (106 . dumb-jump-go)
+ (9 . move-to-column)
+ (112 . previous-error)
+ (110 . next-error)
+ (27 keymap
+     (112 . previous-error)
+     (110 . next-error)
+     (103 . goto-line))
+ (103 . goto-line)
+ (99 . goto-char))
+#+end_example
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
