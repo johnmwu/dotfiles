@@ -488,12 +488,17 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
    :END:
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
-    :bind
-    (:map go-mode-map
+	  :bind
+	  (:map go-mode-map
 	  ("M-." . godef-jump)
+	  ("C-x 4 ." . godef-jump-other-window)
 	  ("C-c C-d" . godoc-at-point))
 
-    )
+	  :config
+	  ;; (setq godoc-at-point-function 'godoc-gogetdoc)
+	  (add-hook 'go-mode-hook
+		    (lambda () (setq tab-width 2)))
+	  )
 #+END_SRC
 
 
