@@ -355,12 +355,12 @@ use should automatically be downloaded. This is the recommended method.
 #+END_SRC
 ** ido
 #+BEGIN_SRC emacs-lisp
-(ido-mode 'buffers) ;; only buffers because of bug 36435
-(setq ido-create-new-buffer 'always)
-(setq ido-enable-flex-maatching t)
-(defadvice ido-switch-buffer (around no-confirmation activate)
-  (let ((confirm-nonexistent-file-or-buffer nil))
-    ad-do-it))
+  (ido-mode 'buffers) ;; only buffers because of bug 36435
+  (setq ido-create-new-buffer 'always)
+  (setq ido-enable-flex-matching t)
+  (defadvice ido-switch-buffer (around no-confirmation activate)
+    (let ((confirm-nonexistent-file-or-buffer nil))
+      ad-do-it))
 #+END_SRC
 ** elpy
 Copied and pasted. 
