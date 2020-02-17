@@ -228,21 +228,6 @@ Don't prompt for confirmation when executing code blocks.
 						;; display
 #+END_SRC
 
-Navigation with refile. As of [2020-02-16 Sun], I've switched to
-counsel.
-#+BEGIN_SRC emacs-lisp :tangle no
-(define-key org-mode-map (kbd "C-c C-w") 'jmw-org-refile)
-(setq org-refile-targets '((nil . (:maxlevel . 3))))
-(defun jmw-org-refile (&optional arg default-buffer rfloc msg)
-  "Redefinition of `org-refile` that places the previous location
-of point on the org mark ring if using the refile interface as a
-goto."
-  (interactive "P")
-  (when (equal arg '(4))
-    (org-mark-ring-push))
-  (org-refile arg default-buffer rfloc msg))
-#+END_SRC
-
 Insert creation time as a property when creating a headline. This is
 useful for determining when tasks were created. 
 #+BEGIN_SRC emacs-lisp
@@ -658,6 +643,15 @@ described here.
 	   :map org-mode-map
 		("C-c C-j" . counsel-org-goto)))
 #+END_SRC
+
+Push onto the org mark ring when using counsel to goto. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-ad-counsel-org-goto ()
+    (org-mark-ring-push))
+  (advice-add 'counsel-org-goto
+	      :before 'jmw-ad-counsel-org-goto)
+#+END_SRC
+
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
