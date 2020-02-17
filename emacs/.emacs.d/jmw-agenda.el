@@ -1,5 +1,5 @@
 (require 'org)
 (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
+(setq org-agenda-span 10)
 (org-agenda-list)
-(org-agenda-write (concat (getenv "TEMP")
-			  "/agenda.txt"))
+(org-agenda-write (concat (getenv "TEMP") "/agenda.txt"))

@@ -634,6 +634,15 @@ Ivy includes several minibuffer bindings, which are defined in the
 ‘ivy-minibuffer-map’ keymap variable.  The most frequently used ones are
 described here.
 #+END_QUOTE
+** counsel
+   :PROPERTIES:
+   :created:  2020-02-16 21:51:03 EST
+   :END:
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :bind (:map org-mode-map
+		("C-c C-j" . counsel-org-goto)))
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
