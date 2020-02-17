@@ -501,7 +501,6 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
 	  )
 #+END_SRC
 
-
 ** ob-go
    :PROPERTIES:
    :created:  2020-02-05 08:31:42 EST
@@ -549,6 +548,92 @@ I'm not sure what ~M-g~ is supposed to be.
  (103 . goto-line)
  (99 . goto-char))
 #+end_example
+** helm
+   :PROPERTIES:
+   :created:  2020-02-15 14:59:25 EST
+   :header-args: :tangle no
+   :END:
+[2020-02-15 Sat] testing it out. 
+
+[2020-02-16 Sun] IMO, it's alright. Critics are right in that it doesn't
+feel that snappy.
+
+[2020-02-16 Sun] I'm using ivy. I'll leave this here, because it is a
+usable helm config.
+
+This is all copied from [[http://tuhdo.github.io/helm-intro.html][here]]. Maybe at some point I'll look more deeply. 
+#+BEGIN_SRC emacs-lisp
+  (require 'helm)
+  (require 'helm-config)
+
+  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+  (global-set-key (kbd "C-c h") 'helm-command-prefix)
+  (global-unset-key (kbd "C-x c"))
+
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
+  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+  (when (executable-find "curl")
+    (setq helm-google-suggest-use-curl-p t))
+
+  ;; I don't know what any of this means
+  (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+	helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+	helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+	helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+	helm-ff-file-name-history-use-recentf t
+	helm-echo-input-in-header-line t)
+
+  (helm-mode 1)
+#+END_SRC
+
+Make helm window occupy bottom fifth of the screen. 
+#+BEGIN_SRC emacs-lisp
+  (setq helm-autoresize-max-height 0)
+  (setq helm-autoresize-min-height 20)
+  (helm-autoresize-mode 1)
+#+END_SRC
+
+The helm versions of common Emacs commands. 
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+#+END_SRC
+** ivy
+   :PROPERTIES:
+   :created:  2020-02-16 16:41:13 EST
+   :END:
+Ooh, this is nice. It has a user manual. 
+
+[2020-02-16 Sun] I'm going to try this. Ivy seems minimalistic and nice.
+#+BEGIN_SRC emacs-lisp
+  (ivy-mode 1)
+#+END_SRC
+
+These are the recommended customizations.
+#+BEGIN_SRC emacs-lisp
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+#+END_SRC 
+
+These are recommended global key bindings:
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "M-y") 'counsel-yank-pop)
+#+END_SRC
+
+In the manual, sec 4.2, it says
+#+BEGIN_QUOTE
+Ivy includes several minibuffer bindings, which are defined in the
+‘ivy-minibuffer-map’ keymap variable.  The most frequently used ones are
+described here.
+#+END_QUOTE
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
