@@ -103,4 +103,5 @@ if jmw_on_mobile; then
     alias o="termux-open"
     alias wander="bash wander"
     alias safe="bash safe"
+    alias agenda="bash agenda"
 fi

@@ -288,4 +288,5 @@ the feel of how it used to be with aliases.
 #+BEGIN_SRC sh
   alias wander="bash wander"
   alias safe="bash safe"
+  alias agenda="bash agenda"
 #+END_SRC

@@ -1,0 +1,14 @@
+#+property: header-args    :tangle yes 
+#+property: header-args    :tangle jmw-agenda.el
+
+This is for the =jmw-agenda= script to display the agenda on the command
+line on my phone.
+
+Doing this in literate programming is a bit extra. 
+#+BEGIN_SRC emacs-lisp
+  (require 'org)
+  (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
+  (org-agenda-list)
+  (org-agenda-write (concat (getenv "TEMP")
+			    "/agenda.txt"))
+#+END_SRC
