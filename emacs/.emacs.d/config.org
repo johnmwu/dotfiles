@@ -187,7 +187,6 @@ Don't prompt for confirmation when executing code blocks.
   (global-set-key "\C-cl" 'org-store-link) 
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-cb" 'org-switchb)
-  (define-key org-mode-map (kbd "C-c C-w") 'jmw-org-refile)
   (setq org-capture-templates
 	'(("e"
 	   "Computer error"
@@ -200,7 +199,6 @@ Don't prompt for confirmation when executing code blocks.
 	   (file+headline "~/core/mind/sys/short/proc/main.org"
 			  "interesting thought")
 	   "* %U %?\n %i")))
-  (setq org-refile-targets '((nil . (:maxlevel . 3))))
   (setq org-entities-user ; special symbols
 	'(("scrB" "\\scrB" t "&#x212C;" "B" "B" "ℬ") ; "script B"
 	  ("scrS" "\\scrS" t "&#x1D4AE;" "S" "S" "𝒮") 
@@ -228,14 +226,21 @@ Don't prompt for confirmation when executing code blocks.
   (setq org-use-speed-commands t)
   ;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
 						;; display
-  (defun jmw-org-refile (&optional arg default-buffer rfloc msg)
-    "Redefinition of `org-refile` that places the previous location
-  of point on the org mark ring if using the refile interface as a
-  goto."
-    (interactive "P")
-    (when (equal arg '(4))
-      (org-mark-ring-push))
-    (org-refile arg default-buffer rfloc msg))
+#+END_SRC
+
+Navigation with refile. As of [2020-02-16 Sun], I've switched to
+counsel.
+#+BEGIN_SRC emacs-lisp :tangle no
+(define-key org-mode-map (kbd "C-c C-w") 'jmw-org-refile)
+(setq org-refile-targets '((nil . (:maxlevel . 3))))
+(defun jmw-org-refile (&optional arg default-buffer rfloc msg)
+  "Redefinition of `org-refile` that places the previous location
+of point on the org mark ring if using the refile interface as a
+goto."
+  (interactive "P")
+  (when (equal arg '(4))
+    (org-mark-ring-push))
+  (org-refile arg default-buffer rfloc msg))
 #+END_SRC
 
 Insert creation time as a property when creating a headline. This is
@@ -631,12 +636,6 @@ These are the recommended customizations.
   (setq ivy-count-format "(%d/%d) ")
 #+END_SRC 
 
-These are recommended global key bindings:
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "M-y") 'counsel-yank-pop)
-#+END_SRC
 
 In the manual, sec 4.2, it says
 #+BEGIN_QUOTE
@@ -650,7 +649,13 @@ described here.
    :END:
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
-    :bind (:map org-mode-map
+    :bind (:map global-map
+		("M-x" . counsel-M-x)
+		("C-x C-f" . counsel-find-file)
+		("M-y" . counsel-yank-pop)
+		("C-h v" . counsel-describe-variable)
+		("C-h f" . counsel-describe-function)
+	   :map org-mode-map
 		("C-c C-j" . counsel-org-goto)))
 #+END_SRC
 * mode
