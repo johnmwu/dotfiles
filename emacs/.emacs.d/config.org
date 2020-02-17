@@ -276,6 +276,7 @@ buffer to appear in the original window.
   (setq org-src-window-setup 'current-window)
 #+END_SRC
 
+
 Don't change window configuration during an =org-capture=. According to
 [[https://stackoverflow.com/q/21195327/4019495][SO]], there is no easy way to do this. The key offender is
 =delete-other-windows= in the function =org-capture-place-template=. We
@@ -288,6 +289,15 @@ adopt the solution given on another [[https://stackoverflow.com/a/54251825/40194
 	      :around 'jmw-ad-org-capture-place-template)
 #+END_SRC
 
+Correct behavior for the agenda. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-ad-org-agenda-place-template (oldfun args)
+    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
+      (apply oldfun args)))      
+  (advice-add 'org-agenda
+	      :around 'jmw-ad-org-capture-place-template)
+  (setq org-agenda-window-setup 'other-window)
+#+END_SRC
 *** books
 Sometimes, I will download books as text files and read them in
 org-mode. 
