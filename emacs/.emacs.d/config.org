@@ -39,7 +39,6 @@ Other:
   (setq org-agenda-window-setup 'other-window)
   (setq org-agenda-restore-windows-after-quit t)
   (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
-  (setq org-agenda-span 10)
   (setq org-habit-show-habits-only-for-today nil)
   (defun jmw-org-make-habit ()
     "Turn the following heading into a habit. Schedules it for
@@ -54,6 +53,11 @@ Other:
   (define-key 'jmw-org-prefix "h" 'jmw-org-make-habit)
 #+END_SRC
 
+Specifying which days appear in the agenda:
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-span 10)
+  (setq org-agenda-start-day "-4d")
+#+END_SRC
 **** todo keyword
 Better colors:
 #+BEGIN_SRC emacs-lisp
@@ -153,6 +157,16 @@ Marking a task done:
     (org-todo "DONE")
     (org-clock-goto))
   (define-key 'jmw-org-prefix "d" 'jmw-org-done)
+#+END_SRC
+
+Similarly, marking a task cancelled. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-cancel ()
+    (interactive)
+    (jmw-org-clock-goto)
+    (org-todo "CANCEL")
+    (org-clock-goto))
+  (define-key 'jmw-org-prefix "c" 'jmw-org-done)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -300,7 +314,7 @@ preferences.
     (insert "*")
     (org-time-stamp-inactive '(16))
     (insert " JMW:* "))
-  (define-key 'jmw-org-prefix "c" 'jmw-org-comment)
+  (define-key 'jmw-org-prefix "a c" 'jmw-org-comment)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -314,7 +328,7 @@ preferences.
 	(insert "*"))
       (deactivate-mark)
       (fill-paragraph)))
-  (define-key 'jmw-org-prefix "l" 'jmw-org-highlight-region)
+  (define-key 'jmw-org-prefix "a h" 'jmw-org-highlight-region)
 #+END_SRC
 * pkg
 Related to an emacs package. 
@@ -628,6 +642,24 @@ Ivy includes several minibuffer bindings, which are defined in the
 ‘ivy-minibuffer-map’ keymap variable.  The most frequently used ones are
 described here.
 #+END_QUOTE
+
+Test feature: fuzzy file finding. 
+#+BEGIN_SRC emacs-lisp :tangle no
+  (setq ivy-re-builders-alist
+	'((read-file-name-internal . ivy--regex-fuzzy)
+	  (t . ivy--regex-plus)))
+#+END_SRC
+Holy shit, I don't like this. 
+
+Ignore order of input tokens. This is the default of helm. 
+#+BEGIN_SRC emacs-lisp
+    (setq ivy-re-builders-alist
+	  '((t . ivy--regex-ignore-order)))
+#+END_SRC
+
+Don't have initial inputs
+#+BEGIN_SRC emacs-lisp
+#+END_SRC
 ** counsel
    :PROPERTIES:
    :created:  2020-02-16 21:51:03 EST
@@ -641,7 +673,10 @@ described here.
 		("C-h v" . counsel-describe-variable)
 		("C-h f" . counsel-describe-function)
 	   :map org-mode-map
-		("C-c C-j" . counsel-org-goto)))
+	   ("C-c C-j" . counsel-org-goto))
+
+    :config
+    (setq ivy-initial-inputs-alist '(())))
 #+END_SRC
 
 Push onto the org mark ring when using counsel to goto. 
@@ -651,7 +686,52 @@ Push onto the org mark ring when using counsel to goto.
   (advice-add 'counsel-org-goto
 	      :before 'jmw-ad-counsel-org-goto)
 #+END_SRC
+** ivy-rich
+   :PROPERTIES:
+   :created:  2020-02-18 15:31:59 EST
+   :END:
+Display more info in ivy. For example, make ~M-x~ display a column of
+documentation alongside the list of candidate functions. 
+#+BEGIN_SRC emacs-lisp
+  (require 'ivy-rich)
+  (ivy-rich-mode 1)
+#+END_SRC
 
+The reason I looked into this was for =counsel-find-file=. I wanted to
+see =ls -l= like stuff. 
+
+The first step is to define a function for the file size. 
+#+BEGIN_SRC emacs-lisp
+  (defun ivy-rich-file-size (candidate)
+    (let ((fname (expand-file-name candidate ivy--directory)))
+      (if (or (not (file-exists-p fname)) (file-remote-p fname))
+	  ""
+	(file-size-human-readable (file-attribute-size
+				   (file-attributes fname))
+				  "si"))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (plist-put ivy-rich-display-transformers-list
+	     'counsel-find-file
+	     '(:columns
+	      ((ivy-rich-candidate
+		(:width 40))
+	       ;; (ivy-rich-file-user
+	       ;;  (:width 4 :face font-lock-doc-face))
+	       ;; (ivy-rich-file-group
+	       ;;  (:width 4 :face font-lock-doc-face))
+	       ;; (ivy-rich-file-modes
+		;; (:width 11 :face font-lock-doc-face))
+	       (ivy-rich-file-size
+		(:width 6 :face font-lock-doc-face))
+	       (ivy-rich-counsel-find-file-truename
+		(:face font-lock-doc-face))
+	       ;; (ivy-rich-file-last-modified-time
+	       ;;  (:width 30 :face font-lock-doc-face))
+	       )))
+  (ivy-rich-set-display-transformer)
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
