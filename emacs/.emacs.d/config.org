@@ -59,6 +59,12 @@ Specifying which days appear in the agenda:
   (setq org-agenda-start-day "-4d")
 #+END_SRC
 **** todo keyword
+Set todo keywords.
+#+BEGIN_SRC emacs-lisp
+  (setq org-todo-keywords
+	'((sequence "TODO(t)" "WAIT(w)" "|" "DONE(d)" "CANCEL(c)")))
+#+END_SRC
+
 Better colors:
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keyword-faces
@@ -166,7 +172,7 @@ Similarly, marking a task cancelled.
     (jmw-org-clock-goto)
     (org-todo "CANCEL")
     (org-clock-goto))
-  (define-key 'jmw-org-prefix "c" 'jmw-org-done)
+  (define-key 'jmw-org-prefix "c" 'jmw-org-cancel)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -237,7 +243,6 @@ Don't prompt for confirmation when executing code blocks.
 	'((headline . nil)
 	  (item . nil)))
   (setq org-mark-ring-length 16)
-  (setq org-use-speed-commands t)
   ;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
 						;; display
 #+END_SRC
@@ -302,19 +307,24 @@ Correct behavior for the agenda.
 	      :around 'jmw-ad-org-capture-place-template)
   (setq org-agenda-window-setup 'other-window)
 #+END_SRC
+
+I don't want to log every time an item is repeated:
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-repeat nil)
+#+END_SRC
 *** books
 Sometimes, I will download books as text files and read them in
 org-mode. 
 
 Adds a comment. The implementation may change with aesthetic
-preferences.
+preferences. The "a" prefix is for "annotation". 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-comment ()
     (interactive)
     (insert "*")
     (org-time-stamp-inactive '(16))
     (insert " JMW:* "))
-  (define-key 'jmw-org-prefix "a c" 'jmw-org-comment)
+  (define-key 'jmw-org-prefix "ac" 'jmw-org-comment)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -328,7 +338,7 @@ preferences.
 	(insert "*"))
       (deactivate-mark)
       (fill-paragraph)))
-  (define-key 'jmw-org-prefix "a h" 'jmw-org-highlight-region)
+  (define-key 'jmw-org-prefix "ah" 'jmw-org-highlight-region)
 #+END_SRC
 * pkg
 Related to an emacs package. 
@@ -732,6 +742,27 @@ The first step is to define a function for the file size.
 	       )))
   (ivy-rich-set-display-transformer)
 #+END_SRC
+** md4rd
+   :PROPERTIES:
+   :created:  2020-02-22 13:20:51 EST
+   :END:
+#+BEGIN_SRC emacs-lisp
+  (use-package md4rd :ensure t
+    :bind (:map md4rd-mode-map
+		("u" . tree-mode-goto-parent)
+		("\t" . tree-mode-toggle-expand)
+		("f" . tree-mode-next-sib)
+		("b" . tree-mode-previous-sib)
+		)
+    :config
+    (add-hook 'md4rd-mode-hook 'md4rd-indent-all-the-lines)
+    (setq md4rd-subs-active '(emacs))
+    (setq md4rd--oauth-access-token
+	  "34674419-_-P8Ht8Ht-2uvHv-hBFHBTvAZxE")
+    (setq md4rd--oauth-refresh-token
+	  "34674419-RHL3BClht1JhmFYOQ7jXwjBqLt0")
+    (run-with-timer 0 3540 'md4rd-refresh-login))
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -862,8 +893,9 @@ first called, and then rearchived when called again.
 		      (concat "7z e -p"
 			      (read-passwd "Password? ")
 			      " -o"
-			      (getenv "TEMP") ;; this could be an issue. Really, we want
-			      ;; the dir name
+			      (getenv "TEMP") ;; this could be an
+					      ;; issue. Really, we want
+					      ;; the dir name
 			      " "
 			      zfile
 			      " "
@@ -892,9 +924,9 @@ This contains passwords.
   (defun jmw-safe ()
     (interactive)
     (jmw-7z (getenv "SAFE_ARCHIVE")
-	    "safe.txt"
+	    "safe.org"
 	    (concat (getenv "TEMP")
-		    "/safe.txt")))
+		    "/safe.org")))
   (define-key 'jmw-prefix "s" 'jmw-safe)
 #+END_SRC
 ** timer

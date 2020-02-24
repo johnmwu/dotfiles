@@ -64,7 +64,7 @@ practice, files are not deleted often.
 
 These are important regular files for me
 #+BEGIN_SRC sh
-  export SAFE_ARCHIVE="${HOME}/core/state/env/safe.txt.7z"
+  export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
   export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
   export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
 #+END_SRC

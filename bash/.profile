@@ -25,7 +25,7 @@ export PROC_DIR="${HOME}/core/mind/sys/short/proc"
 
 export TEMP="${HOME}/other/temp"
 
-export SAFE_ARCHIVE="${HOME}/core/state/env/safe.txt.7z"
+export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
 export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
 export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
 
