@@ -1,4 +1,20 @@
 #+PROPERTY: header-args    :results silent
+* use-package
+   :PROPERTIES:
+   :created:  2020-01-29 11:36:05 CST
+   :END:
+I use =use-package=. This configuration needs to be at the top. 
+
+When I open emacs on a new machine, my packages should be automatically
+downloaded. This is the recommended method.
+#+BEGIN_SRC emacs-lisp
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t)
+#+END_SRC
+
+[2020-02-24 Mon] Trying to get set up on SLS computers again. There's a
+problem---some packages don't support old emacs versions. I'm debating
+whether it makes sense to always ensure.
 * org
 Related to =org-mode=. It's amazing how this has taken over my life. 
 
@@ -347,19 +363,6 @@ preferences. The "a" prefix is for "annotation".
 #+END_SRC
 * pkg
 Related to an emacs package. 
-** use-package
-   :PROPERTIES:
-   :created:  2020-01-29 11:36:05 CST
-   :END:
-Wehn I open emacs for the first time on a new machine, the packages I
-use should automatically be downloaded. This is the recommended method.
-
-[2020-02-24 Mon] Trying to get set up on SLS computers again. There's a
-serious problem---some packages don't support old versions of emacs. 
-#+BEGIN_SRC emacs-lisp
-  (require 'use-package-ensure)
-  (setq use-package-always-ensure t)
-#+END_SRC
 ** auctex
 #+BEGIN_SRC emacs-lisp 
   (use-package tex
