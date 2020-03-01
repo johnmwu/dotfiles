@@ -232,6 +232,14 @@ bound, run the bashrc again.
       dconf write /org/gnome/settings-daemon/plugins/media-keys/area-screenshot-clip "['<Ctrl><Shift>End']"
   fi &>/dev/null
 #+END_SRC
+
+Swap caps and ctrl.
+#+BEGIN_SRC sh
+  /usr/bin/setxkbmap -option "ctrl:swapcaps"
+#+END_SRC
+
+#+RESULTS:
+
 ** vterm
    :PROPERTIES:
    :created:  2020-02-01 17:44:13 EST

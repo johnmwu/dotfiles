@@ -1,1 +1,237 @@
-../../../../../mind/sys/other/readme-home.org
+* intro
+Hi. This is the root of my filesystem.
+
+I've collected a lot of stuff. There are notes, music, photos, books,
+and writings.
+
+If you aren't me, the organization will be confusing. 
+* =readme.org=, =misc.org=
+This is a file named =readme.org=. You'll find one of these in most
+directories.
+
+A readme is supposed to describe the directory. This mostly means
+describing the files inside, which is done in the =dir= heading. There's
+one in this file.
+
+You'll also encounter files named =misc.org=. They contain miscellaneous
+information relevant to the directory---dumps of random thoughts. If you
+aren't me, they won't make much sense.
+* organization
+My filesystem is a decision tree for locating regular files, where the
+splits are defined in the =dir= headings.
+
+** intro
+I want the delineation of directories to be very precise.
+
+You should be able to find a file just by following the delineation.
+This means reading descriptions in readmes and deciding which
+subdirectory to enter.  Eventually, you'll hit a leaf directory with
+just a few files, at which point it'll be trivial to find (or determine
+it doesn't exist).
+
+As an example, suppose you want info about floating point numbers,
+eg. the standard. You would first read the top level readme, understand
+that such a file would be relatively small, and ~cd~ into =~/core=. Then
+the readme in =~/core= would direct you to =~/core/mind=, and then
+=~/core/mind/ob=, etc. all the way down into
+
+#+BEGIN_CENTER
+=~/core/mind/ob/thm/cs/std/code/cc=
+#+END_CENTER
+
+At which point you'd see =IEEE_754-2008.pdf=. If you aren't me, the
+directory names may be confusing. That's why there are readmes.
+
+If after tracing down the tree the file isn't there, you should be
+confident it doesn't exist. You shouldn't be worried that you took a
+wrong turn. It should be that clear. 
+
+Figuring out where to place a file is similar.
+** depth
+There's no indication of how deep a file is. The above file could have
+been in =code= or =thm=. Finding a file involves looking at the files in
+each intermediate directory.
+
+The practical reason for this is that I often don't know which
+subdirectory to place a file, because none of them make sense.
+
+Another possibility is that the file is important to the entire
+directory.
+
+There is no semantic issue. As will be discussed, a directory represents
+a subset of the space of files, and subdirectories represent subsets of
+that. Placing a file higher (closer to the root) in the hierarchy is not
+wrong, it just encodes less classification information.
+** if-elif-else
+Directory descriptions are an if-elif-else statement. The descriptions
+of directories often intersect. The first matching directory is
+correct. I'll give some examples later.
+** decision tree
+This is identical to a decision tree in machine learning. The nodes of
+the tree are my directories, and the decision procedure at a node is
+described in its readme. The space being split is that of my regular
+files.
+
+I borrow two ideas from ML decision trees.
+
+The first is impurity decrease. This is the decision factor for
+splitting. The split should maximize impurity decrease in the space of
+my files.
+
+The second is the idea of splitting along an axis. In a ML decision
+tree, the decision factor is always whether some single feature exceeds
+a threshold, never a linear combination. In ML, this is motivated by
+practicality. Even so, I also try to make my splits "axis-aligned".
+
+An example axis is mean date of activity. An example split along this
+feature would be:
+
+    1. =core=: Relevant right now
+    2. =extra=: Relevant at some point within the last three months
+    3. =other=: Other
+
+Here, the description of 2 subsumes 1. This is OK, because as stated,
+the first matching directory is used. Here are more examples. 
+
+For the axis "anticipated use case",
+
+    1. =body=: Relevant to my physical body
+    2. =mind=: Relevant to my mind
+    3. =state=: Relevant to the state
+    4. =other=: Default case
+
+Again, the description of =state= subsumes that of =mind= and =body=. 
+
+For the axis quale/nonquale,
+
+    1. =bin=: executables
+    2. =src=: anything that may be used to create object in =bin=,
+       including .h files, etc.
+    3. =prog=: files never meant to be experienced as quale
+    4. =other=: default case (files meant to be experienced as
+       quale).
+
+In the above, source files are meant to be experienced as quale, but
+they aren't put in =other= because they already fall into =src=.
+
+In readmes, the term "axis of split" will be used. This is what I mean.
+* extra
+** motivation
+Why did I think of this, and why do I continue to maintain this
+organization? It required much initial work and continues to require
+discipline.
+*** intro
+First, I'm a very organized person. I like this kind of thing. 
+
+Second, it is practical. For most people, journals, medical history,
+resumes, ebooks, passwords, etc. are scattered around different
+places. This can make things hard to find and it difficult to do simple
+tasks, like create a list of all open financial accounts.
+
+There are more interesting reasons, though. 
+*** an extension of my mind
+In the 1945 essay /As We May Think/, Vannevar Bush describes a vision
+for how computers may extend our minds:
+
+#+BEGIN_QUOTE
+One cannot hope thus to equal the speed and flexibility with which the
+mind follows an associative trail, but it should be possible to beat the
+mind decisively in regard to the permanence and clarity of the items
+resurrected from storage. 
+#+END_QUOTE
+
+For many, "permanence and clarity" is the extent of their use for the
+computer. The computer becomes a glorified filing cabinet. 
+
+I want the computer to enhance my mental faculties. This requires fast
+information lookup.
+
+That time in Chicago, I saw an oft-hidden piece of human nature: what
+was it again? Last time I saw this film, I had some thoughts: what were
+they? I remember reading about this business model in a book: what
+exactly did it say? The theory of the Fourier transform on groups was
+developed in this book: what were the key theorems? I should be able to
+answer these approaching the speed of thought.
+
+Bush says one cannot hope to equal the speed of thought. I agree, but I
+still must say: I've gotten close.
+*** a record of past selves
+Because I record so much, it is a useful history. Throughout time, I've
+gone through multiple versions. I've had many passions and felt things
+toward a great number of people. I've had many dreams. Human memory is
+such that I've forgotten most of it.
+
+My computer hasn't. On my computer, I can still step through the ages
+with perfect clarity. At various points, I've gone through bits and
+pieces of it already. It's a romantic, cathartic activity.
+
+Michael, remember IMO 2016, when you roomed with Amir? You guys both got
+gold! You felt great, but also sad: what if this was your height?
+Michael, remember that time you got into the game "Osu!"? You really
+thought that putting in all those hours was worth it, because life was
+just finding a way to distract the mind, no? Oh, remember the vanishing
+idea? At one point, you thought it'd be good to know how to disappear
+completely. You collected notes and stuff. You even named a number: 10
+million USD. That directory is still here. At any point, you could
+continue your planning. Oh, remember that time you wanted to go into
+formal logic?  You wrote your math notes in metamath-style
+syntax. Remember when you defined things like "crystal" or "aurora" with
+arbitrary high level concepts, and basically created your own extension
+of English? Ooh, remember your initial contact with Marina again? You
+were enamored. You thought she was perfect. You thought you could marry
+her. Of course, it didn't go anywhere. You were too scared.
+
+In /As We May Think/, Bush says
+#+BEGIN_QUOTE
+Presumably man's spirit should be elevated if he can better review his
+shady past and analyze more completely and objectively his present
+problems. 
+#+END_QUOTE
+I'm not sure if this is true, but I have the capability to.
+** a curated collection of experiences
+This section may be skipped. 
+
+There are two types of regular files. The first are those required by
+the computer. These are fonts, libraries, etc. 
+
+The other type consists of those which do nothing for the computer; they
+exist only to be experienced by humans.
+
+More specifically, they (a byte stream) are representations of
+quale. This statement warrants repeating. The other kind of regular file
+are those that are representations of quale. 
+
+The truth of this statement is almost self-evident. If a file is not
+used by the computer, then it must somehow by experienced by a human,
+and humans can only experience quale. Thus, the file must somehow be
+convertible to a quale.
+
+As an example, suppose the Declaration of Independence is saved in a
+file named =dec.txt=. Reading it (or for more general quale,
+experiencing it) is the quale it represents. More obvious examples
+include audio, image, and video files.
+
+Organizing a filesystem can thus be viewed as organizing quale. One way
+to look at my filesystem is exactly that---a curated collection of
+experiences. Or rather, /my/ curated collection of experiences, that I
+for some reason believe warrants keeping. 
+* dir
+** core
+Everything I wish to carry around with me for a reasonable length of
+time, regardless of circumstance.
+
+Meant to be lightweight. Ideally perpetually less than 16GiB.
+
+If a file is small, it's probably in here. 
+** extra
+Everything I wish to carry around with me for a reasonable length of
+time. 
+
+The name comes from Arch Linux's =extra= repository. 
+
+As of <2019-11-15 Fri>, it is far less organized than =core=, and mostly
+contains things which are too big for it. 
+** other
+Everything. 
+
+The "else" in an if-elif-else statement.

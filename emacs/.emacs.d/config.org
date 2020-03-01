@@ -1,13 +1,13 @@
 #+PROPERTY: header-args    :results silent
 * org
-Related to =org-mode=. 
+Related to =org-mode=. It's amazing how this has taken over my life. 
 
-First, add the modules we use:
+First, add the modules we use. 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-modules 'org-habit)
 #+END_SRC
 
-Now, load it. There's no point in delaying. 
+Now, load it. There's no point to delay. 
 #+BEGIN_SRC emacs-lisp
   (require 'org)
 #+END_SRC
@@ -187,6 +187,11 @@ Similarly, marking a task cancelled.
    :PROPERTIES:
    :created:  2020-01-08 20:39:50 CST
    :END:
+Load it for go. 
+#+BEGIN_SRC emacs-lisp
+  (use-package ob-go)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -262,7 +267,7 @@ I had this, but I don't really use CDLaTeX
 
 Allow more newlines in an emphasis. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]]. 
 #+BEGIN_SRC emacs-lisp
-  (setf (car (nthcdr 4 org-emphasis-regexp-components)) 10)
+  (setf (car (nthcdr 4 org-emphasis-regexp-components)) 50)
   (org-set-emph-re 'org-emphasis-regexp-components
 		   org-emphasis-regexp-components)
 #+END_SRC
@@ -348,6 +353,9 @@ Related to an emacs package.
    :END:
 Wehn I open emacs for the first time on a new machine, the packages I
 use should automatically be downloaded. This is the recommended method.
+
+[2020-02-24 Mon] Trying to get set up on SLS computers again. There's a
+serious problem---some packages don't support old versions of emacs. 
 #+BEGIN_SRC emacs-lisp
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
@@ -525,11 +533,6 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
 	  )
 #+END_SRC
 
-** ob-go
-   :PROPERTIES:
-   :created:  2020-02-05 08:31:42 EST
-   :END:
-Org-babel for go. 
 ** dumb-jump
    :PROPERTIES:
    :created:  2020-02-12 13:38:09 EST
@@ -634,6 +637,10 @@ The helm versions of common Emacs commands.
    :END:
 Ooh, this is nice. It has a user manual. 
 
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy)
+#+END_SRC
+
 [2020-02-16 Sun] I'm going to try this. Ivy seems minimalistic and nice.
 #+BEGIN_SRC emacs-lisp
   (ivy-mode 1)
@@ -670,7 +677,7 @@ Ignore order of input tokens. This is the default of helm.
 Don't have initial inputs
 #+BEGIN_SRC emacs-lisp
 #+END_SRC
-** counsel
+*** counsel
    :PROPERTIES:
    :created:  2020-02-16 21:51:03 EST
    :END:
@@ -696,15 +703,17 @@ Push onto the org mark ring when using counsel to goto.
   (advice-add 'counsel-org-goto
 	      :before 'jmw-ad-counsel-org-goto)
 #+END_SRC
-** ivy-rich
+*** ivy-rich
    :PROPERTIES:
    :created:  2020-02-18 15:31:59 EST
    :END:
 Display more info in ivy. For example, make ~M-x~ display a column of
 documentation alongside the list of candidate functions. 
 #+BEGIN_SRC emacs-lisp
-  (require 'ivy-rich)
-  (ivy-rich-mode 1)
+  (use-package ivy-rich
+    :config
+    ;; (ivy-rich-mode 1)
+    )
 #+END_SRC
 
 The reason I looked into this was for =counsel-find-file=. I wanted to
