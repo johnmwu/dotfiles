@@ -227,7 +227,6 @@ Don't prompt for confirmation when executing code blocks.
 #+BEGIN_SRC emacs-lisp
   (global-set-key "\C-cl" 'org-store-link) 
   (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-cb" 'org-switchb)
   (setq org-capture-templates
 	'(("e"
 	   "Computer error"
@@ -677,8 +676,18 @@ Ignore order of input tokens. This is the default of helm.
 	  '((t . ivy--regex-ignore-order)))
 #+END_SRC
 
-Don't have initial inputs
+Switch to window containing buffer, if it exists. This is useful on
+EXWM. [2020-03-02 Mon] override ~C-x b~. 
 #+BEGIN_SRC emacs-lisp
+  (defun jmw/ivy-switch-buffer ()
+    (interactive)
+    (ivy-read "Switch to buffer: " #'internal-complete-buffer
+	      :keymap ivy-switch-buffer-map
+	      :preselect (buffer-name (other-buffer (current-buffer)))
+	      :action 'switch-to-window-or-buffer
+	      :matcher #'ivy--switch-buffer-matcher
+	      :caller 'ivy-switch-buffer))
+  (global-set-key (kbd "C-x b") 'jmw/ivy-switch-buffer)
 #+END_SRC
 *** counsel
    :PROPERTIES:
@@ -785,41 +794,46 @@ this on every new machine.
 [2020-03-02 Mon] I'm not sure the system tray is doing anything right
 now.
 #+BEGIN_SRC emacs-lisp
-  (use-package exwm
-    :ensure nil 
-    :config
+  (ignore-errors
+    (use-package exwm
+      :ensure nil 
+      :config
 
-    (require 'exwm-config)
-    (exwm-config-default)
-    (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
-    (setq exwm-systemtray-height 16)
-    (setq exwm-input-global-keys
-	  `(
-	    ;; Bind "s-r" to exit char-mode and fullscreen mode.
-	    ([?\s-r] . exwm-reset)
-	    ;; Bind "s-w" to switch workspace interactively.
-	    ([?\s-w] . exwm-workspace-switch)
-	    ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-	    ,@(mapcar (lambda (i)
-			`(,(kbd (format "s-%d" i)) .
-			  (lambda ()
-			    (interactive)
-			    (exwm-workspace-switch-create ,i))))
-		      (number-sequence 0 9))
-	    ;; Bind "s-&" to launch applications ('M-&' also works if the output
-	    ;; buffer does not bother you).
-	    ([?\s-&] . (lambda (command)
-			 (interactive (list (read-shell-command "$ ")))
-			 (start-process-shell-command command nil command)))
-	    ;; Bind "s-<f2>" to "slock", a simple X display locker.
-	    ;; ([s-f2] . (lambda ()
-	    ;; 	      (interactive)
-	    ;; 	      (start-process "" nil "/usr/bin/slock")))
-	    (,(kbd "C-;") . other-window)
-	    (,(kbd "C-'") . other-frame)
+      (require 'exwm-config)
+      (exwm-config-default)
+      (require 'exwm-systemtray)
+      (exwm-systemtray-enable)
+      (setq exwm-systemtray-height 16)
+      (setq exwm-input-global-keys
+	    `(
+	      ;; Bind "s-r" to exit char-mode and fullscreen mode.
+	      ([?\s-r] . exwm-reset)
+	      ;; Bind "s-w" to switch workspace interactively.
+	      ([?\s-w] . exwm-workspace-switch)
+	      ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+	      ,@(mapcar (lambda (i)
+			  `(,(kbd (format "s-%d" i)) .
+			    (lambda ()
+			      (interactive)
+			      (exwm-workspace-switch-create ,i))))
+			(number-sequence 0 9))
+	      ;; Bind "s-&" to launch applications ('M-&' also works if
+	      ;; the output buffer does not bother you).
+	      ([?\s-&] . (lambda (command)
+			   (interactive (list (read-shell-command "$ ")))
+			   (start-process-shell-command command nil command)))
+	      ;; Bind "s-<f2>" to "slock", a simple X display locker.
+	      ;; ([s-f2] . (lambda ()
+	      ;; 	      (interactive)
+	      ;; 	      (start-process "" nil "/usr/bin/slock")))
+	      (,(kbd "C-;") . other-window)
+	      (,(kbd "C-'") . other-frame)
 
-	    )))  
+	      ))
+      (setq exwm-workspace-show-all-buffers t)
+      (setq exwm-layout-show-all-buffers t)
+      )  
+    )
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
@@ -922,6 +936,16 @@ Type ~y~ or ~n~ instead of yes/no. I've copied this from [[https://pages.sachach
 would think there was a better way of doing this. 
 #+BEGIN_SRC emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+If exists a window containing buffer, switch to it. Otherwise, switch to
+buffer.
+#+BEGIN_SRC emacs-lisp
+  (defun switch-to-window-or-buffer (buffer)
+    (let ((containing-window (get-buffer-window buffer t)))
+      (if containing-window
+	  (select-window containing-window)
+	(switch-to-buffer buffer))))
 #+END_SRC
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
