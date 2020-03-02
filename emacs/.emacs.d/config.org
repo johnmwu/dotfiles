@@ -775,6 +775,52 @@ The first step is to define a function for the file size.
 	  "34674419-RHL3BClht1JhmFYOQ7jXwjBqLt0")
     (run-with-timer 0 3540 'md4rd-refresh-login))
 #+END_SRC
+** exwm
+   :PROPERTIES:
+   :created:  2020-03-01 19:11:44 EST
+   :END:
+[2020-03-01 Sun] Trying this out. We definitely don't want to install
+this on every new machine. 
+
+[2020-03-02 Mon] I'm not sure the system tray is doing anything right
+now.
+#+BEGIN_SRC emacs-lisp
+  (use-package exwm
+    :ensure nil 
+    :config
+
+    (require 'exwm-config)
+    (exwm-config-default)
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (setq exwm-systemtray-height 16)
+    (setq exwm-input-global-keys
+	  `(
+	    ;; Bind "s-r" to exit char-mode and fullscreen mode.
+	    ([?\s-r] . exwm-reset)
+	    ;; Bind "s-w" to switch workspace interactively.
+	    ([?\s-w] . exwm-workspace-switch)
+	    ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+	    ,@(mapcar (lambda (i)
+			`(,(kbd (format "s-%d" i)) .
+			  (lambda ()
+			    (interactive)
+			    (exwm-workspace-switch-create ,i))))
+		      (number-sequence 0 9))
+	    ;; Bind "s-&" to launch applications ('M-&' also works if the output
+	    ;; buffer does not bother you).
+	    ([?\s-&] . (lambda (command)
+			 (interactive (list (read-shell-command "$ ")))
+			 (start-process-shell-command command nil command)))
+	    ;; Bind "s-<f2>" to "slock", a simple X display locker.
+	    ;; ([s-f2] . (lambda ()
+	    ;; 	      (interactive)
+	    ;; 	      (start-process "" nil "/usr/bin/slock")))
+	    (,(kbd "C-;") . other-window)
+	    (,(kbd "C-'") . other-frame)
+
+	    )))  
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -798,14 +844,14 @@ to save in a different file, which I don't load.
 #+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
-(ignore-errors
-  (column-number-mode 1)
-  (size-indication-mode 1)
-  (menu-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
-  (tool-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
-  (scroll-bar-mode 0)
-  (winner-mode 1))
-
+  (ignore-errors
+    (column-number-mode 1)
+    (size-indication-mode 1)
+    (menu-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
+    (tool-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
+    (scroll-bar-mode 0)
+    (winner-mode 1)
+    (fringe-mode 1))
 #+END_SRC
 * startup
 Look and feel of emacs upon completion of startup. 
@@ -852,18 +898,24 @@ Define =jmw-prefix=. This is the prefix key for my personal stuff.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-;") 'other-window)
-(setq make-backup-files nil)
-(setq-default fill-column 72)
-(setq scroll-preserve-screen-position t)
-(setq tab-stop-list '(4 8))
-(setq ansi-color-names-vector
-      ["black" "red3" "green3" "yellow3"
-       "dodger blue" "magenta3" "cyan3" "gray90"])
-(setq ansi-color-map (ansi-color-make-color-map))
+  (setq make-backup-files nil)
+  (setq-default fill-column 72)
+  (setq scroll-preserve-screen-position t)
+  (setq tab-stop-list '(4 8))
+  (setq ansi-color-names-vector
+	["black" "red3" "green3" "yellow3"
+	 "dodger blue" "magenta3" "cyan3" "gray90"])
+  (setq ansi-color-map (ansi-color-make-color-map))
 
-;;;; other ;;;;
-(server-start) 
+  ;;;; other ;;;;
+  (server-start) 
+#+END_SRC
+
+These aren't bound to anything by default. Put them to good use. 
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-;") 'other-window)
+  (define-key org-mode-map (kbd "C-'") nil)
+  (global-set-key (kbd "C-'") 'other-frame)
 #+END_SRC
 
 Type ~y~ or ~n~ instead of yes/no. I've copied this from [[https://pages.sachachua.com/.emacs.d/Sacha.html#org2509ed6][Sacha Chua]]. One

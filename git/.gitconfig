@@ -3,5 +3,5 @@
 	email = johnmichaelwu@gmail.com
 [core]
         # env variable GIT_EDITOR should override this
-	editor = emacs 
+	# editor = emacs
         

@@ -66,7 +66,7 @@ function jmw_on_mobile () {
 export HDF5_USE_FILE_LOCKING=FALSE # See https://github.com/MPAS-Dev/MPAS-Analysis/issues/407
 
 if jmw_on_desktop; then
-    export TEXT_EDITOR="emacsclient --alternate-editor=emacs" 
+    export EDITOR="emacsclient --alternate-editor=emacs" 
     export PATH="${PATH}:/usr/local/texlive/2018/bin/x86_64-linux"
     export PATH="${PATH}:${HOME}/.android/Android/Sdk/platform-tools"
     export PATH="${PATH}:~/.local/bin"

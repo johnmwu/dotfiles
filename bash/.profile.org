@@ -203,7 +203,7 @@ Desktop-specific configurations.
 If I'm on desktop, I'll be using emacs. =emacsclient(1)= is a utility
 for connecting to an existing emacs server. 
 #+BEGIN_SRC sh 
-  export TEXT_EDITOR="emacsclient --alternate-editor=emacs" 
+  export EDITOR="emacsclient --alternate-editor=emacs" 
 #+END_SRC
 
 I had these additions to the path, but I kind of forget why. I'm not
