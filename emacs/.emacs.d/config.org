@@ -196,8 +196,7 @@ Similarly, marking a task cancelled.
    :END:
 #+BEGIN_SRC emacs-lisp
   (defun jmw-main-sched-window ()
-    (get-buffer-window "main.org"))
-
+    (get-buffer-window "main.org" t))
 #+END_SRC
 ** org-babel
    :PROPERTIES:
@@ -794,11 +793,16 @@ this on every new machine.
 [2020-03-02 Mon] I'm not sure the system tray is doing anything right
 now.
 #+BEGIN_SRC emacs-lisp
-  (ignore-errors
+  ;; (ignore-errors
     (use-package exwm
       :ensure nil 
-      :config
+      :demand t
+      :bind (("<XF86AudioRaiseVolume>" . audio/raise-volume)
+	     ("<XF86AudioLowerVolume>" . audio/lower-volume)
+	     ("<XF86AudioMute>" . audio/mute)
+	     )
 
+      :config
       (require 'exwm-config)
       (exwm-config-default)
       (require 'exwm-systemtray)
@@ -828,12 +832,36 @@ now.
 	      ;; 	      (start-process "" nil "/usr/bin/slock")))
 	      (,(kbd "C-;") . other-window)
 	      (,(kbd "C-'") . other-frame)
-
+	      ;; (,(kbd "<print>") . screenshot)
 	      ))
       (setq exwm-workspace-show-all-buffers t)
       (setq exwm-layout-show-all-buffers t)
       )  
-    )
+    ;; )
+#+END_SRC
+
+It sucks that I have to write these...
+#+BEGIN_SRC emacs-lisp
+  (defun audio/mute ()
+    (interactive)
+    (start-process-shell-command "audio/mute"
+				 nil
+				 "amixer set 'Master' 0%"))
+  (defun audio/raise-volume ()
+    (interactive)
+    (start-process-shell-command "audio/raise-volume"
+				 nil
+				 "amixer set 'Master' 5%+"))
+  (defun audio/lower-volume ()
+    (interactive)
+    (start-process-shell-command "audio/lower-volume"
+				 nil
+				 "amixer set 'Master' 5%-"))
+  (defun screenshot ()
+    (interactive)
+    (start-process-shell-command "screenshot"
+				 nil
+				 "gnome-screenshot --clipboard --area"))
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
