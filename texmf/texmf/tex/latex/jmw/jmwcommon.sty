@@ -65,7 +65,10 @@
 \newcommand{\del}{\partial} 
 \DeclareMathOperator{\Ob}{Ob} % Objects of a category
 \newcommand{\KL}[2]{\ensuremath{D_{KL}\left(#1, #2\right)}}
-
+\newcommand{\scrG}{\ensuremath{\mathscr{G}}} % Sigma algebra 2
+\newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\BigOm}{\Omega} % Big Omega notation
+\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
 
 %% From MIT 18.701/2
 \newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} % "Inner product"
@@ -150,8 +153,26 @@
     	postheadspace={0pt}
     ]{thmbluebox}
   
+    \mdfdefinestyle{mdgreenbox}{%
+    	roundcorner = 10pt,
+    	linewidth=1pt,
+    	skipabove=12pt,
+    	innerbottommargin=9pt,
+    	skipbelow=2pt,
+    	linecolor=green,
+    	nobreak=true,
+    	backgroundcolor=LimeGreen!5,
+    }
+    \declaretheoremstyle[
+    	headfont=\sffamily\bfseries\color{OliveGreen},
+    	mdframed={style=mdgreenbox},
+    	headpunct={\\[3pt]},
+    	postheadspace={0pt}
+    ]{thmgreenbox}
+
     \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
     \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+    \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
   \else
     \newtheorem{theorem}{Theorem}[section]
     \newtheorem{lemma}[theorem]{Lemma}

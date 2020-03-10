@@ -506,6 +506,7 @@ Define my vterm prefix
 Bind functions
 #+BEGIN_SRC emacs-lisp
   (define-key 'jmw-vterm-prefix "b" 'vterm)
+  (define-key 'jmw-vterm-prefix "o" 'vterm-other-window)
 #+END_SRC
 
 Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/2708042/4019495][SO]]. 
@@ -790,56 +791,6 @@ The first step is to define a function for the file size.
 [2020-03-01 Sun] Trying this out. We definitely don't want to install
 this on every new machine. 
 
-[2020-03-02 Mon] I'm not sure the system tray is doing anything right
-now.
-#+BEGIN_SRC emacs-lisp
-  ;; (ignore-errors
-    (use-package exwm
-      :ensure nil 
-      :demand t
-      :bind (("<XF86AudioRaiseVolume>" . audio/raise-volume)
-	     ("<XF86AudioLowerVolume>" . audio/lower-volume)
-	     ("<XF86AudioMute>" . audio/mute)
-	     )
-
-      :config
-      (require 'exwm-config)
-      (exwm-config-default)
-      (require 'exwm-systemtray)
-      (exwm-systemtray-enable)
-      (setq exwm-systemtray-height 16)
-      (setq exwm-input-global-keys
-	    `(
-	      ;; Bind "s-r" to exit char-mode and fullscreen mode.
-	      ([?\s-r] . exwm-reset)
-	      ;; Bind "s-w" to switch workspace interactively.
-	      ([?\s-w] . exwm-workspace-switch)
-	      ;; Bind "s-0" to "s-9" to switch to a workspace by its index.
-	      ,@(mapcar (lambda (i)
-			  `(,(kbd (format "s-%d" i)) .
-			    (lambda ()
-			      (interactive)
-			      (exwm-workspace-switch-create ,i))))
-			(number-sequence 0 9))
-	      ;; Bind "s-&" to launch applications ('M-&' also works if
-	      ;; the output buffer does not bother you).
-	      ([?\s-&] . (lambda (command)
-			   (interactive (list (read-shell-command "$ ")))
-			   (start-process-shell-command command nil command)))
-	      ;; Bind "s-<f2>" to "slock", a simple X display locker.
-	      ;; ([s-f2] . (lambda ()
-	      ;; 	      (interactive)
-	      ;; 	      (start-process "" nil "/usr/bin/slock")))
-	      (,(kbd "C-;") . other-window)
-	      (,(kbd "C-'") . other-frame)
-	      ;; (,(kbd "<print>") . screenshot)
-	      ))
-      (setq exwm-workspace-show-all-buffers t)
-      (setq exwm-layout-show-all-buffers t)
-      )  
-    ;; )
-#+END_SRC
-
 It sucks that I have to write these...
 #+BEGIN_SRC emacs-lisp
   (defun audio/mute ()
@@ -859,9 +810,98 @@ It sucks that I have to write these...
 				 "amixer set 'Master' 5%-"))
   (defun screenshot ()
     (interactive)
-    (start-process-shell-command "screenshot"
-				 nil
-				 "gnome-screenshot --clipboard --area"))
+    (shell-command "scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+#+END_SRC
+*** desktop-environment
+    :PROPERTIES:
+    :created:  2020-03-10 00:22:02 EDT
+    :END:
+#+BEGIN_SRC emacs-lisp
+  (use-package desktop-environment
+    :ensure nil
+
+    :config
+    (desktop-environment-mode)
+    (setq desktop-environment-update-exwm-global-keys :global)
+    )
+#+END_SRC
+
+Redefine screenshots:
+#+BEGIN_SRC emacs-lisp
+  (defun desktop-environment-screenshot ()
+    (interactive)
+    (shell-command "scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+#+END_SRC
+*** main
+    :PROPERTIES:
+    :created:  2020-03-10 00:34:57 EDT
+    :END:
+[2020-03-02 Mon] I'm not sure the system tray is doing anything right
+now.
+#+BEGIN_SRC emacs-lisp
+    ;; (ignore-errors
+      (use-package exwm
+	:ensure nil 
+	:demand t
+
+	:config
+	(require 'exwm-config)
+	(exwm-config-default)
+	(require 'exwm-systemtray)
+	(exwm-systemtray-enable)
+	(setq exwm-systemtray-height 16)
+	(setq exwm-input-global-keys
+	      `(
+		;; Bind "s-r" to exit char-mode and fullscreen mode.
+		([?\s-r] . exwm-reset)
+		;; Bind "s-w" to switch workspace interactively.
+		([?\s-w] . exwm-workspace-switch)
+		;; Bind "s-0" to "s-9" to switch to a workspace by its index.
+		,@(mapcar (lambda (i)
+			    `(,(kbd (format "s-%d" i)) .
+			      (lambda ()
+				(interactive)
+				(exwm-workspace-switch-create ,i))))
+			  (number-sequence 0 9))
+		;; Bind "s-&" to launch applications ('M-&' also works if
+		;; the output buffer does not bother you).
+		([?\s-&] . (lambda (command)
+			     (interactive (list (read-shell-command "$ ")))
+			     (start-process-shell-command command nil command)))
+		;; Bind "s-<f2>" to "slock", a simple X display locker.
+		;; ([s-f2] . (lambda ()
+		;; 	      (interactive)
+		;; 	      (start-process "" nil "/usr/bin/slock")))
+		(,(kbd "C-;") . other-window)
+		(,(kbd "C-'") . other-frame)
+		(,(kbd "<print>") . desktop-environment-screenshot)
+		))
+	(setq exwm-input-simulation-keys
+	  '(
+	    ;; movement
+	    ;; ([?\C-b] . [left])
+	    ;; ([?\M-b] . [C-left])
+	    ;; ([?\C-f] . [right])
+	    ;; ([?\M-f] . [C-right])
+	    ;; ([?\C-p] . [up])
+	    ;; ([?\C-n] . [down])
+	    ;; ([?\C-a] . [home])
+	    ;; ([?\C-e] . [end])
+	    ;; ([?\M-v] . [prior])
+	    ;; ([?\C-v] . [next])
+	    ;; ([?\C-d] . [delete])
+	    ;; ([?\C-k] . [S-end delete])
+	    ;; cut/paste.
+	    ;; ([?\C-w] . [?\C-x])
+	    ([?\M-w] . [?\C-c])
+	    ([?\C-y] . [?\C-v])
+	    ;; search
+	    ;; ([?\C-s] . [?\C-f])))
+	    ))
+	(setq exwm-workspace-show-all-buffers t)
+	(setq exwm-layout-show-all-buffers t)
+	)  
+      ;; )
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
