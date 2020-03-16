@@ -192,7 +192,7 @@ Similarly, marking a task cancelled.
 #+END_SRC
 
 Don't show clocking task on mode line. Not particularly elegant. 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
   (add-hook 'org-clock-in-hook
 	    (lambda ()
 	      (delete 'org-mode-line-string global-mode-string)))
@@ -892,6 +892,25 @@ Redefine screenshots:
    :PROPERTIES:
    :created:  2020-03-15 21:47:44 EDT
    :END:
+** smart-mode-line
+   :PROPERTIES:
+   :created:  2020-03-16 17:17:54 EDT
+   :END:
+A more customizable mode line. 
+
+Mark theme as safe. 
+#+BEGIN_SRC emacs-lisp
+  (setq custom-safe-themes
+	(quote
+	 ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+#+END_SRC
+
+Main loading. 
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-mode-line
+    :config
+    (sml/setup))
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
