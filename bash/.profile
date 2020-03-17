@@ -79,6 +79,8 @@ if jmw_on_desktop; then
         dconf write /org/gnome/settings-daemon/plugins/media-keys/area-screenshot-clip "['<Ctrl><Shift>End']"
     fi &>/dev/null
     /usr/bin/setxkbmap -option "ctrl:swapcaps"
+    export BROWSER="firefox"
+    export PDF_VIEWER="okular"
     function vterm_printf(){
         if [ -n "$TMUX" ]; then
     	# tell tmux to pass the escape sequences through

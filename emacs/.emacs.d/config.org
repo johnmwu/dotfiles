@@ -201,6 +201,7 @@ Don't show clocking task on mode line. Not particularly elegant.
    :PROPERTIES:
    :created:  2020-01-08 20:33:25 CST
    :END:
+The window containing =main.org=. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-main-sched-window ()
     (get-buffer-window "main.org" t))
@@ -911,6 +912,15 @@ Main loading.
     :config
     (sml/setup))
 #+END_SRC
+** symon
+   :PROPERTIES:
+   :created:  2020-03-16 18:53:51 EDT
+   :END:
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package symon
+    :straight (:host github :repo "ieure/symon")
+    :config (symon-mode 1))
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** comint-mode
@@ -947,11 +957,26 @@ to save in a different file, which I don't load.
 Look and feel of emacs upon completion of startup. 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (add-to-list 'display-buffer-alist
-	       `(,(regexp-quote "*shell")
-	       display-buffer-same-window))
   (set-default-font "Ubuntu Mono-12")
   (setq inhibit-startup-screen t)
+
+#+END_SRC
+
+Setup initial applications in EXWM. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw/exwm-init-apps ()
+    (exwm-workspace-switch 1)
+    (start-process-shell-command (getenv "BROWSER"))
+
+    (exwm-workspace-switch 2)
+    (start-process-shell-command (getenv "PDF_VIEWER"))
+
+    (exwm-workspace-switch 3)
+    (start-process-shell-command "anki"))
+#+END_SRC
+
+The main thing. 
+#+BEGIN_SRC emacs-lisp
   (add-hook 'window-setup-hook
 	    (lambda ()
 	      (split-window-right) 
@@ -964,7 +989,11 @@ Look and feel of emacs upon completion of startup.
 	      (windmove-right)
 	      (vterm)
 	      (windmove-right)
-	      (vterm)))
+	      (vterm)
+	      (when (member 'exwm features)
+		(jmw/exwm-init-apps))
+	      (select-window (jmw-main-sched-window))
+	      ))
 #+END_SRC
 ** theme
    :PROPERTIES:

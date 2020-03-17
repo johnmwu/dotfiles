@@ -240,6 +240,15 @@ Swap caps and ctrl.
 
 #+RESULTS:
 
+This is my web browser. 
+#+BEGIN_SRC sh
+  export BROWSER="firefox"
+#+END_SRC
+
+This is my pdf viewer. 
+#+BEGIN_SRC sh
+  export PDF_VIEWER="okular"
+#+END_SRC
 ** vterm
    :PROPERTIES:
    :created:  2020-02-01 17:44:13 EST
