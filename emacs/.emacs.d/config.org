@@ -162,7 +162,7 @@ keyword) because it can be done using ordinary TODO insertion.
   (define-key 'jmw-org-prefix "p" 'jmw-push-task)
 #+END_SRC
 
-=org-clock-goto= from anywhere:
+=org-clock-goto= from anywhere. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-clock-goto ()
     (interactive)
@@ -338,6 +338,11 @@ Correct behavior for the agenda.
 I don't want to log every time an item is repeated:
 #+BEGIN_SRC emacs-lisp
   (setq org-log-repeat nil)
+#+END_SRC
+
+Allow refiling to any headline
+#+BEGIN_SRC emacs-lisp
+  (setq org-refile-targets '((:maxlevel . 10)))
 #+END_SRC
 *** books
 Sometimes, I will download books as text files and read them in
@@ -866,6 +871,8 @@ now.
 	  ))
       (setq exwm-workspace-show-all-buffers t)
       (setq exwm-layout-show-all-buffers t)
+      (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
+      (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
       )  
     ;; )
 #+END_SRC
@@ -903,23 +910,37 @@ Mark theme as safe.
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes
 	(quote
-	 ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+	 ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
 #+END_SRC
 
 Main loading. 
 #+BEGIN_SRC emacs-lisp
   (use-package smart-mode-line
     :config
+    (setq sml/theme 'dark)
     (sml/setup))
 #+END_SRC
 ** symon
    :PROPERTIES:
    :created:  2020-03-16 18:53:51 EDT
+   :header-args: :tangle no
    :END:
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp 
   (use-package symon
     :straight (:host github :repo "ieure/symon")
     :config (symon-mode 1))
+#+END_SRC
+** mini-modeline
+   :PROPERTIES:
+   :created:  2020-03-17 14:38:32 EDT
+   :END:
+#+BEGIN_SRC emacs-lisp
+  (use-package mini-modeline
+    :after smart-mode-line
+
+    :config
+    (setq mini-modeline-frame t)
+    (mini-modeline-mode t))
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
@@ -942,6 +963,24 @@ to save in a different file, which I don't load.
 #+BEGIN_SRC emacs-lisp 
   (setq custom-file (concat user-emacs-directory "/custom.el"))
 #+END_SRC
+** display-time-mode
+   :PROPERTIES:
+   :created:  2020-03-17 16:01:31 EDT
+   :END:
+Display the current time on the modeline. 
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-day-and-date t)
+  (setq display-time-24hr-format t)
+  (display-time-mode 1)
+#+END_SRC
+** display-battery-mode
+   :PROPERTIES:
+   :created:  2020-03-17 16:18:23 EDT
+   :END:
+Display battery status on the modeline. 
+#+BEGIN_SRC emacs-lisp
+  (display-battery-mode 1)
+#+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
   (ignore-errors
@@ -962,17 +1001,29 @@ Look and feel of emacs upon completion of startup.
 
 #+END_SRC
 
-Setup initial applications in EXWM. 
+Setup initial applications in EXWM. [2020-03-17 Tue] I guess I'll call
+manually. For some reason, putting it in =window-setup-hook= doesn't
+work.
 #+BEGIN_SRC emacs-lisp
   (defun jmw/exwm-init-apps ()
-    (exwm-workspace-switch 1)
-    (start-process-shell-command (getenv "BROWSER"))
+    (interactive)
+    (exwm-workspace-switch-create 1)
+    (let ((browser (getenv "BROWSER")))
+      (start-process-shell-command browser nil browser))
 
-    (exwm-workspace-switch 2)
-    (start-process-shell-command (getenv "PDF_VIEWER"))
+    (sleep-for 1)
 
-    (exwm-workspace-switch 3)
-    (start-process-shell-command "anki"))
+    (exwm-workspace-switch-create 2)
+    (let ((pdf-viewer (getenv "PDF_VIEWER")))
+      (start-process-shell-command pdf-viewer nil pdf-viewer))
+
+    (sleep-for 1)
+
+    (exwm-workspace-switch-create 3)
+    (start-process-shell-command "anki" nil "anki")
+
+    (sleep-for 1)
+    )
 #+END_SRC
 
 The main thing. 
@@ -990,8 +1041,11 @@ The main thing.
 	      (vterm)
 	      (windmove-right)
 	      (vterm)
-	      (when (member 'exwm features)
-		(jmw/exwm-init-apps))
+	      ;; (make-frame)
+	      ;; (make-frame)
+	      ;; (when (member 'exwm features)
+	      ;;   ;; We're using exwm
+	      ;;   (jmw/exwm-init-apps))
 	      (select-window (jmw-main-sched-window))
 	      ))
 #+END_SRC
@@ -1001,7 +1055,9 @@ The main thing.
    :END:
 [2020-01-28 Tue] I haven't given this much thought. =manoj-dark= is
 permissible.
-#+BEGIN_SRC emacs-lisp
+
+[2020-03-17 Tue] trying other stuff. Decided to stick with this. 
+#+BEGIN_SRC emacs-lisp 
   (load-theme 'manoj-dark)
 #+END_SRC
 * other
