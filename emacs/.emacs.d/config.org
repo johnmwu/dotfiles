@@ -603,8 +603,6 @@ Major mode for Go source files.
 
 	  :config
 	  ;; (setq godoc-at-point-function 'godoc-gogetdoc)
-	  (add-hook 'go-mode-hook
-		    (lambda () (setq tab-width 2)))
 	  )
 #+END_SRC
 
@@ -868,22 +866,17 @@ This is much cleaner.
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
-** comint-mode
-#+BEGIN_SRC emacs-lisp
-(add-hook 'comint-mode-hook ;; don't want line wrapping in REPLs
-      (lambda () (setq auto-fill-function '())))
-#+END_SRC
-** text-mode
-#+BEGIN_SRC emacs-lisp
-(add-hook 'text-mode-hook
-	  (lambda () (setq fill-column 72)))
-#+END_SRC
 ** custom
    :PROPERTIES:
    :created:  2020-01-29 18:33:43 CST
    :END:
+Custom is Emacs's user-friendly customization interface. I don't like
+it, I prefer simple =setq='s. 
+
 I don't like having Custom litter my =init.el= with stuff. This sets it
-to save in a different file, which I don't load. 
+to save in a different file, which I don't load. Normally, Custom will
+do nothing anyway, but occasionally I'll do something that causes it to
+randomly pop back into my =init.el=. 
 #+BEGIN_SRC emacs-lisp 
   (setq custom-file (concat user-emacs-directory "/custom.el"))
 #+END_SRC
@@ -891,7 +884,8 @@ to save in a different file, which I don't load.
    :PROPERTIES:
    :created:  2020-03-17 16:01:31 EDT
    :END:
-Display the current time on the modeline. 
+Display the current time on the modeline. Used in conjunction with
+mini-modeline for my system tray. 
 #+BEGIN_SRC emacs-lisp
   (setq display-time-day-and-date t)
   (setq display-time-24hr-format t)
@@ -901,28 +895,42 @@ Display the current time on the modeline.
    :PROPERTIES:
    :created:  2020-03-17 16:18:23 EDT
    :END:
-Display battery status on the modeline. 
+Display battery status on the modeline. Used in conjuction with
+mini-modeline for my system tray.
 #+BEGIN_SRC emacs-lisp
   (display-battery-mode 1)
+#+END_SRC
+** column-number-mode
+   :PROPERTIES:
+   :created:  2020-03-21 14:20:38 EDT
+   :END:
+Displays column number of point on the mode line. 
+#+BEGIN_SRC emacs-lisp
+  (column-number-mode 1)
+#+END_SRC
+** size-indication-mode
+   :PROPERTIES:
+   :created:  2020-03-21 14:21:26 EDT
+   :END:
+Display size of buffer on the mode line. 
+#+BEGIN_SRC emacs-lisp
+  (size-indication-mode 1)
 #+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
   (ignore-errors
-    (column-number-mode 1)
-    (size-indication-mode 1)
-    (menu-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
-    (tool-bar-mode 0) ;; from https://youtu.be/PKaJoqQQoIA?t=423
+    (menu-bar-mode 0) 
+    (tool-bar-mode 0) 
     (scroll-bar-mode 0)
     (winner-mode 1)
     (fringe-mode 1))
 #+END_SRC
 * startup
-Look and feel of emacs upon completion of startup. 
+Look and feel of emacs upon after startup. 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-default-font "Ubuntu Mono-12")
   (setq inhibit-startup-screen t)
-
 #+END_SRC
 
 Setup initial applications in EXWM. [2020-03-17 Tue] I guess I'll call
@@ -965,8 +973,7 @@ The main thing.
 	      (vterm)
 	      (windmove-right)
 	      (vterm)
-	      ;; (make-frame)
-	      ;; (make-frame)
+	      ;; Not sure why this doesn't work
 	      ;; (when (member 'exwm features)
 	      ;;   ;; We're using exwm
 	      ;;   (jmw/exwm-init-apps))
@@ -978,7 +985,7 @@ The main thing.
    :created:  2020-01-28 22:45:41 CST
    :END:
 [2020-01-28 Tue] I haven't given this much thought. =manoj-dark= is
-permissible.
+fine. 
 
 [2020-03-17 Tue] trying other stuff. Decided to stick with this. 
 #+BEGIN_SRC emacs-lisp 
@@ -996,18 +1003,37 @@ Define =jmw-prefix=. This is the prefix key for my personal stuff.
   (global-set-key (kbd "C-c j") 'jmw-prefix)
 #+END_SRC
 
+By default, Emacs will create backups of files, which look like
+#+BEGIN_EXAMPLE
+[michael@contessa test-backup]$ ls
+test.org  test.org~
+#+END_EXAMPLE
+hich I don't like. If I need backups, I'll use version control. 
 #+BEGIN_SRC emacs-lisp
   (setq make-backup-files nil)
-  (setq-default fill-column 72)
-  (setq scroll-preserve-screen-position t)
-  (setq tab-stop-list '(4 8))
-  (setq ansi-color-names-vector
-	["black" "red3" "green3" "yellow3"
-	 "dodger blue" "magenta3" "cyan3" "gray90"])
-  (setq ansi-color-map (ansi-color-make-color-map))
+#+END_SRC
 
-  ;;;; other ;;;;
-  (server-start) 
+Leave point at the same screen position when going a page down. I have
+no idea why the default is to move point to the top of the window. 
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-preserve-screen-position t)
+#+END_SRC
+
+Start the emacs server. This allows the command =emacsclient(1)= to open
+a file in a buffer owned by an existing emacs process, which is used in
+=git-commit(1)=.
+#+BEGIN_SRC emacs-lisp
+  (server-start)
+#+END_SRC
+
+Lines should not by >72 chars long. 
+#+BEGIN_SRC emacs-lisp
+  (setq-default fill-column 72)
+#+END_SRC
+
+Tabs should display as 2 spaces wide. 
+#+BEGIN_SRC emacs-lisp
+  (setq tab-width 2)
 #+END_SRC
 
 These aren't bound to anything by default. Put them to good use. 
@@ -1035,10 +1061,11 @@ buffer.
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when
-first called, and then rearchived when called again. 
+first called, and rearchived when called again.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-7z (zfile file outfile)
     (if (file-exists-p outfile)
+	;; If outfile exists, put it back into the zfile (the 7z archive)
 	(progn
 	  (message "Preparing to compress")
 	  (sit-for 0.25)
@@ -1053,6 +1080,7 @@ first called, and then rearchived when called again.
 	   (concat 
 	    "shred -u "
 	    outfile)))
+      ;; Otherwise, extract it
       (progn
 	(message "Preparing to extract")
 	(sit-for 0.25)
@@ -1066,9 +1094,7 @@ first called, and then rearchived when called again.
 		      (concat "7z e -p"
 			      (read-passwd "Password? ")
 			      " -o"
-			      (getenv "TEMP") ;; this could be an
-					      ;; issue. Really, we want
-					      ;; the dir name
+			      (getenv "TEMP") 
 			      " "
 			      zfile
 			      " "
@@ -1081,7 +1107,7 @@ first called, and then rearchived when called again.
 #+END_SRC
 
 The wander archive is a kind of diary. I write in it about once a
-month. It's encrypted because it contains sensitive info.
+month. It's encrypted because it contains sensitive stuff. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-wander ()
     (interactive)
@@ -1092,7 +1118,7 @@ month. It's encrypted because it contains sensitive info.
   (define-key 'jmw-prefix "w" 'jmw-wander)
 #+END_SRC
 
-This contains passwords. 
+The safe archive contains passwords. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw-safe ()
     (interactive)
@@ -1106,8 +1132,7 @@ This contains passwords.
    :PROPERTIES:
    :created:  2020-02-01 20:12:03 CST
    :END:
-I use timers in my workflow. They're primarily used as end conditions of
-runs.
+I use timers in my workflow. They're usually end conditions of runs.
 
 Define the timer prefix, and bind it. 
 #+BEGIN_SRC emacs-lisp
