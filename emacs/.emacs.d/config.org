@@ -50,12 +50,14 @@ The main key sequence is
   (global-set-key "\C-ca" 'org-agenda)
 #+END_SRC
 
-Other:
+Specifying which days appear in the agenda:
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-window-setup 'other-window)
-  (setq org-agenda-restore-windows-after-quit t)
-  (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
-  (setq org-habit-show-habits-only-for-today nil)
+  (setq org-agenda-span 10)
+  (setq org-agenda-start-day "-4d")
+#+END_SRC
+
+Turn a heading into a habit. 
+#+BEGIN_SRC emacs-lisp
   (defun jmw-org-make-habit ()
     "Turn the following heading into a habit. Schedules it for
   today with .+1d/2d repeater interval."
@@ -69,34 +71,104 @@ Other:
   (define-key 'jmw-org-prefix "h" 'jmw-org-make-habit)
 #+END_SRC
 
-Specifying which days appear in the agenda:
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-span 10)
-  (setq org-agenda-start-day "-4d")
-#+END_SRC
-**** todo keyword
 Set todo keywords.
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keywords
 	'((sequence "TODO(t)" "WAIT(w)" "|" "DONE(d)" "CANCEL(c)")))
 #+END_SRC
 
-Better colors:
+Better colors for TODO keywords. 
 #+BEGIN_SRC emacs-lisp
   (setq org-todo-keyword-faces
 	'(("CANCEL" . (:foreground "red" :weight bold))
 	  ("WAIT" . (:foreground "yellow" :weight bold))))
+#+END_SRC
+
+Don't change window configuration when viewing the agenda. According to
+[[https://stackoverflow.com/q/21195327/4019495][SO]], there is no easy solution. The offender is =delete-other-windows= in
+function =org-capture-place-template=. We adopt the solution given in
+another [[https://stackoverflow.com/a/54251825/4019495][SO]] post.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-ad-org-agenda-place-template (oldfun args)
+    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
+      (apply oldfun args)))      
+  (advice-add 'org-agenda
+	      :around 'jmw-ad-org-capture-place-template)
+  (setq org-agenda-window-setup 'other-window)
+#+END_SRC
+
+Other:
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-window-setup 'other-window)
+  (setq org-agenda-restore-windows-after-quit t)
+  (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
+  (setq org-habit-show-habits-only-for-today nil)
 #+END_SRC
 *** org-clock
    :PROPERTIES:
    :created:  2020-01-08 20:31:18 CST
    :END:
 The =org-clock= feature. 
+
+First, load. The functions are autoloaded, but I load it now to add
+=org-clock-out-if-current=.
 #+BEGIN_SRC emacs-lisp
-  (require 'org-clock) ;; The functions here are autoloaded, but I load it
-		       ;; now to add 'org-clock-out-if-current
+  (require 'org-clock) 
+#+END_SRC
+
+I want =org-clock-history= to be long. 
+#+BEGIN_SRC emacs-lisp
   (setq org-clock-history-length 35)
+#+END_SRC
+
+On the mode line, I want to see how much time I've spent today on the
+task. The default is showing the amount of time spend since the
+beginning of time, which is weird. 
+#+BEGIN_SRC emacs-lisp
   (setq org-clock-mode-line-total 'today)
+#+END_SRC
+
+=org-clock-goto= should display some context above. 
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-clock-goto-hook (lambda () (recenter-top-bottom 18)))
+#+END_SRC
+
+What follows are many commands related to task manipulation. I use
+=org-clock-history= as a task stack.
+
+=org-clock-goto= from anywhere, i.e jump to current clocking task in the
+schedule.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-clock-goto ()
+    (interactive)
+    (select-window (jmw-main-sched-window))
+    (org-clock-goto))
+  (define-key 'jmw-org-prefix "g" 'jmw-org-clock-goto)
+#+END_SRC
+
+Push a task onto the stack. Semantically, this is saying: the following
+is relevant to completing the current task. Usually for tasks I discover
+in the moment rather than ones I know at the outset.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-push-task (task-name)
+    "Push a task onto the stack."
+    (interactive "sTask name: ")
+    (jmw-org-clock-goto)
+    (org-insert-todo-heading-respect-content)
+    (org-do-demote)
+    (move-end-of-line 1)
+    (insert task-name)
+    (org-clock-in))
+  (define-key 'jmw-org-prefix "p" 'jmw-push-task)
+#+END_SRC
+As of [2020-01-10 Fri], there is no symmetric notion for queueing a
+task. Queueing a task can be done using ordinary insertion of a TODO
+item. There is no notion of deferring a task (a la Go's =defer=) because
+it can be done using ordinary TODO insertion.
+
+Popping a task off the stack. Not called =jmw-pop-task= because calling
+it doesn't mean the task is done.
+#+BEGIN_SRC emacs-lisp
   (defun jmw-org-clock-out-up ()
     "Clock out and go up a process in the stack."
     (interactive)
@@ -111,7 +183,12 @@ The =org-clock= feature.
       (goto-char marker)
       (org-clock-in)))
   (define-key 'jmw-org-prefix "o" 'jmw-org-clock-out-up)
+#+END_SRC
 
+If we're clocking and point is on the current task, =org-todo= should
+run =jmw-org-clock-out-up=. This isn't very clean, but I couldn't come
+up with anything better.
+#+BEGIN_SRC emacs-lisp 
   ;; code copied from ~org-clock-out-if-current~
   (defun jmw-org-clock-out-if-current ()
     (when (and (org-clocking-p)
@@ -134,54 +211,23 @@ The =org-clock= feature.
 	    'jmw-org-clock-out-if-current)
   (remove-hook 'org-after-todo-state-change-hook
 	       'org-clock-out-if-current)
-  (add-hook 'org-clock-goto-hook
-	    (lambda ()
-	      (recenter-top-bottom 18)))
 #+END_SRC
 
-A formalization of pushing a task onto the stack. Semantically, pushing
-a task is saying: the following is required, or at least relevant, to
-completing the current task. This can be viewed as a special, important
-case of inserting a TODO item. 
-
-As of [2020-01-10 Fri], there is no symmetric notion for queueing a
-task. Queueing a task can be done using ordinary insertion of a TODO
-item. There is no notion of deferring a task (as in Go's =defer=
-keyword) because it can be done using ordinary TODO insertion. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-push-task (task-name)
-    "Push a task onto the stack."
-    (interactive "sTask name: ")
-    (select-window (jmw-main-sched-window))
-    (org-clock-goto)
-    (org-insert-todo-heading-respect-content)
-    (org-do-demote)
-    (move-end-of-line 1)
-    (insert task-name)
-    (org-clock-in))
-  (define-key 'jmw-org-prefix "p" 'jmw-push-task)
-#+END_SRC
-
-=org-clock-goto= from anywhere. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-org-clock-goto ()
-    (interactive)
-    (select-window (jmw-main-sched-window))
-    (org-clock-goto))
-  (define-key 'jmw-org-prefix "g" 'jmw-org-clock-goto)
-#+END_SRC
-
-Marking a task done:
+Popping a task off the stack. This time, we're actually done the task.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-done ()
     (interactive)
     (jmw-org-clock-goto)
-    (org-todo "DONE")
+    (org-todo "DONE") ;; calls `jmw-org-clock-out-up`
     (org-clock-goto))
   (define-key 'jmw-org-prefix "d" 'jmw-org-done)
 #+END_SRC
+In theory, the call to =jmw-org-clock-out-up= should bring us to the
+parent task, so the call to =org-clock-goto= would be
+redundant. However, =org-todo= is wrapper in a big =save-excursion= so
+it's still necessary.
 
-Similarly, marking a task cancelled. 
+Similarly, pop a task off the stack because we've decided not to do it.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-org-cancel ()
     (interactive)
@@ -189,13 +235,6 @@ Similarly, marking a task cancelled.
     (org-todo "CANCEL")
     (org-clock-goto))
   (define-key 'jmw-org-prefix "c" 'jmw-org-cancel)
-#+END_SRC
-
-Don't show clocking task on mode line. Not particularly elegant. 
-#+BEGIN_SRC emacs-lisp :tangle no
-  (add-hook 'org-clock-in-hook
-	    (lambda ()
-	      (delete 'org-mode-line-string global-mode-string)))
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -210,11 +249,15 @@ The window containing =main.org=.
    :PROPERTIES:
    :created:  2020-01-08 20:39:50 CST
    :END:
-Load it for go. 
+Org's system for dealing with source code. 
+
+Load it for go, because it isn't one of Org's default languages. 
 #+BEGIN_SRC emacs-lisp
   (use-package ob-go)
 #+END_SRC
 
+Load the org-babel languages I use. Necessary to get ~C-c C-c~ to
+actually execute something.
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -223,6 +266,11 @@ Load it for go.
      (C . t)
      (shell . t)
      (go . t)))
+#+END_SRC
+
+This is romantically named the "Library of Babel". As of
+[2020-03-20 Fri], I've never used it.
+#+BEGIN_SRC emacs-lisp
   (org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
 #+END_SRC
 
@@ -230,10 +278,65 @@ Don't prompt for confirmation when executing code blocks.
 #+BEGIN_SRC emacs-lisp 
   (setq org-confirm-babel-evaluate nil)
 #+END_SRC
-** other
+
+By default, editing org source reorganizes the frame. I want the new
+buffer to appear in the original window. 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key "\C-cl" 'org-store-link) 
+  (setq org-src-window-setup 'other-window)
+#+END_SRC
+** heading+list
+   :PROPERTIES:
+   :created:  2020-03-20 18:12:39 EDT
+   :END:
+Related to headings and lists. 
+
+Expand lists like they were subheadings. 
+#+BEGIN_SRC emacs-lisp
+  (setq org-cycle-include-plain-lists 'integrate)
+#+END_SRC
+
+Don't insert random blank lines around entries. Don't split lines. 
+#+BEGIN_SRC emacs-lisp
+  (setq org-blank-before-new-entry 
+	'((heading . nil)
+	  (plain-list-item . nil))) 
+  (setq org-M-RET-may-split-line
+	'((headline . nil)
+	  (item . nil)))
+#+END_SRC
+
+Insert creation time as a property when creating a headline. This is
+useful for tasks---I may cancel something if it's been sitting around
+for too long.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-insert-creation ()
+    (org-set-property "created" (format-time-string "%F %T %Z")))
+  (add-hook 'org-insert-heading-hook 'jmw-org-insert-creation)
+#+END_SRC
+
+I don't want to log every time an item is repeated. 
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-repeat nil)
+#+END_SRC
+
+Allow refiling to any headline. 
+#+BEGIN_SRC emacs-lisp
+  (setq org-refile-targets '((nil . (:maxlevel . 10))))
+#+END_SRC
+** capture
+   :PROPERTIES:
+   :created:  2020-03-20 18:18:01 EDT
+   :END:
+=org-capture= is useful for someone with many miscellaneous thoughts. It
+allows you to easily record something wherever you are. 
+
+This is the recommended key binding. It has to be global. 
+#+BEGIN_SRC emacs-lisp
   (global-set-key "\C-cc" 'org-capture)
+#+END_SRC
+
+=org-capture-templates= is the types of =org-capture='s you can perform.
+#+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
 	'(("e"
 	   "Computer error"
@@ -246,6 +349,89 @@ Don't prompt for confirmation when executing code blocks.
 	   (file+headline "~/core/mind/sys/short/proc/main.org"
 			  "interesting thought")
 	   "* %U %?\n %i")))
+#+END_SRC
+
+Don't change window configuration during an =org-capture=. According to
+[[https://stackoverflow.com/q/21195327/4019495][SO]], there is no easy solution. The offender is =delete-other-windows= in
+function =org-capture-place-template=. We adopt the solution given in
+another [[https://stackoverflow.com/a/54251825/4019495][SO]] post.
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-ad-org-capture-place-template (oldfun args)
+    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
+      (apply oldfun args)))      
+  (advice-add 'org-capture-place-template
+	      :around 'jmw-ad-org-capture-place-template)
+#+END_SRC
+** markup
+   :PROPERTIES:
+   :created:  2020-03-20 18:28:51 EDT
+   :END:
+Textual markup. 
+
+Allow for *this sentence to actually be formatted bold in org, even with
+a newline in the middle*. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]].
+#+BEGIN_SRC emacs-lisp
+  (setf (car (nthcdr 4 org-emphasis-regexp-components)) 50)
+  (org-set-emph-re 'org-emphasis-regexp-components
+		   org-emphasis-regexp-components)
+#+END_SRC
+
+Customizing the org emphasis characters (like the asterisk for turning
+text bold). According to [[https://www.mail-archive.com/emacs-orgmode@gnu.org/msg115307.html][this]] message, adding different characters is
+not going to happen.
+#+BEGIN_SRC emacs-lisp
+  (setq org-emphasis-alist
+	'(("*" (bold :foreground "Yellow")) ;; like highlighting
+	  ("/" italic)
+	  ("_" underline)
+	  ("=" org-verbatim verbatim)
+	  ("~" org-code verbatim)
+	  ("+" (:strike-through t))))
+#+END_SRC
+
+Adds a comment. Mainly for annotating books (see
+=russell-happy.org=). The implementation may change with aesthetic
+preferences. The "a" prefix is for "annotation".
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-comment ()
+    (interactive)
+    (insert "*")
+    (org-time-stamp-inactive '(16))
+    (insert " JMW:* "))
+  (define-key 'jmw-org-prefix "ac" 'jmw-org-comment)
+#+END_SRC
+
+Highlight an active region. 
+#+BEGIN_SRC emacs-lisp
+  (defun jmw-org-highlight-region (from to)
+    (interactive "r")
+    (when (use-region-p)
+      (save-excursion
+	(goto-char to)
+	(insert "*")
+	(goto-char from)
+	(insert "*"))
+      (deactivate-mark)
+      (fill-paragraph)))
+  (define-key 'jmw-org-prefix "ah" 'jmw-org-highlight-region)
+#+END_SRC
+
+This stores the current location of point for pasting into an org
+file. This is critical for org's hypertext capabilities.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-cl" 'org-store-link) 
+#+END_SRC
+** other
+When displayed, I like lines to wrap around rather than disappear off
+the edge. It makes tables look terrible, but whatever.
+#+BEGIN_SRC emacs-lisp
+  (setq org-startup-truncated nil)
+#+END_SRC
+
+Special characters. This'll display them in the buffer and correctly
+export to HTML. As of [2020-03-20 Fri], most of these were created to
+take notes for 18.675. 
+#+BEGIN_SRC emacs-lisp
   (setq org-entities-user ; special symbols
 	'(("scrB" "\\scrB" t "&#x212C;" "B" "B" "ℬ") ; "script B"
 	  ("scrS" "\\scrS" t "&#x1D4AE;" "S" "S" "𝒮") 
@@ -261,120 +447,11 @@ Don't prompt for confirmation when executing code blocks.
 	  ("del" "\\del" t "&#x2202;" "d" "d" "∂") 
 	  ("NN" "\\NN" t "&#x2115;" "N" "N" "ℕ") 
 	  ))
-  (setq org-cycle-include-plain-lists 'integrate)
-  (setq org-blank-before-new-entry 
-	'((heading . nil)
-	  (plain-list-item . nil))) 
-  (setq org-startup-truncated nil)
-  (setq org-M-RET-may-split-line
-	'((headline . nil)
-	  (item . nil)))
-  (setq org-mark-ring-length 16)
-  ;(setq org-popup-calendar-for-date-prompt nil) ;; also turns off live
-						;; display
-#+END_SRC
-
-Insert creation time as a property when creating a headline. This is
-useful for determining when tasks were created. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-org-insert-creation ()
-    (org-set-property "created" (format-time-string "%F %T %Z")))
-  (add-hook 'org-insert-heading-hook 'jmw-org-insert-creation)
-#+END_SRC
-
-I had this, but I don't really use CDLaTeX
-#+BEGIN_SRC emacs-lisp :tangle no
-  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
-#+END_SRC
-
-Allow more newlines in an emphasis. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]]. 
-#+BEGIN_SRC emacs-lisp
-  (setf (car (nthcdr 4 org-emphasis-regexp-components)) 50)
-  (org-set-emph-re 'org-emphasis-regexp-components
-		   org-emphasis-regexp-components)
-#+END_SRC
-
-More visible emphasis. According to [[https://www.mail-archive.com/emacs-orgmode@gnu.org/msg115307.html][this]] message, adding different
-characters is not going to happen.
-#+BEGIN_SRC emacs-lisp
-  (setq org-emphasis-alist
-	'(("*" (bold :foreground "Yellow")) ;; like highlighting
-	  ("/" italic)
-	  ("_" underline)
-	  ("=" org-verbatim verbatim)
-	  ("~" org-code verbatim)
-	  ("+" (:strike-through t))))
-#+END_SRC
-
-By default, editing org source reorganizes the frame. I want the new
-buffer to appear in the original window. 
-#+BEGIN_SRC emacs-lisp
-  (setq org-src-window-setup 'other-window)
-#+END_SRC
-
-
-Don't change window configuration during an =org-capture=. According to
-[[https://stackoverflow.com/q/21195327/4019495][SO]], there is no easy way to do this. The key offender is
-=delete-other-windows= in the function =org-capture-place-template=. We
-adopt the solution given on another [[https://stackoverflow.com/a/54251825/4019495][SO]] post. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-ad-org-capture-place-template (oldfun args)
-    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
-      (apply oldfun args)))      
-  (advice-add 'org-capture-place-template
-	      :around 'jmw-ad-org-capture-place-template)
-#+END_SRC
-
-Correct behavior for the agenda. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-ad-org-agenda-place-template (oldfun args)
-    (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
-      (apply oldfun args)))      
-  (advice-add 'org-agenda
-	      :around 'jmw-ad-org-capture-place-template)
-  (setq org-agenda-window-setup 'other-window)
-#+END_SRC
-
-I don't want to log every time an item is repeated:
-#+BEGIN_SRC emacs-lisp
-  (setq org-log-repeat nil)
-#+END_SRC
-
-Allow refiling to any headline
-#+BEGIN_SRC emacs-lisp
-  (setq org-refile-targets '((:maxlevel . 10)))
-#+END_SRC
-*** books
-Sometimes, I will download books as text files and read them in
-org-mode. 
-
-Adds a comment. The implementation may change with aesthetic
-preferences. The "a" prefix is for "annotation". 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-org-comment ()
-    (interactive)
-    (insert "*")
-    (org-time-stamp-inactive '(16))
-    (insert " JMW:* "))
-  (define-key 'jmw-org-prefix "ac" 'jmw-org-comment)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (defun jmw-org-highlight-region (from to)
-    (interactive "r")
-    (when (use-region-p)
-      (save-excursion
-	(goto-char to)
-	(insert "*")
-	(goto-char from)
-	(insert "*"))
-      (deactivate-mark)
-      (fill-paragraph)))
-  (define-key 'jmw-org-prefix "ah" 'jmw-org-highlight-region)
 #+END_SRC
 * pkg
 Related to an emacs package. 
 ** auctex
+For editing source files in the TeX family. 
 #+BEGIN_SRC emacs-lisp 
   (use-package tex
     :config
@@ -393,22 +470,11 @@ Related to an emacs package.
     (setq font-latex-fontify-script nil)
 
     :defer t
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
     :ensure auctex)
 #+END_SRC
-** ido
-#+BEGIN_SRC emacs-lisp
-  (ido-mode 'buffers) ;; only buffers because of bug 36435
-  (setq ido-create-new-buffer 'always)
-  (setq ido-enable-flex-matching t)
-  (defadvice ido-switch-buffer (around no-confirmation activate)
-    (let ((confirm-nonexistent-file-or-buffer nil))
-      ad-do-it))
-#+END_SRC
 ** elpy
+For editing Python source files. 
+
 Copied and pasted. 
 #+BEGIN_SRC emacs-lisp
 (use-package elpy
@@ -417,6 +483,7 @@ Copied and pasted.
   (advice-add 'python-mode :before 'elpy-enable))
 #+END_SRC
 ** buffer-move
+Switches buffers between windows. This is super useful. 
 #+BEGIN_SRC emacs-lisp
   (use-package buffer-move
     :bind
@@ -425,19 +492,13 @@ Copied and pasted.
      ("<C-S-left>" . 'buf-move-left)
      ("<C-S-right>" . 'buf-move-right)))
 #+END_SRC
-** bash-completion
-#+BEGIN_SRC emacs-lisp
-  (use-package bash-completion
-    :config
-    (bash-completion-setup))
-#+END_SRC
 ** emms
+EMMS is the Emacs MultiMedia System. I use it for playing music. 
 #+BEGIN_SRC emacs-lisp
   (use-package emms-setup
     :config
     (emms-all)
     (emms-default-players)
-    ;; settings
     (setq emms-source-file-default-directory "~/core/mind/env/ext")
     (setq emms-repeat-playlist t)
     (emms-mode-line 0)
@@ -450,21 +511,19 @@ Copied and pasted.
     :ensure emms)
 #+END_SRC
 
-Define my emms prefix
+Define my emms prefix. 
 #+BEGIN_SRC emacs-lisp
   (fset 'jmw-emms-prefix (make-sparse-keymap))
   (global-set-key (kbd "C-c e") 'jmw-emms-prefix)
 #+END_SRC
 
+Pause the music. 
 #+BEGIN_SRC emacs-lisp
   (define-key 'jmw-emms-prefix (kbd "<SPC>") 'emms-pause)
 #+END_SRC
-** ffap
-Smart ~C-x C-f~ based on context around point. 
-#+BEGIN_SRC emacs-lisp
-(ffap-bindings)
-#+END_SRC
 ** cc-mode
+For editing C source files. 
+
 Use "line comment style", i.e =//= style comments. 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'c-mode-hook (lambda () (c-toggle-comment-style -1)))
@@ -477,7 +536,6 @@ Emacs's built-in hex editor.
 ** pyim
 A Chinese input method. Installed because ibus pinyin wasn't working
 with fullscreen emacs.
-
 #+BEGIN_SRC emacs-lisp
   (use-package pyim
     :config
@@ -489,7 +547,9 @@ with fullscreen emacs.
    :PROPERTIES:
    :created:  2020-01-29 12:20:45 CST
    :END:
-Add lorem ipsum filler text to emacs. 
+Add lorem ipsum filler text to emacs. The utility of this is avoiding
+writing that random one-off script (or find a suitable document) when
+you need to generate text.
 #+BEGIN_SRC emacs-lisp
   (use-package lorem-ipsum)
 #+END_SRC
@@ -500,10 +560,9 @@ I don't use the default bindings because it conflicts with org-mode's
    :PROPERTIES:
    :created:  2020-01-29 19:03:53 CST
    :END:
-A terminal emulator within emacs that
+A terminal emulator that
 - allows curses based applications
-- ignores certain shortcuts like ~C-x C-f~. 
-
+- ignores certain shortcuts like ~C-x C-f~ (passes them to emacs)
 #+BEGIN_SRC emacs-lisp
   (use-package vterm
     :config
@@ -533,6 +592,7 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
    :PROPERTIES:
    :created:  2020-02-05 08:31:27 EST
    :END:
+Major mode for Go source files. 
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
 	  :bind
@@ -548,115 +608,17 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
 	  )
 #+END_SRC
 
-** dumb-jump
-   :PROPERTIES:
-   :created:  2020-02-12 13:38:09 EST
-   :END:
-This is copied from [[https://github.com/jacktasia/dumb-jump][the main page]]. 
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :bind (
-	   ;; ("M-g o" . dumb-jump-go-other-window)
-	   ("M-g j" . dumb-jump-go)
-	   ("M-g b" . dumb-jump-back)
-	   ;; ("M-g i" . dumb-jump-go-prompt)
-	   ;; ("M-g x" . dumb-jump-go-prefer-external)
-	   ;; ("M-g z" . dumb-jump-go-prefer-external-other-window)
-	   )
-    :config
-    ;; (setq dumb-jump-selector 'ivy)
-    ;; (setq dumb-jump-selector 'helm)
-
-    )
-#+END_SRC
-
-I'm not sure what ~M-g~ is supposed to be. 
-#+BEGIN_SRC emacs-lisp :tangle no :results pp
-  (global-key-binding (kbd "M-g"))
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-(keymap
- (98 . dumb-jump-back)
- (106 . dumb-jump-go)
- (9 . move-to-column)
- (112 . previous-error)
- (110 . next-error)
- (27 keymap
-     (112 . previous-error)
-     (110 . next-error)
-     (103 . goto-line))
- (103 . goto-line)
- (99 . goto-char))
-#+end_example
-** helm
-   :PROPERTIES:
-   :created:  2020-02-15 14:59:25 EST
-   :header-args: :tangle no
-   :END:
-[2020-02-15 Sat] testing it out. 
-
-[2020-02-16 Sun] IMO, it's alright. Critics are right in that it doesn't
-feel that snappy.
-
-[2020-02-16 Sun] I'm using ivy. I'll leave this here, because it is a
-usable helm config.
-
-This is all copied from [[http://tuhdo.github.io/helm-intro.html][here]]. Maybe at some point I'll look more deeply. 
-#+BEGIN_SRC emacs-lisp
-  (require 'helm)
-  (require 'helm-config)
-
-  ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
-  ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
-  ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
-  (global-set-key (kbd "C-c h") 'helm-command-prefix)
-  (global-unset-key (kbd "C-x c"))
-
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-  (when (executable-find "curl")
-    (setq helm-google-suggest-use-curl-p t))
-
-  ;; I don't know what any of this means
-  (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
-	helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
-	helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
-	helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
-	helm-ff-file-name-history-use-recentf t
-	helm-echo-input-in-header-line t)
-
-  (helm-mode 1)
-#+END_SRC
-
-Make helm window occupy bottom fifth of the screen. 
-#+BEGIN_SRC emacs-lisp
-  (setq helm-autoresize-max-height 0)
-  (setq helm-autoresize-min-height 20)
-  (helm-autoresize-mode 1)
-#+END_SRC
-
-The helm versions of common Emacs commands. 
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-#+END_SRC
 ** ivy
    :PROPERTIES:
    :created:  2020-02-16 16:41:13 EST
    :END:
-Ooh, this is nice. It has a user manual. 
-
+A better way to select an item from a list. This includes
+- ~C-x C-f~
+- ~M-x~
 #+BEGIN_SRC emacs-lisp
   (use-package ivy)
 #+END_SRC
 
-[2020-02-16 Sun] I'm going to try this. Ivy seems minimalistic and nice.
 #+BEGIN_SRC emacs-lisp
   (ivy-mode 1)
 #+END_SRC
@@ -666,22 +628,6 @@ These are the recommended customizations.
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
 #+END_SRC 
-
-
-In the manual, sec 4.2, it says
-#+BEGIN_QUOTE
-Ivy includes several minibuffer bindings, which are defined in the
-‘ivy-minibuffer-map’ keymap variable.  The most frequently used ones are
-described here.
-#+END_QUOTE
-
-Test feature: fuzzy file finding. 
-#+BEGIN_SRC emacs-lisp :tangle no
-  (setq ivy-re-builders-alist
-	'((read-file-name-internal . ivy--regex-fuzzy)
-	  (t . ivy--regex-plus)))
-#+END_SRC
-Holy shit, I don't like this. 
 
 Ignore order of input tokens. This is the default of helm. 
 #+BEGIN_SRC emacs-lisp
@@ -718,15 +664,18 @@ EXWM. [2020-03-02 Mon] override ~C-x b~.
 	   ("C-c C-j" . counsel-org-goto))
 
     :config
-    (setq ivy-initial-inputs-alist '(())))
+    (setq ivy-initial-inputs-alist '(()))
+    (setq counsel-find-file-at-point t))
 #+END_SRC
 
-Push onto the org mark ring when using counsel to goto. 
+Push onto the org mark ring when using counsel to goto. We want the mark
+ring to be large.
 #+BEGIN_SRC emacs-lisp
   (defun jmw-ad-counsel-org-goto ()
     (org-mark-ring-push))
   (advice-add 'counsel-org-goto
 	      :before 'jmw-ad-counsel-org-goto)
+  (setq org-mark-ring-length 16)
 #+END_SRC
 *** ivy-rich
    :PROPERTIES:
@@ -776,33 +725,11 @@ The first step is to define a function for the file size.
 	       )))
   (ivy-rich-set-display-transformer)
 #+END_SRC
-** md4rd
-   :PROPERTIES:
-   :created:  2020-02-22 13:20:51 EST
-   :END:
-#+BEGIN_SRC emacs-lisp
-  (use-package md4rd :ensure t
-    :bind (:map md4rd-mode-map
-		("u" . tree-mode-goto-parent)
-		("\t" . tree-mode-toggle-expand)
-		("f" . tree-mode-next-sib)
-		("b" . tree-mode-previous-sib)
-		)
-    :config
-    (add-hook 'md4rd-mode-hook 'md4rd-indent-all-the-lines)
-    (setq md4rd-subs-active '(emacs))
-    (setq md4rd--oauth-access-token
-	  "34674419-_-P8Ht8Ht-2uvHv-hBFHBTvAZxE")
-    (setq md4rd--oauth-refresh-token
-	  "34674419-RHL3BClht1JhmFYOQ7jXwjBqLt0")
-    (run-with-timer 0 3540 'md4rd-refresh-login))
-#+END_SRC
 ** exwm
    :PROPERTIES:
    :created:  2020-03-01 19:11:44 EST
    :END:
-[2020-03-01 Sun] Trying this out. We definitely don't want to install
-this on every new machine. 
+The Emacs OS is real. 
 *** main
     :PROPERTIES:
     :created:  2020-03-10 00:34:57 EDT
@@ -886,8 +813,7 @@ now.
 
     :config
     (setq desktop-environment-update-exwm-global-keys :global)
-    (desktop-environment-mode)
-    )
+    (desktop-environment-mode))
 #+END_SRC
 
 Redefine screenshots:
@@ -896,10 +822,6 @@ Redefine screenshots:
     (interactive)
     (shell-command "scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
 #+END_SRC
-** minions
-   :PROPERTIES:
-   :created:  2020-03-15 21:47:44 EDT
-   :END:
 ** smart-mode-line
    :PROPERTIES:
    :created:  2020-03-16 17:17:54 EDT
@@ -918,28 +840,30 @@ Main loading.
   (use-package smart-mode-line
     :config
     (setq sml/theme 'dark)
+    ;; this is needed to not push global modeline info off screen
+    (setq sml/shorten-modes t)
+    (setq sml/mode-width 40)
+
     (sml/setup))
-#+END_SRC
-** symon
-   :PROPERTIES:
-   :created:  2020-03-16 18:53:51 EDT
-   :header-args: :tangle no
-   :END:
-#+BEGIN_SRC emacs-lisp 
-  (use-package symon
-    :straight (:host github :repo "ieure/symon")
-    :config (symon-mode 1))
 #+END_SRC
 ** mini-modeline
    :PROPERTIES:
    :created:  2020-03-17 14:38:32 EDT
    :END:
+Move modeline to reside in minibuffer area. Now, only the current
+window's mode line is displayed. 
+
+The issue with the default is a lot of info is repeated---the current
+time, the current clocking task, etc. Furthermore, with the way I
+horizontally split windows, the info wouldn't even fit. 
+
+This is much cleaner. 
 #+BEGIN_SRC emacs-lisp
   (use-package mini-modeline
     :after smart-mode-line
 
     :config
-    (setq mini-modeline-frame t)
+    (setq mini-modeline-right-padding 0)
     (mini-modeline-mode t))
 #+END_SRC
 * mode
@@ -1236,36 +1160,3 @@ The rest of these functions need serious work.
   (define-key 'jmw-timer-prefix "c" 'jmw-cancel-timer)
   (define-key 'jmw-timer-prefix "d" 'jmw-time-left) ;; "display"
 #+END_SRC
-* misc
-  :PROPERTIES:
-  :created:  2020-03-15 22:38:41 EDT
-  :header-args: :tangle no :results pp
-  :END:
-#+BEGIN_SRC emacs-lisp 
-mode-line-format
-#+END_SRC
-
-#+RESULTS:
-: ("%e" mode-line-front-space mode-line-mule-info mode-line-client mode-line-modified mode-line-remote mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position
-:  (vc-mode vc-mode)
-:  "  " minions-mode-line-modes mode-line-misc-info mode-line-end-spaces)
-
-#+BEGIN_SRC emacs-lisp
-vc-mode
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-#(" Git:master" 1 5
-  (mouse-face mode-line-highlight local-map
-	      (keymap
-	       (mode-line keymap
-			  (down-mouse-1 menu-item "Version Control" vc-menu-map :filter vc-menu-map-filter)))
-	      face vc-edited-state help-echo "Locally modified file under the Git version control system\nCurrent revision: 8e5ed903a404e6d58a5350d35ce0eeaa8524ed6b\nmouse-1: Version Control menu")
-  5 11
-  (mouse-face mode-line-highlight local-map
-	      (keymap
-	       (mode-line keymap
-			  (down-mouse-1 menu-item "Version Control" vc-menu-map :filter vc-menu-map-filter)))
-	      help-echo "Locally modified file under the Git version control system\nCurrent revision: 8e5ed903a404e6d58a5350d35ce0eeaa8524ed6b\nmouse-1: Version Control menu" face vc-edited-state))
-#+end_example
