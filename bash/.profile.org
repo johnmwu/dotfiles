@@ -1,5 +1,4 @@
-#+property: header-args    :tangle yes 
-#+property: header-args    :tangle .profile
+#+property: header-args    :tangle .profile :results silent
 
 * common
 Common among all unix systems. 
@@ -72,6 +71,11 @@ These are important regular files for me
 For my UROP with MIT CSAIL's SLS group. 
 #+BEGIN_SRC sh
   export SLSHOME="/usr/users/johnmwu"
+#+END_SRC
+
+My Emacs configuration. 
+#+BEGIN_SRC sh
+  export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
 #+END_SRC
 ** path
    :PROPERTIES:

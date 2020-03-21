@@ -31,6 +31,8 @@ export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
 
 export SLSHOME="/usr/users/johnmwu"
 
+export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
+
 export PATH="${PATH}:${BIN_DIR}/bin"
 
 alias e="emacsclient"

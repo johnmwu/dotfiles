@@ -810,15 +810,26 @@ now.
     :ensure nil
 
     :config
+    ;; For some reason, this has to be after exwm setup
     (setq desktop-environment-update-exwm-global-keys :global)
     (desktop-environment-mode))
 #+END_SRC
 
-Redefine screenshots:
+By default, =desktop-environment-screenshot= saves the entire screen to
+some specified directory. Redefine to take a screenshot of a region and
+copy to clipboard. This took me way too long to hack. Some oddities:
+- The ~sleep 0.1~ at the beginning is suggested by [[https://bbs.archlinux.org/viewtopic.php?id=86507][this old archlinux
+  bbs]] thread. If it's not there, on EXWM windows it gives the error
+  "Couldn't grab keyboard".
+- The plethora of flags is to get =scrot(1)= to copy to clipboard. 
+- The ~&>/dev/null~ needs to be there, else =scrot(1)= hangs. Why? Who
+  knows.
+This is the state as of [2020-03-21 Sat]. Let's hope this will one day
+be better written.
 #+BEGIN_SRC emacs-lisp
   (defun desktop-environment-screenshot ()
     (interactive)
-    (shell-command "scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+    (shell-command "sleep 0.1; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
 #+END_SRC
 ** smart-mode-line
    :PROPERTIES:
@@ -958,6 +969,14 @@ work.
     )
 #+END_SRC
 
+These are the initial files I want open. 
+#+BEGIN_SRC emacs-lisp
+  (setq jmw/init-file-list
+	(list
+	 (getenv "EMACS_CONFIG")
+	 ))
+#+END_SRC
+
 The main thing. 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'window-setup-hook
@@ -965,6 +984,8 @@ The main thing.
 	      (split-window-right) 
 	      (split-window-right)
 	      (balance-windows)
+	      (dolist (fname jmw/init-file-list)
+		(find-file fname))
 	      (find-file (concat (getenv "PROC_DIR")
 				 "/main.org"))
 	      (set-window-dedicated-p (get-buffer-window "main.org")
