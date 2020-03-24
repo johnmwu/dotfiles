@@ -256,6 +256,11 @@ Load it for go, because it isn't one of Org's default languages.
   (use-package ob-go)
 #+END_SRC
 
+[[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-js.html][Org docs]] say to do this for js. 
+#+BEGIN_SRC emacs-lisp
+  (require 'ob-js)
+#+END_SRC
+
 Load the org-babel languages I use. Necessary to get ~C-c C-c~ to
 actually execute something.
 #+BEGIN_SRC emacs-lisp
@@ -265,7 +270,8 @@ actually execute something.
      (python . t)
      (C . t)
      (shell . t)
-     (go . t)))
+     (go . t)
+     (js . t)))
 #+END_SRC
 
 This is romantically named the "Library of Babel". As of
@@ -874,6 +880,17 @@ This is much cleaner.
     :config
     (setq mini-modeline-right-padding 0)
     (mini-modeline-mode t))
+#+END_SRC
+** js2-mode
+   :PROPERTIES:
+   :created:  2020-03-23 13:53:15 EDT
+   :END:
+An improved javascript major mode. 
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+    (setq js-indent-level 2))
 #+END_SRC
 * mode
 Related to a mode, minor or major. 
