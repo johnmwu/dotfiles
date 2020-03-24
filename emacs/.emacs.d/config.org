@@ -30,12 +30,11 @@ Now, load it. There's no point to delay.
 
 Define the prefix key and bind it. 
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-org-prefix (make-sparse-keymap))
-  (global-set-key (kbd "C-c o") 'jmw-org-prefix)
+  (fset 'jmw/org-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c o") 'jmw/org-prefix)
 #+END_SRC
 ** sched
-My scheduling subsystem. As of [2020-01-08 Wed], described in
-=~/core/mind/sys/meta=. 
+My scheduling subsystem. Described in =~/core/mind/sys/meta=.
 *** agenda
    :PROPERTIES:
    :created:  2020-01-08 20:17:40 CST
@@ -58,7 +57,7 @@ Specifying which days appear in the agenda:
 
 Turn a heading into a habit. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-make-habit ()
+  (defun jmw/org-make-habit ()
     "Turn the following heading into a habit. Schedules it for
   today with .+1d/2d repeater interval."
     (interactive)
@@ -68,7 +67,7 @@ Turn a heading into a habit.
 		 " .+1d/2d")))
       (org-set-property "STYLE" "habit")
       (org-schedule '(1) time)))
-  (define-key 'jmw-org-prefix "h" 'jmw-org-make-habit)
+  (define-key 'jmw/org-prefix "h" 'jmw/org-make-habit)
 #+END_SRC
 
 Set todo keywords.
@@ -89,11 +88,11 @@ Don't change window configuration when viewing the agenda. According to
 function =org-capture-place-template=. We adopt the solution given in
 another [[https://stackoverflow.com/a/54251825/4019495][SO]] post.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-ad-org-agenda-place-template (oldfun args)
+  (defun jmw/ad-org-agenda-place-template (oldfun args)
     (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
       (apply oldfun args)))      
   (advice-add 'org-agenda
-	      :around 'jmw-ad-org-capture-place-template)
+	      :around 'jmw/ad-org-capture-place-template)
   (setq org-agenda-window-setup 'other-window)
 #+END_SRC
 
@@ -139,37 +138,37 @@ What follows are many commands related to task manipulation. I use
 =org-clock-goto= from anywhere, i.e jump to current clocking task in the
 schedule.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-clock-goto ()
+  (defun jmw/org-clock-goto ()
     (interactive)
-    (select-window (jmw-main-sched-window))
+    (select-window (jmw/main-sched-window))
     (org-clock-goto))
-  (define-key 'jmw-org-prefix "g" 'jmw-org-clock-goto)
+  (define-key 'jmw/org-prefix "g" 'jmw/org-clock-goto)
 #+END_SRC
 
 Push a task onto the stack. Semantically, this is saying: the following
 is relevant to completing the current task. Usually for tasks I discover
 in the moment rather than ones I know at the outset.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-push-task (task-name)
+  (defun jmw/push-task (task-name)
     "Push a task onto the stack."
     (interactive "sTask name: ")
-    (jmw-org-clock-goto)
+    (jmw/org-clock-goto)
     (org-insert-todo-heading-respect-content)
     (org-do-demote)
     (move-end-of-line 1)
     (insert task-name)
     (org-clock-in))
-  (define-key 'jmw-org-prefix "p" 'jmw-push-task)
+  (define-key 'jmw/org-prefix "p" 'jmw/push-task)
 #+END_SRC
 As of [2020-01-10 Fri], there is no symmetric notion for queueing a
 task. Queueing a task can be done using ordinary insertion of a TODO
 item. There is no notion of deferring a task (a la Go's =defer=) because
 it can be done using ordinary TODO insertion.
 
-Popping a task off the stack. Not called =jmw-pop-task= because calling
+Popping a task off the stack. Not called =jmw/pop-task= because calling
 it doesn't mean the task is done.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-clock-out-up ()
+  (defun jmw/org-clock-out-up ()
     "Clock out and go up a process in the stack."
     (interactive)
     (when (org-clocking-p)
@@ -179,18 +178,18 @@ it doesn't mean the task is done.
     (pop org-clock-history)
     (let* ((marker (pop org-clock-history))
 	   (buf (marker-buffer marker)))
-      (select-window (jmw-main-sched-window))
+      (select-window (jmw/main-sched-window))
       (goto-char marker)
       (org-clock-in)))
-  (define-key 'jmw-org-prefix "o" 'jmw-org-clock-out-up)
+  (define-key 'jmw/org-prefix "o" 'jmw/org-clock-out-up)
 #+END_SRC
 
 If we're clocking and point is on the current task, =org-todo= should
-run =jmw-org-clock-out-up=. This isn't very clean, but I couldn't come
+run =jmw/org-clock-out-up=. This isn't very clean, but I couldn't come
 up with anything better.
 #+BEGIN_SRC emacs-lisp 
   ;; code copied from ~org-clock-out-if-current~
-  (defun jmw-org-clock-out-if-current ()
+  (defun jmw/org-clock-out-if-current ()
     (when (and (org-clocking-p)
 	       org-clock-out-when-done
 	       (marker-buffer org-clock-marker)
@@ -206,35 +205,35 @@ up with anything better.
 	       (> (save-excursion (outline-next-heading) (point))
 		  org-clock-marker))
       (org-auto-repeat-maybe org-state)
-      (jmw-org-clock-out-up)))
+      (jmw/org-clock-out-up)))
   (add-hook 'org-after-todo-state-change-hook
-	    'jmw-org-clock-out-if-current)
+	    'jmw/org-clock-out-if-current)
   (remove-hook 'org-after-todo-state-change-hook
 	       'org-clock-out-if-current)
 #+END_SRC
 
 Popping a task off the stack. This time, we're actually done the task.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-done ()
+  (defun jmw/org-done ()
     (interactive)
-    (jmw-org-clock-goto)
-    (org-todo "DONE") ;; calls `jmw-org-clock-out-up`
+    (jmw/org-clock-goto)
+    (org-todo "DONE") ;; calls `jmw/org-clock-out-up`
     (org-clock-goto))
-  (define-key 'jmw-org-prefix "d" 'jmw-org-done)
+  (define-key 'jmw/org-prefix "d" 'jmw/org-done)
 #+END_SRC
-In theory, the call to =jmw-org-clock-out-up= should bring us to the
+In theory, the call to =jmw/org-clock-out-up= should bring us to the
 parent task, so the call to =org-clock-goto= would be
 redundant. However, =org-todo= is wrapper in a big =save-excursion= so
 it's still necessary.
 
 Similarly, pop a task off the stack because we've decided not to do it.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-cancel ()
+  (defun jmw/org-cancel ()
     (interactive)
-    (jmw-org-clock-goto)
+    (jmw/org-clock-goto)
     (org-todo "CANCEL")
     (org-clock-goto))
-  (define-key 'jmw-org-prefix "c" 'jmw-org-cancel)
+  (define-key 'jmw/org-prefix "c" 'jmw/org-cancel)
 #+END_SRC
 *** other
    :PROPERTIES:
@@ -242,7 +241,7 @@ Similarly, pop a task off the stack because we've decided not to do it.
    :END:
 The window containing =main.org=. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-main-sched-window ()
+  (defun jmw/main-sched-window ()
     (get-buffer-window "main.org" t))
 #+END_SRC
 ** org-babel
@@ -286,7 +285,7 @@ Don't prompt for confirmation when executing code blocks.
 #+END_SRC
 
 By default, editing org source reorganizes the frame. I want the new
-buffer to appear in the original window. 
+buffer to appear in another window. 
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'other-window)
 #+END_SRC
@@ -296,7 +295,7 @@ buffer to appear in the original window.
    :END:
 Related to headings and lists. 
 
-Expand lists like they were subheadings. 
+Expand lists like they are subheadings. 
 #+BEGIN_SRC emacs-lisp
   (setq org-cycle-include-plain-lists 'integrate)
 #+END_SRC
@@ -315,9 +314,9 @@ Insert creation time as a property when creating a headline. This is
 useful for tasks---I may cancel something if it's been sitting around
 for too long.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-insert-creation ()
+  (defun jmw/org-insert-creation ()
     (org-set-property "created" (format-time-string "%F %T %Z")))
-  (add-hook 'org-insert-heading-hook 'jmw-org-insert-creation)
+  (add-hook 'org-insert-heading-hook 'jmw/org-insert-creation)
 #+END_SRC
 
 I don't want to log every time an item is repeated. 
@@ -362,11 +361,11 @@ Don't change window configuration during an =org-capture=. According to
 function =org-capture-place-template=. We adopt the solution given in
 another [[https://stackoverflow.com/a/54251825/4019495][SO]] post.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-ad-org-capture-place-template (oldfun args)
+  (defun jmw/ad-org-capture-place-template (oldfun args)
     (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
       (apply oldfun args)))      
   (advice-add 'org-capture-place-template
-	      :around 'jmw-ad-org-capture-place-template)
+	      :around 'jmw/ad-org-capture-place-template)
 #+END_SRC
 ** markup
    :PROPERTIES:
@@ -399,17 +398,17 @@ Adds a comment. Mainly for annotating books (see
 =russell-happy.org=). The implementation may change with aesthetic
 preferences. The "a" prefix is for "annotation".
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-comment ()
+  (defun jmw/org-comment ()
     (interactive)
     (insert "*")
     (org-time-stamp-inactive '(16))
     (insert " JMW:* "))
-  (define-key 'jmw-org-prefix "ac" 'jmw-org-comment)
+  (define-key 'jmw/org-prefix "ac" 'jmw/org-comment)
 #+END_SRC
 
 Highlight an active region. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-org-highlight-region (from to)
+  (defun jmw/org-highlight-region (from to)
     (interactive "r")
     (when (use-region-p)
       (save-excursion
@@ -419,7 +418,7 @@ Highlight an active region.
 	(insert "*"))
       (deactivate-mark)
       (fill-paragraph)))
-  (define-key 'jmw-org-prefix "ah" 'jmw-org-highlight-region)
+  (define-key 'jmw/org-prefix "ah" 'jmw/org-highlight-region)
 #+END_SRC
 
 This stores the current location of point for pasting into an org
@@ -519,13 +518,13 @@ EMMS is the Emacs MultiMedia System. I use it for playing music.
 
 Define my emms prefix. 
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-emms-prefix (make-sparse-keymap))
-  (global-set-key (kbd "C-c e") 'jmw-emms-prefix)
+  (fset 'jmw/emms-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c e") 'jmw/emms-prefix)
 #+END_SRC
 
 Pause the music. 
 #+BEGIN_SRC emacs-lisp
-  (define-key 'jmw-emms-prefix (kbd "<SPC>") 'emms-pause)
+  (define-key 'jmw/emms-prefix (kbd "<SPC>") 'emms-pause)
 #+END_SRC
 ** cc-mode
 For editing C source files. 
@@ -577,14 +576,14 @@ A terminal emulator that
 
 Define my vterm prefix
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-vterm-prefix (make-sparse-keymap))
-  (global-set-key (kbd "C-c v") 'jmw-vterm-prefix)
+  (fset 'jmw/vterm-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c v") 'jmw/vterm-prefix)
 #+END_SRC
 
 Bind functions
 #+BEGIN_SRC emacs-lisp
-  (define-key 'jmw-vterm-prefix "b" 'vterm)
-  (define-key 'jmw-vterm-prefix "o" 'vterm-other-window)
+  (define-key 'jmw/vterm-prefix "b" 'vterm)
+  (define-key 'jmw/vterm-prefix "o" 'vterm-other-window)
 #+END_SRC
 
 Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/2708042/4019495][SO]]. 
@@ -661,10 +660,10 @@ Ignore order of input tokens. This is the default of helm.
 Push onto the org mark ring when using counsel to goto. We want the mark
 ring to be large.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-ad-counsel-org-goto ()
+  (defun jmw/ad-counsel-org-goto ()
     (org-mark-ring-push))
   (advice-add 'counsel-org-goto
-	      :before 'jmw-ad-counsel-org-goto)
+	      :before 'jmw/ad-counsel-org-goto)
   (setq org-mark-ring-length 16)
 #+END_SRC
 *** ivy-rich
@@ -1045,7 +1044,7 @@ The main thing.
 	      ;; (when (member 'exwm features)
 	      ;;   ;; We're using exwm
 	      ;;   (jmw/exwm-init-apps))
-	      (select-window (jmw-main-sched-window))
+	      (select-window (jmw/main-sched-window))
 	      ))
 #+END_SRC
 ** theme
@@ -1065,10 +1064,10 @@ fine.
   :END:
 Default case. As of [2019-12-24 Tue], not too organized. 
 
-Define =jmw-prefix=. This is the prefix key for my personal stuff. 
+Define =jmw/prefix=. This is the prefix key for my personal stuff. 
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-prefix (make-sparse-keymap))
-  (global-set-key (kbd "C-c j") 'jmw-prefix)
+  (fset 'jmw/prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c j") 'jmw/prefix)
 #+END_SRC
 
 By default, Emacs will create backups of files, which look like
@@ -1131,7 +1130,7 @@ I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when
 first called, and rearchived when called again.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-7z (zfile file outfile)
+  (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
 	;; If outfile exists, put it back into the zfile (the 7z archive)
 	(progn
@@ -1177,24 +1176,24 @@ first called, and rearchived when called again.
 The wander archive is a kind of diary. I write in it about once a
 month. It's encrypted because it contains sensitive stuff. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-wander ()
+  (defun jmw/wander ()
     (interactive)
-    (jmw-7z (getenv "WANDER_ARCHIVE")
+    (jmw/7z (getenv "WANDER_ARCHIVE")
 	    "wander.txt"
 	    (concat (getenv "TEMP")
 		    "/wander.txt")))
-  (define-key 'jmw-prefix "w" 'jmw-wander)
+  (define-key 'jmw/prefix "w" 'jmw/wander)
 #+END_SRC
 
 The safe archive contains passwords. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-safe ()
+  (defun jmw/safe ()
     (interactive)
-    (jmw-7z (getenv "SAFE_ARCHIVE")
+    (jmw/7z (getenv "SAFE_ARCHIVE")
 	    "safe.org"
 	    (concat (getenv "TEMP")
 		    "/safe.org")))
-  (define-key 'jmw-prefix "s" 'jmw-safe)
+  (define-key 'jmw/prefix "s" 'jmw/safe)
 #+END_SRC
 ** timer
    :PROPERTIES:
@@ -1204,52 +1203,52 @@ I use timers in my workflow. They're usually end conditions of runs.
 
 Define the timer prefix, and bind it. 
 #+BEGIN_SRC emacs-lisp
-  (fset 'jmw-timer-prefix (make-sparse-keymap))
-  (global-set-key (kbd "C-c t") 'jmw-timer-prefix)
+  (fset 'jmw/timer-prefix (make-sparse-keymap))
+  (global-set-key (kbd "C-c t") 'jmw/timer-prefix)
 #+END_SRC
 
 This is how you create a timer. In the future, this should be extended
 to take in info about the current run. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-run-with-timer (durationspec)
+  (defun jmw/run-with-timer (durationspec)
     (interactive "sDuration: ")
-    (setq jmw-timer
+    (setq jmw/timer
 	  (run-with-timer (timer-duration durationspec)
 			  0.5
-			  'jmw-times-up)))
-  (define-key 'jmw-timer-prefix "s" 'jmw-run-with-timer)
+			  'jmw/times-up)))
+  (define-key 'jmw/timer-prefix "s" 'jmw/run-with-timer)
 #+END_SRC
 
 This is what happens when time is up. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-times-up ()
+  (defun jmw/times-up ()
     "Single function run when timer expires"
     (play-sound-file "~/core/prod/bin/other/alarm.wav"))
 #+END_SRC
 
 The rest of these functions need serious work.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw-find-timer (timerlist)
+  (defun jmw/find-timer (timerlist)
     (if timerlist
 	(if (equal (timer--function (car timerlist))
-		   'jmw-times-up)
+		   'jmw/times-up)
 	    (car timerlist)
-	  (jmw-find-timer (cdr timerlist)))
+	  (jmw/find-timer (cdr timerlist)))
       nil))
-  (defun jmw-cancel-timer ()
+  (defun jmw/cancel-timer ()
     (interactive)
-    (cancel-timer jmw-timer)
-    (let ((timer (jmw-find-timer timer-list)))
+    (cancel-timer jmw/timer)
+    (let ((timer (jmw/find-timer timer-list)))
       (if timer
-	  (setq jmw-timer timer))))
-  (defun jmw-time-left ()
+	  (setq jmw/timer timer))))
+  (defun jmw/time-left ()
     "Timer info. May be expanded to more than just time remaining."
     (interactive)
-    (let* ((time-diff (time-subtract (timer--time jmw-timer)
+    (let* ((time-diff (time-subtract (timer--time jmw/timer)
 				     (current-time)))
 	   (floats (float-time time-diff))
 	   (seconds (floor floats)))
       (message "%ss" seconds)))
-  (define-key 'jmw-timer-prefix "c" 'jmw-cancel-timer)
-  (define-key 'jmw-timer-prefix "d" 'jmw-time-left) ;; "display"
+  (define-key 'jmw/timer-prefix "c" 'jmw/cancel-timer)
+  (define-key 'jmw/timer-prefix "d" 'jmw/time-left) ;; "display"
 #+END_SRC

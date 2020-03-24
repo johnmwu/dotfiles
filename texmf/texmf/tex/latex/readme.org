@@ -1,3 +1,18 @@
 * dir
 ** 6046
-Downloaded files while taking 6.046 during semester sp19
+Downloaded for MIT 6.046. 
+** evan
+   :PROPERTIES:
+   :created:  2020-03-24 19:16:45 EDT
+   :END:
+From [[https://web.evanchen.cc/][Evan Chen]]. 
+** jmw
+   :PROPERTIES:
+   :created:  2020-03-24 19:28:30 EDT
+   :END:
+Personal stuff. 
+** siamart
+   :PROPERTIES:
+   :created:  2020-03-24 19:28:55 EDT
+   :END:
+SIAM recommended style files. See [[https://www.siam.org/publications/journals/about-siam-journals/information-for-authors][here]]. 
