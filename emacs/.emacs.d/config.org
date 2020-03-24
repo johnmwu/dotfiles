@@ -967,6 +967,9 @@ work.
 #+BEGIN_SRC emacs-lisp
   (defun jmw/exwm-init-apps ()
     (interactive)
+
+    (start-process-shell-command "megasync" nil "megasync")
+
     (exwm-workspace-switch-create 1)
     (let ((browser (getenv "BROWSER")))
       (start-process-shell-command browser nil browser))
