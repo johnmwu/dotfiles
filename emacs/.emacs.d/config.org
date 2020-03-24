@@ -728,47 +728,51 @@ The Emacs OS.
 now.
 #+BEGIN_SRC emacs-lisp
   ;; (ignore-errors
-    (use-package exwm
-      :ensure nil 
-      :demand t
+  (use-package exwm
+    :ensure nil 
+    :demand t
 
-      :config
-      (require 'exwm-systemtray)
-      (exwm-systemtray-enable)
-      (setq exwm-workspace-number 4)
-      (setq exwm-systemtray-height 16)
-      (setq exwm-input-global-keys
-	    `(
-	      ([?\s-r] . exwm-reset)
-	      ([?\s-w] . exwm-workspace-switch)
-	      ,@(mapcar (lambda (i)
-			  `(,(kbd (format "s-%d" i)) .
-			    (lambda ()
-			      (interactive)
-			      (exwm-workspace-switch-create ,i))))
-			(number-sequence 0 9))
-	      ([?\s-&] . (lambda (command)
-			   (interactive (list (read-shell-command "$ ")))
-			   (start-process-shell-command command nil command)))
-	      (,(kbd "C-;") . other-window)
-	      (,(kbd "C-'") . other-frame)
-	      (,(kbd "s-k") . exwm-workspace-delete)
-	      ))
-      (setq exwm-input-simulation-keys
-	'(
-	  ([?\M-w] . [?\C-c])
-	  ([?\C-y] . [?\C-v])
-	  ))
-      ;; Allow switching to buffers on other workspaces
-      (setq exwm-workspace-show-all-buffers t)
-      (setq exwm-layout-show-all-buffers t)
+    :config
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (setq exwm-workspace-number 4)
+    (setq exwm-systemtray-height 16)
+    (setq exwm-input-global-keys
+	  `(
+	    ([?\s-r] . exwm-reset)
+	    ([?\s-w] . exwm-workspace-switch)
+	    ,@(mapcar (lambda (i)
+			`(,(kbd (format "s-%d" i)) .
+			  (lambda ()
+			    (interactive)
+			    (exwm-workspace-switch-create ,i))))
+		      (number-sequence 0 9))
+	    ([?\s-&] . (lambda (command)
+			 (interactive (list (read-shell-command "$ ")))
+			 (start-process-shell-command command nil command)))
+	    (,(kbd "C-;") . other-window)
+	    (,(kbd "C-'") . other-frame)
+	    (,(kbd "s-k") . exwm-workspace-delete)
+	    ))
+    (setq exwm-input-simulation-keys
+	  '(
+	    ([?\M-w] . [?\C-c])
+	    ([?\C-y] . [?\C-v])
+	    ))
+    ;; Allow switching to buffers on other workspaces
+    (setq exwm-workspace-show-all-buffers t)
+    (setq exwm-layout-show-all-buffers t)
 
-      (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
-      (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
+    (add-hook 'exwm-update-class-hook
+	      (lambda ()
+		(exwm-workspace-rename-buffer exwm-class-name)))
 
-      (exwm-enable)
-      )  
-    ;; )
+    (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
+    (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
+
+    (exwm-enable)
+    )  
+  ;; )
 #+END_SRC
 *** desktop-environment
     :PROPERTIES:
@@ -877,9 +881,21 @@ randomly pop back into my =init.el=.
    :END:
 Display the current time on the modeline. Used in conjunction with
 mini-modeline for my system tray. 
+
+Formatting. 
 #+BEGIN_SRC emacs-lisp
   (setq display-time-day-and-date t)
   (setq display-time-24hr-format t)
+#+END_SRC
+
+Do not display the load average. No idea why this is displayed alongside
+time by default. 
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-default-load-average nil)
+#+END_SRC
+
+Use it.
+#+BEGIN_SRC emacs-lisp
   (display-time-mode 1)
 #+END_SRC
 ** display-battery-mode
