@@ -638,20 +638,6 @@ Ignore order of input tokens. This is the default of helm.
     (setq ivy-re-builders-alist
 	  '((t . ivy--regex-ignore-order)))
 #+END_SRC
-
-Switch to window containing buffer, if it exists. This is useful on
-EXWM. [2020-03-02 Mon] override ~C-x b~. 
-#+BEGIN_SRC emacs-lisp
-  (defun jmw/ivy-switch-buffer ()
-    (interactive)
-    (ivy-read "Switch to buffer: " #'internal-complete-buffer
-	      :keymap ivy-switch-buffer-map
-	      :preselect (buffer-name (other-buffer (current-buffer)))
-	      :action 'switch-to-window-or-buffer
-	      :matcher #'ivy--switch-buffer-matcher
-	      :caller 'ivy-switch-buffer))
-  (global-set-key (kbd "C-x b") 'jmw/ivy-switch-buffer)
-#+END_SRC
 *** counsel
    :PROPERTIES:
    :created:  2020-02-16 21:51:03 EST
