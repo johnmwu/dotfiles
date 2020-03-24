@@ -720,64 +720,111 @@ The first step is to define a function for the file size.
    :created:  2020-03-01 19:11:44 EST
    :END:
 The Emacs OS. 
-*** main
-    :PROPERTIES:
-    :created:  2020-03-10 00:34:57 EDT
-    :END:
-[2020-03-02 Mon] I'm not sure the system tray is doing anything right
-now.
-#+BEGIN_SRC emacs-lisp
-  ;; (ignore-errors
+#+BEGIN_SRC emacs-lisp :noweb yes
   (use-package exwm
     :ensure nil 
     :demand t
 
     :config
-    (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
-    (setq exwm-workspace-number 4)
-    (setq exwm-systemtray-height 16)
-    (setq exwm-input-global-keys
-	  `(
-	    ([?\s-r] . exwm-reset)
-	    ([?\s-w] . exwm-workspace-switch)
-	    ,@(mapcar (lambda (i)
-			`(,(kbd (format "s-%d" i)) .
-			  (lambda ()
-			    (interactive)
-			    (exwm-workspace-switch-create ,i))))
-		      (number-sequence 0 9))
-	    ([?\s-&] . (lambda (command)
-			 (interactive (list (read-shell-command "$ ")))
-			 (start-process-shell-command command nil command)))
-	    (,(kbd "C-;") . other-window)
-	    (,(kbd "C-'") . other-frame)
-	    (,(kbd "s-k") . exwm-workspace-delete)
-	    ))
-    (setq exwm-input-simulation-keys
-	  '(
-	    ([?\M-w] . [?\C-c])
-	    ([?\C-y] . [?\C-v])
-	    ))
-    ;; Allow switching to buffers on other workspaces
-    (setq exwm-workspace-show-all-buffers t)
-    (setq exwm-layout-show-all-buffers t)
-
-    (add-hook 'exwm-update-class-hook
-	      (lambda ()
-		(exwm-workspace-rename-buffer exwm-class-name)))
-
-    (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
-    (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
-
-    (exwm-enable)
-    )  
-  ;; )
+    <<exwm-config>>)  
 #+END_SRC
-*** desktop-environment
+*** config
     :PROPERTIES:
-    :created:  2020-03-10 00:22:02 EDT
+    :created:  2020-03-24 15:33:23 EDT
+    :header-args: :noweb-ref exwm-config
     :END:
+This heading is tangled into =exwm='s =use-package= form with Org's
+noweb.
+
+Setup the X system tray. 
+#+BEGIN_SRC emacs-lisp
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+  (setq exwm-systemtray-height 16)
+#+END_SRC
+
+We want 4 workspaces by default. 
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-workspace-number 4)
+#+END_SRC
+
+These are the "most global" key bindings. They work in line mode and
+char mode.
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-input-global-keys
+	`(
+	  ([?\s-r] . exwm-reset)
+	  ([?\s-w] . exwm-workspace-switch)
+	  ,@(mapcar (lambda (i)
+		      `(,(kbd (format "s-%d" i)) .
+			(lambda ()
+			  (interactive)
+			  (exwm-workspace-switch-create ,i))))
+		    (number-sequence 0 9))
+	  ([?\s-&] . (lambda (command)
+		       (interactive (list (read-shell-command "$ ")))
+		       (start-process-shell-command command nil command)))
+	  (,(kbd "C-;") . other-window)
+	  (,(kbd "C-'") . other-frame)
+	  (,(kbd "s-k") . exwm-workspace-delete)
+	  ))
+#+END_SRC
+
+Key translations in line mode. For instance, ~C-c~ is normally captured
+by emacs and never sent to the application. To copy text, then, we make
+~M-w~ translate to ~C-c~. 
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-input-simulation-keys
+	'(
+	  ([?\M-w] . [?\C-c])
+	  ([?\C-y] . [?\C-v])
+	  ))
+#+END_SRC
+
+Allow us to see and switch to buffers in other workspaces. 
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-workspace-show-all-buffers t)
+  (setq exwm-layout-show-all-buffers t)
+#+END_SRC
+
+This hook is run when =WM_CLASS= (part of X) changes. We use this to
+name EXWM buffers. By default, they're all called =*EXWM*=. This makes
+the buffer with firefox called =firefox=, the buffer with anki called
+=Anki=, etc.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'exwm-update-class-hook
+	    (lambda ()
+	      (exwm-workspace-rename-buffer exwm-class-name)))
+#+END_SRC
+
+=exwm-input-prefix-keys= are prefix keys sent to Emacs in line mode. For
+instance, ~C-x~ is sent to Emacs (and thus never the application) so
+that ~C-x b~ works from anywhere. 
+
+I don't usually need help on Emacs (~C-c h~) from an EXWM buffer. ~C-h~
+also conflicts with some other stuff, ex.
+- Anki add card history
+- Firefox history
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
+#+END_SRC
+
+Be able to quit from anywhere. Not sure why ~C-g~ isn't in
+=exwm-input-prefix-keys= by default. 
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
+#+END_SRC
+
+The [[https://github.com/ch11ng/exwm/wiki/Configuration-Example][example config]] given in the wiki says you need to add this, but it
+can be anywhere in your config.
+#+BEGIN_SRC emacs-lisp
+  (exwm-enable)
+#+END_SRC
+**** desktop-environment
+     :PROPERTIES:
+     :created:  2020-03-10 00:22:02 EDT
+     :END:
+We want to use this only if we're using EXWM. 
 #+BEGIN_SRC emacs-lisp
   (use-package desktop-environment
     :ensure nil
@@ -788,9 +835,10 @@ now.
     (desktop-environment-mode))
 #+END_SRC
 
-By default, =desktop-environment-screenshot= saves the entire screen to
-some specified directory. Redefine to take a screenshot of a region and
-copy to clipboard. This took me way too long to hack. Some oddities:
+Redefine to take a screenshot of a region and copy to clipboard. By
+default, =desktop-environment-screenshot= saves the entire screen to
+some specified directory. This took me way too long to hack. Some
+oddities:
 - The ~sleep 0.1~ at the beginning is suggested by [[https://bbs.archlinux.org/viewtopic.php?id=86507][this old archlinux
   bbs]] thread. If it's not there, on EXWM windows it gives the error
   "Couldn't grab keyboard".
@@ -798,12 +846,44 @@ copy to clipboard. This took me way too long to hack. Some oddities:
 - The ~&>/dev/null~ needs to be there, else =scrot(1)= hangs. Why? Who
   knows.
 This is the state as of [2020-03-21 Sat]. Let's hope this will one day
-be better written.
+be written better. 
 #+BEGIN_SRC emacs-lisp
   (defun desktop-environment-screenshot ()
     (interactive)
     (shell-command "sleep 0.1; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
 #+END_SRC
+**** display-time-mode
+     :PROPERTIES:
+     :created:  2020-03-17 16:01:31 EDT
+     :END:
+  Display the current time on the modeline. Used in conjunction with
+  mini-modeline for my system tray. 
+
+  Formatting. 
+  #+BEGIN_SRC emacs-lisp
+    (setq display-time-day-and-date t)
+    (setq display-time-24hr-format t)
+  #+END_SRC
+
+  Do not display the load average. No idea why this is displayed alongside
+  time by default. 
+  #+BEGIN_SRC emacs-lisp
+    (setq display-time-default-load-average nil)
+  #+END_SRC
+
+  Use it.
+  #+BEGIN_SRC emacs-lisp
+    (display-time-mode 1)
+  #+END_SRC
+**** display-battery-mode
+     :PROPERTIES:
+     :created:  2020-03-17 16:18:23 EDT
+     :END:
+  Display battery status on the modeline. Used in conjuction with
+  mini-modeline for my system tray.
+  #+BEGIN_SRC emacs-lisp
+    (display-battery-mode 1)
+  #+END_SRC
 ** smart-mode-line
    :PROPERTIES:
    :created:  2020-03-16 17:17:54 EDT
@@ -845,7 +925,7 @@ This is much cleaner.
     :after smart-mode-line
 
     :config
-    (setq mini-modeline-right-padding 0)
+    (setq mini-modeline-right-padding 20)
     (mini-modeline-mode t))
 #+END_SRC
 ** js2-mode
@@ -874,38 +954,6 @@ do nothing anyway, but occasionally I'll do something that causes it to
 randomly pop back into my =init.el=. 
 #+BEGIN_SRC emacs-lisp 
   (setq custom-file (concat user-emacs-directory "/custom.el"))
-#+END_SRC
-** display-time-mode
-   :PROPERTIES:
-   :created:  2020-03-17 16:01:31 EDT
-   :END:
-Display the current time on the modeline. Used in conjunction with
-mini-modeline for my system tray. 
-
-Formatting. 
-#+BEGIN_SRC emacs-lisp
-  (setq display-time-day-and-date t)
-  (setq display-time-24hr-format t)
-#+END_SRC
-
-Do not display the load average. No idea why this is displayed alongside
-time by default. 
-#+BEGIN_SRC emacs-lisp
-  (setq display-time-default-load-average nil)
-#+END_SRC
-
-Use it.
-#+BEGIN_SRC emacs-lisp
-  (display-time-mode 1)
-#+END_SRC
-** display-battery-mode
-   :PROPERTIES:
-   :created:  2020-03-17 16:18:23 EDT
-   :END:
-Display battery status on the modeline. Used in conjuction with
-mini-modeline for my system tray.
-#+BEGIN_SRC emacs-lisp
-  (display-battery-mode 1)
 #+END_SRC
 ** column-number-mode
    :PROPERTIES:
