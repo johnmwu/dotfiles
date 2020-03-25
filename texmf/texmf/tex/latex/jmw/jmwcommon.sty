@@ -28,6 +28,7 @@
 \fi
 \usepackage{graphicx}
 \usepackage{siunitx}
+\usepackage{dsfont} % sexy double-struck chars
 
 
 
@@ -51,14 +52,14 @@
 %%%% Macro %%%%
 %% Misc
 \newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
-\newcommand{\CC}{\ensuremath{\mathbb{C}}} 
-\newcommand{\RR}{\ensuremath{\mathbb{R}}}
-\newcommand{\QQ}{\ensuremath{\mathbb{Q}}}
-\newcommand{\ZZ}{\ensuremath{\mathbb{Z}}}
-\newcommand{\FF}{\ensuremath{\mathbb{F}}}
-\newcommand{\PP}{\ensuremath{\mathbb{P}}}
-\newcommand{\NN}{\ensuremath{\mathbb{N}}}
-\renewcommand{\SS}{\ensuremath{\mathbb{S}}} % sphere
+\newcommand{\CC}{\ensuremath{\mathds{C}}} 
+\newcommand{\RR}{\ensuremath{\mathds{R}}}
+\newcommand{\QQ}{\ensuremath{\mathds{Q}}}
+\newcommand{\ZZ}{\ensuremath{\mathds{Z}}}
+\newcommand{\FF}{\ensuremath{\mathds{F}}}
+\newcommand{\PP}{\ensuremath{\mathds{P}}}
+\newcommand{\NN}{\ensuremath{\mathds{N}}}
+\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
 \newcommand{\eps}{\ensuremath{\epsilon}}
 \newcommand{\dt}{\ensuremath{\delta}}
 \newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} % "Define equals"
@@ -103,7 +104,7 @@
 \newcommand{\scrF}{\ensuremath{\mathscr{F}}} % Sigma algebra 1
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
 \renewcommand{\d}[1]{\ensuremath{\mathrm{d}{#1}}}
-\newcommand{\EE}{\ensuremath{\mathbb{E}}} % expected value
+\newcommand{\EE}{\ensuremath{\mathds{E}}} % expected value
 \newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
 \newcommand{\LHS}{\ensuremath{\mathrm{LHS}}} 
 \newcommand{\probto}{\xrightarrow{p}}
