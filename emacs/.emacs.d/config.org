@@ -3,18 +3,14 @@
    :PROPERTIES:
    :created:  2020-01-29 11:36:05 CST
    :END:
-I use =use-package=. This configuration needs to be at the top. 
+I use =use-package=. 
 
 When I open emacs on a new machine, my packages should be automatically
-downloaded. This is the recommended method.
+downloaded. 
 #+BEGIN_SRC emacs-lisp
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
 #+END_SRC
-
-[2020-02-24 Mon] Trying to get set up on SLS computers again. There's a
-problem---some packages don't support old emacs versions. I'm debating
-whether it makes sense to always ensure.
 * org
 Related to =org-mode=. It's amazing how this has taken over my life. 
 
@@ -223,7 +219,7 @@ Popping a task off the stack. This time, we're actually done the task.
 #+END_SRC
 In theory, the call to =jmw/org-clock-out-up= should bring us to the
 parent task, so the call to =org-clock-goto= would be
-redundant. However, =org-todo= is wrapper in a big =save-excursion= so
+redundant. However, =org-todo= is wrapped in a big =save-excursion= so
 it's still necessary.
 
 Similarly, pop a task off the stack because we've decided not to do it.
@@ -328,6 +324,11 @@ Allow refiling to any headline.
 #+BEGIN_SRC emacs-lisp
   (setq org-refile-targets '((nil . (:maxlevel . 10))))
 #+END_SRC
+
+Don't indent when demoting headlines.
+#+BEGIN_SRC emacs-lisp
+  (setq org-adapt-indentation nil)
+#+END_SRC
 ** capture
    :PROPERTIES:
    :created:  2020-03-20 18:18:01 EDT
@@ -373,8 +374,8 @@ another [[https://stackoverflow.com/a/54251825/4019495][SO]] post.
    :END:
 Textual markup. 
 
-Allow for *this sentence to actually be formatted bold in org, even with
-a newline in the middle*. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]].
+Allow for *this sentence to actually be formatted bold in org, even
+though it spans multiple lines*. Following [[https://emacs.stackexchange.com/a/13828/21253][stackexchange]].
 #+BEGIN_SRC emacs-lisp
   (setf (car (nthcdr 4 org-emphasis-regexp-components)) 50)
   (org-set-emph-re 'org-emphasis-regexp-components
@@ -620,9 +621,6 @@ A better way to select an item from a list. This includes
 - ~M-x~
 #+BEGIN_SRC emacs-lisp
   (use-package ivy)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
   (ivy-mode 1)
 #+END_SRC
 
@@ -889,11 +887,9 @@ be written better.
    :END:
 A more customizable mode line. 
 
-Mark theme as safe. 
+Mark all themes as safe. 
 #+BEGIN_SRC emacs-lisp
-  (setq custom-safe-themes
-	(quote
-	 ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+  (setq custom-safe-themes t)
 #+END_SRC
 
 Main loading. 
@@ -1075,13 +1071,13 @@ By default, Emacs will create backups of files, which look like
 [michael@contessa test-backup]$ ls
 test.org  test.org~
 #+END_EXAMPLE
-hich I don't like. If I need backups, I'll use version control. 
+which I don't like. If I need backups, I'll use version control. 
 #+BEGIN_SRC emacs-lisp
   (setq make-backup-files nil)
 #+END_SRC
 
-Leave point at the same screen position when going a page down. I have
-no idea why the default is to move point to the top of the window. 
+Leave point at the same screen position when paging down. Don't know why
+the default is to move point to the top of the window.
 #+BEGIN_SRC emacs-lisp
   (setq scroll-preserve-screen-position t)
 #+END_SRC
@@ -1093,7 +1089,7 @@ a file in a buffer owned by an existing emacs process, which is used in
   (server-start)
 #+END_SRC
 
-Lines should not by >72 chars long. 
+Break at 72 chars. 
 #+BEGIN_SRC emacs-lisp
   (setq-default fill-column 72)
 #+END_SRC
@@ -1110,8 +1106,8 @@ These aren't bound to anything by default. Put them to good use.
   (global-set-key (kbd "C-'") 'other-frame)
 #+END_SRC
 
-Type ~y~ or ~n~ instead of yes/no. I've copied this from [[https://pages.sachachua.com/.emacs.d/Sacha.html#org2509ed6][Sacha Chua]]. One
-would think there was a better way of doing this. 
+Type ~y~ or ~n~ instead of yes/no. One would think there was a better
+way. 
 #+BEGIN_SRC emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
@@ -1174,7 +1170,7 @@ first called, and rearchived when called again.
 #+END_SRC
 
 The wander archive is a kind of diary. I write in it about once a
-month. It's encrypted because it contains sensitive stuff. 
+month. 
 #+BEGIN_SRC emacs-lisp
   (defun jmw/wander ()
     (interactive)
