@@ -474,24 +474,40 @@ Related to an emacs package.
 ** auctex
 For editing source files in the TeX family. 
 #+BEGIN_SRC emacs-lisp 
-  (use-package tex
-    :config
-    (setq TeX-view-program-selection
-	  (quote
-	   (((output-dvi has-no-display-manager)
-	     "dvi2tty")
-	    ((output-dvi style-pstricks)
-	     "dvips and gv")
-	    (output-dvi "xdvi")
-	    (output-pdf "Okular")
-	    (output-html "xdg-open"))))
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master nil)
-    (setq font-latex-fontify-script nil)
+(use-package tex
+  :config
+  <<auctex-config>>
 
-    :defer t
-    :ensure auctex)
+  :defer t
+  :ensure auctex)
+#+END_SRC
+*** cfg
+:PROPERTIES:
+:created:  2020-03-27 18:30:46 EDT
+:header-args+: :noweb-ref auctex-config :tangle no
+:END:
+What program to view TeX output. Change pdf to use =xdg-open=. Using
+=setf= feels like cheating. 
+#+BEGIN_SRC emacs-lisp
+(setf (alist-get 'output-pdf TeX-view-program-selection) '("xdg-open"))
+#+END_SRC
+
+These are recommended in section 5.3 of the AUCTeX manual, "Automatic
+Parsing of TeX Files". They have something to do with the =auto=
+directory and parsing speed. 
+#+BEGIN_SRC emacs-lisp
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+#+END_SRC
+
+Query for the master file every time. 
+#+BEGIN_SRC emacs-lisp
+(setq-default TeX-master nil)
+#+END_SRC
+
+Don't raise/lower sub/superscripts. It looks weird. 
+#+BEGIN_SRC emacs-lisp
+(setq font-latex-fontify-script nil)
 #+END_SRC
 ** elpy
 For editing Python source files. 
@@ -507,8 +523,7 @@ Copied and pasted.
 	      <<elpy-mode-map>>)
 
   :config
-  (setq python-shell-completion-native-enable nil)
-  (setq python-indent-guess-indent-offset nil))
+  )
 #+END_SRC
 
 To behave like ~C-M-f~, ~C-M-d~, etc.
@@ -753,10 +768,10 @@ The Emacs OS.
     :config
     <<exwm-config>>)  
 #+END_SRC
-*** config
+*** cfg
     :PROPERTIES:
     :created:  2020-03-24 15:33:23 EDT
-    :header-args: :noweb-ref exwm-config
+    :header-args+: :noweb-ref exwm-config :tangle no
     :END:
 This heading is tangled into =exwm='s =use-package= form with Org's
 noweb.
