@@ -58,8 +58,8 @@ LS_COLORS="${LS_COLORS}*vimrc=$ENV_C:"
 shopt -s globstar # Thu Feb  7 20:53:09 EST 2019
 
 function jmw_on_desktop () {
-    [[ $(uname -m) = x86* ]]
-}
+[[ $(uname -m) = x86* ]]
+  }
 
 function jmw_on_mobile () {
     ! jmw_on_desktop
@@ -101,6 +101,13 @@ if jmw_on_desktop; then
     PS1=$PS1'\[$(vterm_prompt_end)\]'
     export GOPATH="${HOME}/go"
     export PATH="${PATH}:${GOPATH}/bin"
+    if [[ $DESKTOP_SESSION = "emacs" ]]; then
+    		export GTK_IM_MODULE=ibus
+    		export QT_IM_MODULE=ibus
+    		export QT4_IM_MODULE=ibus
+    		export XMODIFIERS=@im=ibus
+    		ibus-daemon -dx
+    fi
 fi
 
 if jmw_on_mobile; then

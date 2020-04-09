@@ -1,4 +1,4 @@
-#+property: header-args    :tangle .profile :results silent
+#+property: header-args    :tangle .profile :results silent :noweb yes
 
 * common
 Common among all unix systems. 
@@ -200,7 +200,7 @@ Main block for mobile-specific config stuff.
 * desktop
   :PROPERTIES:
   :created:  2020-02-01 17:05:38 EST
-  :header-args: :noweb-ref desktop 
+  :header-args: :noweb-ref desktop :tangle no :noweb yes
   :END:
 Desktop-specific configurations. 
 
@@ -253,6 +253,7 @@ This is my pdf viewer.
 #+BEGIN_SRC sh
   export PDF_VIEWER="okular"
 #+END_SRC
+
 ** vterm
    :PROPERTIES:
    :created:  2020-02-01 17:44:13 EST
@@ -284,6 +285,34 @@ For the Go programming language.
 #+BEGIN_SRC sh
   export GOPATH="${HOME}/go"
   export PATH="${PATH}:${GOPATH}/bin"
+#+END_SRC
+** ime
+:PROPERTIES:
+:created:  2020-04-08 18:41:53 EDT
+:END:
+EXWM chinese input
+#+BEGIN_SRC sh 
+	if [[ $DESKTOP_SESSION = "emacs" ]]; then
+			<<exwm-body>>
+	fi
+#+END_SRC
+*** exwm-body
+:PROPERTIES:
+:created:  2020-04-08 18:56:59 EDT
+:header-args: :noweb-ref exwm-body :tangle no
+:END:
+Use ibus as the input method. For some reason, the Qt4 is necessary for
+anki. This is close to what [[https://wiki.archlinux.org/index.php/IBus][arch]] recommends. 
+#+BEGIN_SRC sh
+	export GTK_IM_MODULE=ibus
+	export QT_IM_MODULE=ibus
+	export QT4_IM_MODULE=ibus
+	export XMODIFIERS=@im=ibus
+#+END_SRC
+
+Start the daemon if it hasn't already. 
+#+BEGIN_SRC sh 
+	ibus-daemon -dx
 #+END_SRC
 * mobile
   :PROPERTIES:
