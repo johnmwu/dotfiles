@@ -461,6 +461,7 @@ take notes for 18.675.
 	  ("imp" "\\imp" t "&#x21D2;" "->" "->" "⇒") 
 	  ("del" "\\del" t "&#x2202;" "d" "d" "∂") 
 	  ("NN" "\\NN" t "&#x2115;" "N" "N" "ℕ") 
+	  ("QQ" "\\QQ" t "&#x211A;" "Q" "Q" "ℚ") 
 	  ))
 #+END_SRC
 * pkg
