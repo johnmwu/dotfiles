@@ -69,8 +69,22 @@ These are important regular files for me
 #+END_SRC
 
 For my UROP with MIT CSAIL's SLS group. 
+
+I set up =sshfs=. The "root" depends on what host I'm on. 
 #+BEGIN_SRC sh
-  export SLSHOME="/usr/users/johnmwu"
+	if [[ $HOSTNAME = aloysius ]]; then
+			export SLS_ROOT=""
+	elif [[ $HOSTNAME = contessa ]]; then
+			export SLS_ROOT="$HOME/other/sls-root"
+	fi
+#+END_SRC
+
+Misc environment variables.
+#+BEGIN_SRC sh
+	# this is recommended, but a symlink. Breaks when mounting using sshfs. 
+	# export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
+	export SLS_HOME="$SLS_ROOT/data/sls/u/urop/johnmwu"
+	export SLS_DATA_HOME="$SLS_ROOT/data/sls/temp/johnmwu"
 #+END_SRC
 
 My Emacs configuration. 

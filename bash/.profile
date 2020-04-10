@@ -29,7 +29,15 @@ export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
 export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
 export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
 
-export SLSHOME="/usr/users/johnmwu"
+if [[ $HOSTNAME = aloysius ]]; then
+		export SLS_ROOT=""
+elif [[ $HOSTNAME = contessa ]]; then
+		export SLS_ROOT="$HOME/other/sls-root"
+fi
+
+# export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
+export SLS_HOME="$SLS_ROOT/data/sls/u/urop/johnmwu"
+export SLS_DATA_HOME="$SLS_ROOT/data/sls/temp/johnmwu"
 
 export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
 
