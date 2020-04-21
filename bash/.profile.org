@@ -83,8 +83,10 @@ Misc environment variables.
 #+BEGIN_SRC sh
 	# this is recommended, but a symlink. Breaks when mounting using sshfs. 
 	# export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
-	export SLS_HOME="$SLS_ROOT/data/sls/u/urop/johnmwu"
-	export SLS_DATA_HOME="$SLS_ROOT/data/sls/temp/johnmwu"
+	export SLS_HOME_REL="data/sls/u/urop/johnmwu"
+	export SLS_DATA_HOME_REL="data/sls/temp/johnmwu"
+	export SLS_HOME="$SLS_ROOT/$SLS_HOME_REL"
+	export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
 #+END_SRC
 
 My Emacs configuration. 

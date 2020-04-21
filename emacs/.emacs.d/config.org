@@ -975,6 +975,12 @@ An improved javascript major mode.
     (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
     (setq js-indent-level 2))
 #+END_SRC
+
+When =t=, this prompted me for my scp password whenever I had a ssh
+connection to =aloysius=. 
+#+BEGIN_SRC emacs-lisp
+(setq ivy-rich-parse-remote-buffer nil)
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** custom

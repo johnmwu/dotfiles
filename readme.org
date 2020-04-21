@@ -1,4 +1,4 @@
 My top level [[https://www.gnu.org/software/stow/][stow]] directory. 
 
-I'm an Emacs user, and use [[https://orgmode.org/][Org Mode]]. My =config.org= (emacs
-configuration) is the largest file here.
+I use Emacs and [[https://orgmode.org/][Org Mode]]. My =config.org= (emacs config) is the largest
+file here.

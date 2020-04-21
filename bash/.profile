@@ -35,9 +35,12 @@ elif [[ $HOSTNAME = contessa ]]; then
 		export SLS_ROOT="$HOME/other/sls-root"
 fi
 
+# this is recommended, but a symlink. Breaks when mounting using sshfs. 
 # export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
-export SLS_HOME="$SLS_ROOT/data/sls/u/urop/johnmwu"
-export SLS_DATA_HOME="$SLS_ROOT/data/sls/temp/johnmwu"
+export SLS_HOME_REL="data/sls/u/urop/johnmwu"
+export SLS_DATA_HOME_REL="data/sls/temp/johnmwu"
+export SLS_HOME="$SLS_ROOT/$SLS_HOME_REL"
+export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
 
 export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
 
