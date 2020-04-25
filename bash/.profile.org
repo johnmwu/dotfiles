@@ -103,31 +103,13 @@ This contains personal scripts.
 #+BEGIN_SRC sh
   export PATH="${PATH}:${BIN_DIR}/bin" 
 #+END_SRC
-** other
-   :PROPERTIES:
-   :created:  2020-02-02 00:44:04 CST
-   :END:
-Vim or emacs? Both. I'm aliasing =emacsclient(1)= because =emacs(1)= is
-typically invoked just once at startup. 
-#+BEGIN_SRC sh
-  alias e="emacsclient"
-  alias v="vim"
-#+END_SRC
-
-More aliases
-#+BEGIN_SRC sh
-  alias python="python3"
-  alias ju="jupyter notebook &> /dev/null & disown"
-#+END_SRC
-
-Setup for colored =ls(1)= output. First, we alias the obvious. 
+** LS_COLORS
+:PROPERTIES:
+:created:  2020-04-21 00:18:59 EDT
+:END:
+Pretty =ls(1)= output. 
 #+BEGIN_SRC sh
   alias ls="ls --color"
-#+END_SRC
-
-This sets the =LS_COLORS= environment variable according to my
-customizations.
-#+BEGIN_SRC sh
   if [[ -f ~/.dircolors ]]; then
       eval "$(env TERM=xterm dircolors ~/.dircolors)"
   fi
@@ -145,54 +127,40 @@ this block is liable to changing.
   LS_COLORS="${LS_COLORS}*emacs_bash=$ENV_C:"
   LS_COLORS="${LS_COLORS}*vimrc=$ENV_C:"
 #+END_SRC
-
-Let =**= match zero or more directories and subdirectories. I'm not
-tangling, because I have almost never used this feature. 
+** other
+   :PROPERTIES:
+   :created:  2020-02-02 00:44:04 CST
+   :END:
+Vim or Emacs? Both. =emacsclient(1)= is the vi-style version of Emacs.
 #+BEGIN_SRC sh
-  shopt -s globstar # Thu Feb  7 20:53:09 EST 2019
+  alias e="emacsclient"
+  alias v="vim"
 #+END_SRC
 
-This function determines whether we're on a desktop machine. As is,
-we're literally just testing if we're using a x86 machine. 
+More aliases. 
+#+BEGIN_SRC sh
+	alias python="python3"
+	alias ju="jupyter notebook &> /dev/null & disown"
+#+END_SRC
+
+Make =**= match zero or more dirs in globs.
+#+BEGIN_SRC sh
+shopt -s globstar 
+#+END_SRC
+
+Are we on desktop? Not the most intelligent logic. 
 #+BEGIN_SRC sh 
-    function jmw_on_desktop () {
-	[[ $(uname -m) = x86* ]]
-    }
+function jmw_on_desktop () {
+		[[ $(uname -m) = x86* ]]
+}
 #+END_SRC
 
-When run on my lenovo,
-#+BEGIN_SRC sh :results output :tangle no
-    function jmw_on_desktop () {
-	[[ $(uname -m) = x86* ]]
-    }
-    jmw_on_desktop
-    echo "$?"
-#+END_SRC
-
-#+RESULTS:
-: 0
-
-Similarly, to detect whether we're on mobile. It isn't very advanced.
+Are we on mobile? Again, not too advanced. 
 #+BEGIN_SRC sh 
   function jmw_on_mobile () {
       ! jmw_on_desktop
   }
 #+END_SRC
-
-When run on my lenovo,
-#+BEGIN_SRC sh :results output :tangle no
-  function jmw_on_desktop () {
-      [[ $(uname -m) = x86* ]]
-  }
-  function jmw_on_mobile () {
-      ! jmw_on_desktop
-  }
-  jmw_on_mobile
-  echo "$?"
-#+END_SRC
-
-#+RESULTS:
-: 1
 
 For some reason, I had this in my old config file. It's from my SLS
 UROP.
@@ -200,14 +168,13 @@ UROP.
   export HDF5_USE_FILE_LOCKING=FALSE # See https://github.com/MPAS-Dev/MPAS-Analysis/issues/407
 #+END_SRC
 
-Main block for desktop-specific config stuff.
+Desktop and mobile-specific stuff. 
 #+BEGIN_SRC sh :noweb yes
   if jmw_on_desktop; then
       <<desktop>>
   fi
 #+END_SRC
 
-Main block for mobile-specific config stuff. 
 #+BEGIN_SRC sh :noweb yes
   if jmw_on_mobile; then
       <<mobile>>

@@ -73,6 +73,8 @@
 \newcommand{\Unif}{\ensuremath{\textsc{Unif}}} % uniform distribution
 \newcommand{\Geom}{\ensuremath{\textsc{Geom}}} % geometric distribution
 \newcommand{\Exp}{\ensuremath{\textsc{Exp}}} % exponential distribution
+\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}} % cauchy distribution
+\newcommand{\card}[1]{\ensuremath{\abs{#1}}}
 
 %% From MIT 18.701/2
 \newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} % "Inner product"
@@ -177,9 +179,11 @@
     \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
     \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
     \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
-  \else
+    \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
+    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  \else
     \newtheorem{theorem}{Theorem}[section]
     \newtheorem{lemma}[theorem]{Lemma}
+    \newtheorem{definition}[theorem]{Definition}
   \fi
 \else\fi  
 %%%% Document %%%%
