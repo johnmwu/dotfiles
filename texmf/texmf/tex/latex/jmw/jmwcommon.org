@@ -1,3 +1,9 @@
+#+property: header-args :tangle jmwcommon.sty
+* package header
+:PROPERTIES:
+:created:  2020-04-25 01:09:01 EDT
+:END:
+#+BEGIN_SRC latex
 % Much of this is copied from Evan Chen. 
 \ProvidesPackage{jmwcommon}
 \newif\ifjmwsetup\jmwsetupfalse
@@ -7,7 +13,12 @@
 \newif\ifjmwmmthm\jmwmmthmfalse
 \DeclareOption{sexy}{\jmwsetuptrue\jmwmdthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
-
+#+END_SRC
+* use packages
+:PROPERTIES:
+:created:  2020-04-25 01:09:24 EDT
+:END:
+#+BEGIN_SRC latex
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{mathrsfs} 
@@ -23,7 +34,12 @@
 \usepackage{graphicx}
 \usepackage{siunitx}
 \usepackage{dsfont} % sexy double-struck chars
-
+#+END_SRC
+* env
+:PROPERTIES:
+:created:  2020-04-25 01:10:12 EDT
+:END:
+#+BEGIN_SRC latex
 \newenvironment{objects}{{\bf Object:}\begin{itemize}}{\end{itemize}}
 \newenvironment{lecture}[1]{\section{Lecture #1}}{\vfill\eject}
 \newtheorem{claim}{Claim}
@@ -36,8 +52,13 @@
   \newenvironment{mmp}[1]{\begin{@mmp}[\tt #1]\label{#1}}{\end{@mmp}}
   \newenvironment{mma}[1]{\begin{@mma}[\tt #1]\label{#1}}{\end{@mma}}
   \newcommand{\mmref}[1]{\hyperref[#1]{\tt #1}}
-\else\fi
-
+\else\fi  
+#+END_SRC
+* macro
+:PROPERTIES:
+:created:  2020-04-25 01:10:37 EDT
+:END:
+#+BEGIN_SRC latex
 \newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
 \newcommand{\CC}{\ensuremath{\mathds{C}}} 
 \newcommand{\RR}{\ensuremath{\mathds{R}}}
@@ -109,10 +130,21 @@
 %% From MIT 18.101 %%
 \newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
 \DeclareMathOperator{\D}{D} % Jacobian
-
+#+END_SRC
+* style
+:PROPERTIES:
+:created:  2020-04-25 01:11:50 EDT
+:END:
+This is probably better in a document class
+#+BEGIN_SRC latex
 \setlength{\parskip}{0.5\baselineskip}
 \setlength{\parindent}{0pt}
-
+#+END_SRC
+* thm
+:PROPERTIES:
+:created:  2020-04-25 01:12:50 EDT
+:END:
+#+BEGIN_SRC latex
 \ifjmwsetup
   \ifjmwmdthm
     \usepackage{amsthm}
@@ -162,11 +194,17 @@
     \newtheorem{lemma}[theorem]{Lemma}
     \newtheorem{definition}[theorem]{Definition}
   \fi
-\else\fi
-
+\else\fi  
+#+END_SRC
+* other
+:PROPERTIES:
+:created:  2020-04-25 01:13:55 EDT
+:END:
+#+BEGIN_SRC latex
 \@ifundefined{KOMAClassName}
 {}
 {
   \setkomafont{author}{\Large\scshape}
   \setkomafont{date}{\Large\normalsize}
 }
+#+END_SRC
