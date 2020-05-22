@@ -899,7 +899,7 @@ be written better.
 #+BEGIN_SRC emacs-lisp
   (defun desktop-environment-screenshot ()
     (interactive)
-    (shell-command "sleep 0.1; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+    (shell-command "sleep 0.2; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
 #+END_SRC
 **** display-time-mode
      :PROPERTIES:
@@ -1017,6 +1017,24 @@ Displays column number of point on the mode line.
 Display size of buffer on the mode line. 
 #+BEGIN_SRC emacs-lisp
   (size-indication-mode 1)
+#+END_SRC
+** emacs-lisp-mode
+:PROPERTIES:
+:created:  2020-05-22 17:23:47 EDT
+:END:
+Don't use tabs for lisp indentation. 
+#+BEGIN_SRC emacs-lisp
+(add-hook 'emacs-lisp-mode-hook
+          (lambda () (setq indent-tabs-mode nil)))
+#+END_SRC
+** electric-indent-mode
+:PROPERTIES:
+:created:  2020-05-22 17:32:30 EDT
+:END:
+By default, electric-indent-mode indents the previous /and/ the next
+line. I almost never want the former. Using solution from [[https://emacs.stackexchange.com/a/20899/21253][SE]]. 
+#+BEGIN_SRC emacs-lisp
+(setq-default electric-indent-inhibit t)
 #+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
@@ -1160,7 +1178,18 @@ Break at 72 chars.
   (setq-default fill-column 72)
 #+END_SRC
 
-Tabs should display as 2 spaces wide. 
+Window width for textual buffers. Resize to it. 
+#+BEGIN_SRC emacs-lisp
+(setq jmw/text-window-width (+ fill-column 3))
+(defun jmw/resize-text-window ()
+	(interactive)
+	(window-resize (selected-window)
+								 (- jmw/text-window-width (window-width))
+								 t))
+	
+#+END_SRC
+
+Tabs should display as 2 spaces wide. It's wide enough for my eyes. 
 #+BEGIN_SRC emacs-lisp
   (setq-default tab-width 2)
 #+END_SRC
