@@ -3,14 +3,16 @@
 :PROPERTIES:
 :created:  2020-04-25 01:09:01 EDT
 :END:
+Credit inspirations.
 #+BEGIN_SRC latex
 % Much of this is copied from Evan Chen. 
+#+END_SRC
+
+#+BEGIN_SRC latex
 \ProvidesPackage{jmwcommon}
 \newif\ifjmwsetup\jmwsetupfalse
 \newif\ifjmwmdthm\jmwmdthmfalse
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
-\newif\ifjmwsecthm\jmwsecthmfalse
-\newif\ifjmwmmthm\jmwmmthmfalse
 \DeclareOption{sexy}{\jmwsetuptrue\jmwmdthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
 #+END_SRC
@@ -18,118 +20,187 @@
 :PROPERTIES:
 :created:  2020-04-25 01:09:24 EDT
 :END:
+=\align=, =\text=, =\DeclareMathOperator=.
 #+BEGIN_SRC latex
 \usepackage{amsmath}
+#+END_SRC
+
+More (though rarely used) math symbols. The list can be googled. 
+#+BEGIN_SRC latex
 \usepackage{amssymb}
+#+END_SRC
+
+Script fonts. See [[https://www.stat.colostate.edu/~vollmer/pdfs/typesetting-script.pdf][here]]. Nike Sun likes these. 
+#+BEGIN_SRC latex
 \usepackage{mathrsfs} 
+#+END_SRC
+
+LaTeX's standard package for colors. =usenames= and co make more colors
+available.
+#+BEGIN_SRC latex
 \PassOptionsToPackage{usenames,svgnames,dvipsnames}{xcolor}
 \usepackage{xcolor}
   \definecolor{lightred}{rgb}{0.5,0,0}
+#+END_SRC
+
+Hyperlink support---make =\ref= clickable. 
+#+BEGIN_SRC latex
 \ifjmwcolorlinks
   \usepackage[colorlinks=true]{hyperref}
   \hypersetup{urlcolor=RubineRed,linkcolor=RoyalBlue,citecolor=ForestGreen}
 \else
   \usepackage{hyperref}
 \fi
-\usepackage{graphicx}
-\usepackage{siunitx}
-\usepackage{dsfont} % sexy double-struck chars
 #+END_SRC
-* env
-:PROPERTIES:
-:created:  2020-04-25 01:10:12 EDT
-:END:
-#+BEGIN_SRC latex
-\newenvironment{objects}{{\bf Object:}\begin{itemize}}{\end{itemize}}
-\newenvironment{lecture}[1]{\section{Lecture #1}}{\vfill\eject}
-\newtheorem{claim}{Claim}
-\renewcommand\th{^{\text{\normalfont{th}}}} % Suggested by Harry
 
-%% Metamath-like syntax
-\ifjmwmmthm
-  \newtheorem{@mmp}{\tt\color{red}\scalebox{1.2}{\colorbox{cyan}{\$p}}} % "Metamath dollar p"
-  \newtheorem{@mma}{\tt\color{blue}\scalebox{1.2}{\colorbox{lightred}{\$a}}} % "Metamath dollar a"
-  \newenvironment{mmp}[1]{\begin{@mmp}[\tt #1]\label{#1}}{\end{@mmp}}
-  \newenvironment{mma}[1]{\begin{@mma}[\tt #1]\label{#1}}{\end{@mma}}
-  \newcommand{\mmref}[1]{\hyperref[#1]{\tt #1}}
-\else\fi  
+=\includegraphics=.
+#+BEGIN_SRC latex
+\usepackage{graphicx}
+#+END_SRC
+
+Typeset nice SI units, like kg*m/s^2. [2020-05-22 Fri] not used often. 
+#+BEGIN_SRC latex
+\usepackage{siunitx}
+#+END_SRC
+
+Better double-struck characters. Suggested by Harry Yu. 
+#+BEGIN_SRC latex
+\usepackage{dsfont} % sexy double-struck chars
 #+END_SRC
 * macro
 :PROPERTIES:
 :created:  2020-04-25 01:10:37 EDT
 :END:
+Abbreviations. No semantics. 
 #+BEGIN_SRC latex
-\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
-\newcommand{\CC}{\ensuremath{\mathds{C}}} 
-\newcommand{\RR}{\ensuremath{\mathds{R}}}
-\newcommand{\QQ}{\ensuremath{\mathds{Q}}}
-\newcommand{\ZZ}{\ensuremath{\mathds{Z}}}
 \newcommand{\FF}{\ensuremath{\mathds{F}}}
 \newcommand{\PP}{\ensuremath{\mathds{P}}}
-\newcommand{\NN}{\ensuremath{\mathds{N}}}
-\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
+\newcommand{\EE}{\ensuremath{\mathds{E}}}
 \newcommand{\eps}{\ensuremath{\epsilon}}
 \newcommand{\dt}{\ensuremath{\delta}}
-\newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} % "Define equals"
 \newcommand{\del}{\partial} 
-\DeclareMathOperator{\Ob}{Ob} % Objects of a category
-\newcommand{\KL}[2]{\ensuremath{D_{KL}\left(#1, #2\right)}}
-\newcommand{\scrG}{\ensuremath{\mathscr{G}}} % Sigma algebra 2
-\newcommand{\BigO}{\mathcal{O}} 
-\newcommand{\BigOm}{\Omega} % Big Omega notation
-\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
-\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} % uniform distribution
-\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} % geometric distribution
-\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} % exponential distribution
-\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}} % cauchy distribution
-\newcommand{\card}[1]{\ensuremath{\abs{#1}}} % cardinality
-
-%% From MIT 18.701/2
-\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} % "Inner product"
-\DeclareMathOperator{\Tr}{Tr} % "Trace"
-\newcommand{\iso}{\ensuremath{\equiv}} % "Isomorphic to"
-\let\Im\relax
-\DeclareMathOperator{\Im}{Im} % "Image"
-\renewcommand{\phi}{\varphi}
-\newcommand{\revimplies}{\Longleftarrow} % "Reverse implies"
-\DeclareMathOperator{\GL}{GL} % General Linear Group
-\newcommand{\degrees}{^\circ} % "degrees"
+\newcommand{\scrG}{\ensuremath{\mathscr{G}}} % for sigma algebras
+\newcommand{\scrF}{\ensuremath{\mathscr{F}}} % for sigma algebras
+\newcommand{\scrB}{\ensuremath{\mathscr{B}}} % for borel algebras
 \newcommand{\cbrt}{\sqrt[3]} % "cube root"
-\newcommand{\id}{\mathrm{id}} % Identity map
-
-%% From MIT 18.335
-\newcommand{\epsm}{\ensuremath{\eps_{\mbox{mach}}}} % "Machine epsilon"
-\DeclareMathOperator{\fl}{fl} % "Floating point"
-\newcommand{\vx}{\ensuremath{\mathbf{x}}} % "Vector x"
-\newcommand{\vy}{\ensuremath{\mathbf{y}}} % "Vector y"
-\newcommand{\vq}{\ensuremath{\mathbf{q}}} % "Vector q"
-\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
-
-%% From MIT 6.046
-\renewcommand{\Pr}[1]{\ensuremath{\Pr[#1]}}
-
-%% From MIT 18.675 %%
-\DeclareMathOperator{\supp}{supp} % Support of a measure
-\DeclareMathOperator{\li}{li} % Logarithmic integral
-\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
-\newcommand{\floor}[1]{\ensuremath{\left\lfloor #1\right\rfloor}}
-\newcommand{\scrB}{\ensuremath{\mathscr{B}}} % Borel algebra
-\newcommand{\scrF}{\ensuremath{\mathscr{F}}} % Sigma algebra 1
-\newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
+\renewcommand{\phi}{\varphi}
 \renewcommand{\d}[1]{\ensuremath{\mathrm{d}{#1}}}
-\newcommand{\EE}{\ensuremath{\mathds{E}}} % expected value
-\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
-\newcommand{\LHS}{\ensuremath{\mathrm{LHS}}} 
+#+END_SRC
+
+Number systems. 
+#+BEGIN_SRC latex
+\newcommand{\NN}{\ensuremath{\mathds{N}}}
+\newcommand{\ZZ}{\ensuremath{\mathds{Z}}}
+\newcommand{\QQ}{\ensuremath{\mathds{Q}}}
+\newcommand{\RR}{\ensuremath{\mathds{R}}}
+\newcommand{\CC}{\ensuremath{\mathds{C}}} 
+\newcommand{\HH}{\ensuremath{\mathds{H}}} 
+#+END_SRC
+
+Probability Distributions.
+#+BEGIN_SRC latex
+\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
+\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
+\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
+\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
+\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
+\newcommand{\Gauss}{\mathcal{N}}
+#+END_SRC
+
+Groups and representations. 
+#+BEGIN_SRC latex
+\DeclareMathOperator{\GL}{GL} 
+\DeclareMathOperator{\SL}{SL} 
+\DeclareMathOperator{\GO}{GO} 
+\DeclareMathOperator{\SO}{SO} 
+\DeclareMathOperator{\GU}{GU} 
+\DeclareMathOperator{\SU}{SU} 
+#+END_SRC
+
+Big-O and co.
+#+BEGIN_SRC latex
+\newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\BigOm}{\Omega} 
+#+END_SRC
+
+Maps \RR to some significance space. 
+#+BEGIN_SRC latex
+\DeclareMathOperator{\fl}{fl} 
+#+END_SRC
+
+KL divergence.
+#+BEGIN_SRC latex
+\newcommand{\KL}[2]{\ensuremath{D_{KL}\left(#1, #2\right)}}
+#+END_SRC
+
+Equals sign that defines something.
+#+BEGIN_SRC latex
+\newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} 
+#+END_SRC
+
+Insert an email address.
+#+BEGIN_SRC latex
+\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
+#+END_SRC
+
+Norm (normed vector spaces).
+#+BEGIN_SRC latex
+\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
+#+END_SRC
+
+Absolute value of a complex number (or more generally, a quaternion).
+#+BEGIN_SRC latex
+\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
+#+END_SRC
+
+Floor function. 
+#+BEGIN_SRC latex
+\newcommand{\floor}[1]{\ensuremath{\left\lfloor #1\right\rfloor}}
+#+END_SRC
+
+Sphere. \SS^n is a subspace of \RR^{n+1}
+#+BEGIN_SRC latex
+\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
+#+END_SRC
+
+Misc stuff from 18.675. 
+#+BEGIN_SRC latex
+\renewcommand{\Pr}[1]{\PP[#1]}
+\newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
+\newcommand{\Ev}{\EE} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
-\newcommand{\Gauss}{\mathcal{N}}
 \newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}} 
-\newcommand{\meet}{\wedge}
+#+END_SRC
 
-%% From MIT 18.101 %%
-\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
+Cardinality of a set. 
+#+BEGIN_SRC latex
+\newcommand{\card}[1]{\ensuremath{\abs{#1}}} 
+#+END_SRC
+
+Inner product.
+#+BEGIN_SRC latex
+\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} 
+#+END_SRC
+
+#+BEGIN_SRC latex
+\DeclareMathOperator{\Tr}{Tr} % "Trace"
 \DeclareMathOperator{\D}{D} % Jacobian
+#+END_SRC
+
+Bolded vector.
+#+BEGIN_SRC latex
+\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+#+END_SRC
+** other
+:PROPERTIES:
+:created:  2020-05-22 04:37:13 EDT
+:END:
+Not satisfied with calling signature. Hope a better solution exists.
+#+BEGIN_SRC latex
+\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
+\newcommand{\degrees}{^\circ} % "degrees"
 #+END_SRC
 * style
 :PROPERTIES:
@@ -185,11 +256,39 @@ This is probably better in a document class
     	postheadspace={0pt}
     ]{thmgreenbox}
 
+		\mdfdefinestyle{mdredbox}{%
+			linewidth=0.5pt,
+			skipabove=12pt,
+			frametitleaboveskip=5pt,
+			frametitlebelowskip=0pt,
+			skipbelow=2pt,
+			frametitlefont=\bfseries,
+			innertopmargin=4pt,
+			innerbottommargin=8pt,
+			nobreak=true,
+			backgroundcolor=Salmon!5,
+			linecolor=RawSienna,
+		}
+		\declaretheoremstyle[
+			headfont=\bfseries\color{RawSienna},
+			mdframed={style=mdredbox},
+			headpunct={\\[3pt]},
+			postheadspace={0pt},
+		]{thmredbox}
+
+    % numbered
     \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
     \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+    \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
     \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+    \declaretheorem[style=thmredbox,name=Argument]{argument}
+    
+
+    % no number
+    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
     \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
-    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  \else
+    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
+	\else
     \newtheorem{theorem}{Theorem}[section]
     \newtheorem{lemma}[theorem]{Lemma}
     \newtheorem{definition}[theorem]{Definition}
@@ -206,5 +305,17 @@ This is probably better in a document class
 {
   \setkomafont{author}{\Large\scshape}
   \setkomafont{date}{\Large\normalsize}
+}
+#+END_SRC
+
+pgfplots expressions. 
+#+BEGIN_SRC latex
+\newcommand{\pgfcauchypdf}[2]{(#2)/(pi*((#2)^2+(x-(#1))^2))}
+#+END_SRC
+
+kora. 
+#+BEGIN_SRC latex
+\newcommand{\kora}{%
+(\raisebox{0.5em}{\rotatebox{-45}{)}}$^{\circ}{\scriptscriptstyle\Box}^{\circ}$)\raisebox{0.5em}{\rotatebox{-45}{)}}\rotatebox{90}{)}\raisebox{0.5ex}{$\bot$}$\mkern-3.5mu-\mkern-3.5mu$\raisebox{0.5ex}{$\bot$}
 }
 #+END_SRC
