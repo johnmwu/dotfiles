@@ -198,7 +198,7 @@ tangling them for now.
 #+BEGIN_SRC sh 
   export PATH="${PATH}:/usr/local/texlive/2018/bin/x86_64-linux"
   export PATH="${PATH}:${HOME}/.android/Android/Sdk/platform-tools"
-  export PATH="${PATH}:~/.local/bin"
+  export PATH="${PATH}:${HOME}/.local/bin"
 #+END_SRC
 
 Alias =o= to mean "open". The precise command used depends on the
