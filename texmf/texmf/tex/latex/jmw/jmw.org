@@ -1,4 +1,4 @@
-#+property: header-args :tangle jmwcommon.sty
+#+property: header-args :tangle jmw.sty :noweb yes
 * package header
 :PROPERTIES:
 :created:  2020-04-25 01:09:01 EDT
@@ -10,10 +10,9 @@ Credit inspirations.
 
 #+BEGIN_SRC latex
 \ProvidesPackage{jmwcommon}
-\newif\ifjmwsetup\jmwsetupfalse
-\newif\ifjmwmdthm\jmwmdthmfalse
+\newif\ifjmwmdfthm\jmwmdfthmfalse
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
-\DeclareOption{sexy}{\jmwsetuptrue\jmwmdthmtrue\jmwcolorlinkstrue}
+\DeclareOption{sexy}{\jmwmdfthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
 #+END_SRC
 * use packages
@@ -30,6 +29,11 @@ More (though rarely used) math symbols. The list can be googled.
 \usepackage{amssymb}
 #+END_SRC
 
+Not entirely sure, but part of AMSLaTeX.
+#+BEGIN_SRC latex
+\usepackage{amsthm}
+#+END_SRC
+
 Script fonts. See [[https://www.stat.colostate.edu/~vollmer/pdfs/typesetting-script.pdf][here]]. Nike Sun likes these. 
 #+BEGIN_SRC latex
 \usepackage{mathrsfs} 
@@ -38,8 +42,7 @@ Script fonts. See [[https://www.stat.colostate.edu/~vollmer/pdfs/typesetting-scr
 LaTeX's standard package for colors. =usenames= and co make more colors
 available.
 #+BEGIN_SRC latex
-\PassOptionsToPackage{usenames,svgnames,dvipsnames}{xcolor}
-\usepackage{xcolor}
+\usepackage[usenames,svgnames,dvipsnames]{xcolor}
   \definecolor{lightred}{rgb}{0.5,0,0}
 #+END_SRC
 
@@ -216,84 +219,93 @@ This is probably better in a document class
 :created:  2020-04-25 01:12:50 EDT
 :END:
 #+BEGIN_SRC latex
-\ifjmwsetup
-  \ifjmwmdthm
-    \usepackage{amsthm}
-    \usepackage{thmtools}
-    \usepackage[framemethod=TikZ]{mdframed}
-  
-    \mdfdefinestyle{mdbluebox}{%
-    	roundcorner = 10pt,
-    	linewidth=1pt,
-    	skipabove=12pt,
-    	innerbottommargin=9pt,
-    	skipbelow=2pt,
-    	linecolor=blue,
-    	nobreak=true,
-    	backgroundcolor=TealBlue!5,
-    }
-    \declaretheoremstyle[
-    	headfont=\sffamily\bfseries\color{MidnightBlue},
-    	mdframed={style=mdbluebox},
-    	headpunct={\\[3pt]},
-    	postheadspace={0pt}
-    ]{thmbluebox}
-  
-    \mdfdefinestyle{mdgreenbox}{%
-    	roundcorner = 10pt,
-    	linewidth=1pt,
-    	skipabove=12pt,
-    	innerbottommargin=9pt,
-    	skipbelow=2pt,
-    	linecolor=green,
-    	nobreak=true,
-    	backgroundcolor=LimeGreen!5,
-    }
-    \declaretheoremstyle[
-    	headfont=\sffamily\bfseries\color{OliveGreen},
-    	mdframed={style=mdgreenbox},
-    	headpunct={\\[3pt]},
-    	postheadspace={0pt}
-    ]{thmgreenbox}
+\usepackage{thmtools}
 
-		\mdfdefinestyle{mdredbox}{%
-			linewidth=0.5pt,
-			skipabove=12pt,
-			frametitleaboveskip=5pt,
-			frametitlebelowskip=0pt,
-			skipbelow=2pt,
-			frametitlefont=\bfseries,
-			innertopmargin=4pt,
-			innerbottommargin=8pt,
-			nobreak=true,
-			backgroundcolor=Salmon!5,
-			linecolor=RawSienna,
-		}
-		\declaretheoremstyle[
-			headfont=\bfseries\color{RawSienna},
-			mdframed={style=mdredbox},
-			headpunct={\\[3pt]},
-			postheadspace={0pt},
-		]{thmredbox}
+\ifjmwmdfthm
+  <<mdf-thm>>
+\else
+  \newtheorem{theorem}{Theorem}[section]
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{definition}[theorem]{Definition}
+\fi
+#+END_SRC
+** mdf-thm
+:PROPERTIES:
+:created:  2020-05-24 18:07:43 EDT
+:header-args: :noweb-ref mdf-thm :tangle no
+:END:
+Main framing package.
+#+BEGIN_SRC latex
+\usepackage[framemethod=TikZ]{mdframed}
+#+END_SRC
 
-    % numbered
-    \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
-    \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
-    \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
-    \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
-    \declaretheorem[style=thmredbox,name=Argument]{argument}
-    
+Evan's boxes and theorem styles. 
+#+BEGIN_SRC latex
+\mdfdefinestyle{mdfbluebox}{%
+  roundcorner=10pt,
+  linewidth=1pt,
+  skipabove=12pt,
+  innerbottommargin=9pt,
+  skipbelow=2pt,
+  linecolor=blue,
+  nobreak=true,
+  backgroundcolor=TealBlue!5,
+}
+\declaretheoremstyle[
+  headfont=\sffamily\bfseries\color{MidnightBlue},
+  mdframed={style=mdfbluebox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
+]{thmbluebox}
 
-    % no number
-    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
-    \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
-    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
-	\else
-    \newtheorem{theorem}{Theorem}[section]
-    \newtheorem{lemma}[theorem]{Lemma}
-    \newtheorem{definition}[theorem]{Definition}
-  \fi
-\else\fi  
+\mdfdefinestyle{mdfgreenbox}{%
+  roundcorner=10pt,
+  linewidth=1pt,
+  skipabove=12pt,
+  innerbottommargin=9pt,
+  skipbelow=2pt,
+  linecolor=green,
+  nobreak=true,
+  backgroundcolor=LimeGreen!5,
+}
+\declaretheoremstyle[
+  headfont=\sffamily\bfseries\color{OliveGreen},
+  mdframed={style=mdfgreenbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
+]{thmgreenbox}
+
+\mdfdefinestyle{mdfredbox}{%
+  linewidth=0.5pt,
+  skipabove=12pt,
+  frametitleaboveskip=5pt,
+  frametitlebelowskip=0pt,
+  skipbelow=2pt,
+  frametitlefont=\bfseries,
+  innertopmargin=4pt,
+  innerbottommargin=8pt,
+  nobreak=true,
+  backgroundcolor=Salmon!5,
+  linecolor=RawSienna,
+}
+\declaretheoremstyle[
+  headfont=\bfseries\color{RawSienna},
+  mdframed={style=mdfredbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt},
+]{thmredbox}
+
+% numbered
+\declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+\declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+\declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
+\declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+\declaretheorem[style=thmredbox,name=Argument]{argument}
+
+% no number
+\declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
+\declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
+\declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
 #+END_SRC
 * other
 :PROPERTIES:

@@ -1,20 +1,20 @@
 % Much of this is copied from Evan Chen.
 
 \ProvidesPackage{jmwcommon}
-\newif\ifjmwsetup\jmwsetupfalse
-\newif\ifjmwmdthm\jmwmdthmfalse
+\newif\ifjmwmdfthm\jmwmdfthmfalse
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
-\DeclareOption{sexy}{\jmwsetuptrue\jmwmdthmtrue\jmwcolorlinkstrue}
+\DeclareOption{sexy}{\jmwmdfthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
 
 \usepackage{amsmath}
 
 \usepackage{amssymb}
 
+\usepackage{amsthm}
+
 \usepackage{mathrsfs}
 
-\PassOptionsToPackage{usenames,svgnames,dvipsnames}{xcolor}
-\usepackage{xcolor}
+\usepackage[usenames,svgnames,dvipsnames]{xcolor}
   \definecolor{lightred}{rgb}{0.5,0,0}
 
 \ifjmwcolorlinks
@@ -106,84 +106,80 @@
 \setlength{\parskip}{0.5\baselineskip}
 \setlength{\parindent}{0pt}
 
-\ifjmwsetup
-  \ifjmwmdthm
-    \usepackage{amsthm}
-    \usepackage{thmtools}
-    \usepackage[framemethod=TikZ]{mdframed}
+\usepackage{thmtools}
+
+\ifjmwmdfthm
+  \usepackage[framemethod=TikZ]{mdframed}
+  \mdfdefinestyle{mdfbluebox}{%
+    roundcorner=10pt,
+    linewidth=1pt,
+    skipabove=12pt,
+    innerbottommargin=9pt,
+    skipbelow=2pt,
+    linecolor=blue,
+    nobreak=true,
+    backgroundcolor=TealBlue!5,
+  }
+  \declaretheoremstyle[
+    headfont=\sffamily\bfseries\color{MidnightBlue},
+    mdframed={style=mdfbluebox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
+  ]{thmbluebox}
   
-    \mdfdefinestyle{mdbluebox}{%
-    	roundcorner = 10pt,
-    	linewidth=1pt,
-    	skipabove=12pt,
-    	innerbottommargin=9pt,
-    	skipbelow=2pt,
-    	linecolor=blue,
-    	nobreak=true,
-    	backgroundcolor=TealBlue!5,
-    }
-    \declaretheoremstyle[
-    	headfont=\sffamily\bfseries\color{MidnightBlue},
-    	mdframed={style=mdbluebox},
-    	headpunct={\\[3pt]},
-    	postheadspace={0pt}
-    ]{thmbluebox}
+  \mdfdefinestyle{mdfgreenbox}{%
+    roundcorner=10pt,
+    linewidth=1pt,
+    skipabove=12pt,
+    innerbottommargin=9pt,
+    skipbelow=2pt,
+    linecolor=green,
+    nobreak=true,
+    backgroundcolor=LimeGreen!5,
+  }
+  \declaretheoremstyle[
+    headfont=\sffamily\bfseries\color{OliveGreen},
+    mdframed={style=mdfgreenbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
+  ]{thmgreenbox}
   
-    \mdfdefinestyle{mdgreenbox}{%
-    	roundcorner = 10pt,
-    	linewidth=1pt,
-    	skipabove=12pt,
-    	innerbottommargin=9pt,
-    	skipbelow=2pt,
-    	linecolor=green,
-    	nobreak=true,
-    	backgroundcolor=LimeGreen!5,
-    }
-    \declaretheoremstyle[
-    	headfont=\sffamily\bfseries\color{OliveGreen},
-    	mdframed={style=mdgreenbox},
-    	headpunct={\\[3pt]},
-    	postheadspace={0pt}
-    ]{thmgreenbox}
-
-		\mdfdefinestyle{mdredbox}{%
-			linewidth=0.5pt,
-			skipabove=12pt,
-			frametitleaboveskip=5pt,
-			frametitlebelowskip=0pt,
-			skipbelow=2pt,
-			frametitlefont=\bfseries,
-			innertopmargin=4pt,
-			innerbottommargin=8pt,
-			nobreak=true,
-			backgroundcolor=Salmon!5,
-			linecolor=RawSienna,
-		}
-		\declaretheoremstyle[
-			headfont=\bfseries\color{RawSienna},
-			mdframed={style=mdredbox},
-			headpunct={\\[3pt]},
-			postheadspace={0pt},
-		]{thmredbox}
-
-    % numbered
-    \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
-    \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
-    \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
-    \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
-    \declaretheorem[style=thmredbox,name=Argument]{argument}
-    
-
-    % no number
-    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
-    \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
-    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
-	\else
-    \newtheorem{theorem}{Theorem}[section]
-    \newtheorem{lemma}[theorem]{Lemma}
-    \newtheorem{definition}[theorem]{Definition}
-  \fi
-\else\fi
+  \mdfdefinestyle{mdfredbox}{%
+    linewidth=0.5pt,
+    skipabove=12pt,
+    frametitleaboveskip=5pt,
+    frametitlebelowskip=0pt,
+    skipbelow=2pt,
+    frametitlefont=\bfseries,
+    innertopmargin=4pt,
+    innerbottommargin=8pt,
+    nobreak=true,
+    backgroundcolor=Salmon!5,
+    linecolor=RawSienna,
+  }
+  \declaretheoremstyle[
+    headfont=\bfseries\color{RawSienna},
+    mdframed={style=mdfredbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt},
+  ]{thmredbox}
+  
+  % numbered
+  \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+  \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+  \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
+  \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+  \declaretheorem[style=thmredbox,name=Argument]{argument}
+  
+  % no number
+  \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
+  \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
+  \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
+\else
+  \newtheorem{theorem}{Theorem}[section]
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{definition}[theorem]{Definition}
+\fi
 
 \@ifundefined{KOMAClassName}
 {}
