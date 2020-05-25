@@ -1,53 +1,52 @@
 #+property: header-args    :tangle .profile :results silent :noweb yes
-
 * common
 Common among all unix systems. 
 
 Source global definitions. My lenovo laptop doesn't have any. 
 #+BEGIN_SRC sh
-  if [ -f /etc/bashrc ]; then
-	  . /etc/bashrc
-  fi
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
 #+END_SRC
 ** anaconda
-   :PROPERTIES:
-   :created:  2020-02-01 17:45:56 EST
-   :END:
+ :PROPERTIES:
+ :created:  2020-02-01 17:45:56 EST
+ :END:
 I did not write any of this code. I include it here so that subsequent
 tangling preserves its existence. In general, I dislike random stuff
 adding text to my bashrc. 
 #+BEGIN_SRC sh
-  # >>> conda initialize >>>
-  # !! Contents within this block are managed by 'conda init' !!
-  __conda_setup="$('/usr/users/johnmwu/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-  if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-  else
-      if [ -f "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh" ]; then
-	  . "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh"
-      else
-	  export PATH="/usr/users/johnmwu/anaconda3/bin:$PATH"
-      fi
-  fi
-  unset __conda_setup
-  # <<< conda initialize <<<
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/usr/users/johnmwu/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+		eval "$__conda_setup"
+else
+		if [ -f "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh" ]; then
+	. "/usr/users/johnmwu/anaconda3/etc/profile.d/conda.sh"
+		else
+	export PATH="/usr/users/johnmwu/anaconda3/bin:$PATH"
+		fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 #+END_SRC
 ** file
 Specific, important files. 
 
 The root directory for "binary files". This contains the executables.
 #+BEGIN_SRC sh
-  export BIN_DIR="${HOME}/core/prod/bin"
+export BIN_DIR="${HOME}/core/prod/bin"
 #+END_SRC
 
 Root dotfile directory.
 #+BEGIN_SRC sh
-  export ENV_STOW_DIR="${BIN_DIR}/env/stow"
+export ENV_STOW_DIR="${BIN_DIR}/env/stow"
 #+END_SRC
 
 Root data directory for the scheduling subsystem. 
 #+BEGIN_SRC sh
-  export PROC_DIR="${HOME}/core/mind/sys/short/proc"
+export PROC_DIR="${HOME}/core/mind/sys/short/proc"
 #+END_SRC
 
 The temporary directory. This is actually used by other programs,
@@ -58,50 +57,50 @@ including
 Semantically, it is a place where file permanence is not guaranteed. In
 practice, files are not deleted often. 
 #+BEGIN_SRC sh
-  export TEMP="${HOME}/other/temp"
+export TEMP="${HOME}/other/temp"
 #+END_SRC
 
 These are important regular files for me
 #+BEGIN_SRC sh
-  export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
-  export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
-  export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
+export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
+export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
+export README_HOME="${HOME}/core/mind/sys/other/readme-home.org"
 #+END_SRC
 
 For my UROP with MIT CSAIL's SLS group. 
 
 I set up =sshfs=. The "root" depends on what host I'm on. 
 #+BEGIN_SRC sh
-	if [[ $HOSTNAME = aloysius ]]; then
-			export SLS_ROOT=""
-	elif [[ $HOSTNAME = contessa ]]; then
-			export SLS_ROOT="$HOME/other/sls-root"
-	fi
+if [[ $HOSTNAME = aloysius ]]; then
+		export SLS_ROOT=""
+elif [[ $HOSTNAME = contessa ]]; then
+		export SLS_ROOT="$HOME/other/sls-root"
+fi
 #+END_SRC
 
 Misc environment variables.
 #+BEGIN_SRC sh
-	# this is recommended, but a symlink. Breaks when mounting using sshfs. 
-	# export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
-	export SLS_HOME_REL="data/sls/u/urop/johnmwu"
-	export SLS_DATA_HOME_REL="data/sls/temp/johnmwu"
-	export SLS_HOME="$SLS_ROOT/$SLS_HOME_REL"
-	export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
+# this is recommended, but a symlink. Breaks when mounting using sshfs. 
+# export SLS_HOME="$SLS_ROOT/usr/users/johnmwu"
+export SLS_HOME_REL="data/sls/u/urop/johnmwu"
+export SLS_DATA_HOME_REL="data/sls/temp/johnmwu"
+export SLS_HOME="$SLS_ROOT/$SLS_HOME_REL"
+export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
 #+END_SRC
 
 My Emacs configuration. 
 #+BEGIN_SRC sh
-  export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
+export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
 #+END_SRC
 ** path
-   :PROPERTIES:
-   :created:  2020-02-02 00:44:00 CST
-   :END:
+ :PROPERTIES:
+ :created:  2020-02-02 00:44:00 CST
+ :END:
 Path alterations. 
 
 This contains personal scripts. 
 #+BEGIN_SRC sh
-  export PATH="${PATH}:${BIN_DIR}/bin" 
+export PATH="${PATH}:${BIN_DIR}/bin" 
 #+END_SRC
 ** LS_COLORS
 :PROPERTIES:
@@ -109,38 +108,38 @@ This contains personal scripts.
 :END:
 Pretty =ls(1)= output. 
 #+BEGIN_SRC sh
-  alias ls="ls --color"
-  if [[ -f ~/.dircolors ]]; then
-      eval "$(env TERM=xterm dircolors ~/.dircolors)"
-  fi
+alias ls="ls --color"
+if [[ -f ~/.dircolors ]]; then
+		eval "$(env TERM=xterm dircolors ~/.dircolors)"
+fi
 #+END_SRC
 
 These are also "environment" objects, so they need to be manually
 colored. See my =~/.dircolors=. The colors or definitions may change, so
 this block is liable to changing. 
 #+BEGIN_SRC sh
-  ENV_C="35;46;01"
-  LS_COLORS="${LS_COLORS}*profile=$ENV_C:"
-  LS_COLORS="${LS_COLORS}*dircolors=$ENV_C:"
-  LS_COLORS="${LS_COLORS}*gitconfig=$ENV_C:"
-  LS_COLORS="${LS_COLORS}*emacs=$ENV_C:"
-  LS_COLORS="${LS_COLORS}*emacs_bash=$ENV_C:"
-  LS_COLORS="${LS_COLORS}*vimrc=$ENV_C:"
+ENV_C="35;46;01"
+LS_COLORS="${LS_COLORS}*profile=$ENV_C:"
+LS_COLORS="${LS_COLORS}*dircolors=$ENV_C:"
+LS_COLORS="${LS_COLORS}*gitconfig=$ENV_C:"
+LS_COLORS="${LS_COLORS}*emacs=$ENV_C:"
+LS_COLORS="${LS_COLORS}*emacs_bash=$ENV_C:"
+LS_COLORS="${LS_COLORS}*vimrc=$ENV_C:"
 #+END_SRC
 ** other
-   :PROPERTIES:
-   :created:  2020-02-02 00:44:04 CST
-   :END:
+ :PROPERTIES:
+ :created:  2020-02-02 00:44:04 CST
+ :END:
 Vim or Emacs? Both. =emacsclient(1)= is the vi-style version of Emacs.
 #+BEGIN_SRC sh
-  alias e="emacsclient"
-  alias v="vim"
+alias e="emacsclient"
+alias v="vim"
 #+END_SRC
 
 More aliases. 
 #+BEGIN_SRC sh
-	alias python="python3"
-	alias ju="jupyter notebook &> /dev/null & disown"
+alias python="python3"
+alias ju="jupyter notebook &> /dev/null & disown"
 #+END_SRC
 
 Make =**= match zero or more dirs in globs.
@@ -151,123 +150,123 @@ shopt -s globstar
 Are we on desktop? Not the most intelligent logic. 
 #+BEGIN_SRC sh 
 function jmw_on_desktop () {
-		[[ $(uname -m) = x86* ]]
+	[[ $(uname -m) = x86* ]]
 }
 #+END_SRC
 
 Are we on mobile? Again, not too advanced. 
 #+BEGIN_SRC sh 
-  function jmw_on_mobile () {
-      ! jmw_on_desktop
-  }
+function jmw_on_mobile () {
+		! jmw_on_desktop
+}
 #+END_SRC
 
 For some reason, I had this in my old config file. It's from my SLS
 UROP.
 #+BEGIN_SRC sh
-  export HDF5_USE_FILE_LOCKING=FALSE # See https://github.com/MPAS-Dev/MPAS-Analysis/issues/407
+export HDF5_USE_FILE_LOCKING=FALSE # See https://github.com/MPAS-Dev/MPAS-Analysis/issues/407
 #+END_SRC
 
 Desktop and mobile-specific stuff. 
 #+BEGIN_SRC sh :noweb yes
-  if jmw_on_desktop; then
-      <<desktop>>
-  fi
+if jmw_on_desktop; then
+		<<desktop>>
+fi
 #+END_SRC
 
 #+BEGIN_SRC sh :noweb yes
-  if jmw_on_mobile; then
-      <<mobile>>
-  fi
+if jmw_on_mobile; then
+		<<mobile>>
+fi
 #+END_SRC
 * desktop
-  :PROPERTIES:
-  :created:  2020-02-01 17:05:38 EST
-  :header-args: :noweb-ref desktop :tangle no :noweb yes
-  :END:
+:PROPERTIES:
+:created:  2020-02-01 17:05:38 EST
+:header-args: :noweb-ref desktop :tangle no :noweb yes
+:END:
 Desktop-specific configurations. 
 
 If I'm on desktop, I'll be using emacs. =emacsclient(1)= is a utility
 for connecting to an existing emacs server. 
 #+BEGIN_SRC sh 
-  export EDITOR="emacsclient --alternate-editor=emacs" 
+export EDITOR="emacsclient --alternate-editor=emacs" 
 #+END_SRC
 
 I had these additions to the path, but I kind of forget why. I'm not
 tangling them for now.
 #+BEGIN_SRC sh 
-  export PATH="${PATH}:/usr/local/texlive/2018/bin/x86_64-linux"
-  export PATH="${PATH}:${HOME}/.android/Android/Sdk/platform-tools"
-  export PATH="${PATH}:${HOME}/.local/bin"
+export PATH="${PATH}:/usr/local/texlive/2018/bin/x86_64-linux"
+export PATH="${PATH}:${HOME}/.android/Android/Sdk/platform-tools"
+export PATH="${PATH}:${HOME}/.local/bin"
 #+END_SRC
 
 Alias =o= to mean "open". The precise command used depends on the
 desktop environment.
 #+BEGIN_SRC sh
-  if [[ $XDG_SESSION_TYPE = "x11" ]]; then 
-      alias o="xdg-open 2>/dev/null"
-  else
-      alias o="gio open 2>/dev/null"
-  fi
+if [[ $XDG_SESSION_TYPE = "x11" ]]; then 
+		alias o="xdg-open 2>/dev/null"
+else
+		alias o="gio open 2>/dev/null"
+fi
 #+END_SRC
 
 This is a hack for a bug in GNOME whereby I cannot set ~C-S-<END>~ to
 take a screenshot. I hope it gets fixed. This code binds it. If it's not
 bound, run the bashrc again. 
 #+BEGIN_SRC sh
-  if type dconf; then
-      dconf write /org/gnome/settings-daemon/plugins/media-keys/area-screenshot-clip "['<Ctrl><Shift>End']"
-  fi &>/dev/null
+if type dconf; then
+		dconf write /org/gnome/settings-daemon/plugins/media-keys/area-screenshot-clip "['<Ctrl><Shift>End']"
+fi &>/dev/null
 #+END_SRC
 
 Swap caps and ctrl.
 #+BEGIN_SRC sh
-  /usr/bin/setxkbmap -option "ctrl:swapcaps"
+/usr/bin/setxkbmap -option "ctrl:swapcaps"
 #+END_SRC
 
 #+RESULTS:
 
 This is my web browser. 
 #+BEGIN_SRC sh
-  export BROWSER="firefox"
+export BROWSER="firefox"
 #+END_SRC
 
 This is my pdf viewer. 
 #+BEGIN_SRC sh
-  export PDF_VIEWER="okular"
+export PDF_VIEWER="okular"
 #+END_SRC
 
 ** vterm
-   :PROPERTIES:
-   :created:  2020-02-01 17:44:13 EST
-   :END:
+ :PROPERTIES:
+ :created:  2020-02-01 17:44:13 EST
+ :END:
 This is copy-pasted from [[https://github.com/akermu/emacs-libvterm][github]]. 
 #+BEGIN_SRC sh
-  function vterm_printf(){
-      if [ -n "$TMUX" ]; then
-	  # tell tmux to pass the escape sequences through
-	  # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
-	  printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-      elif [ "${TERM%%-*}" = "screen" ]; then
-	  # GNU screen (screen, screen-256color, screen-256color-bce)
-	  printf "\eP\e]%s\007\e\\" "$1"
-      else
-	  printf "\e]%s\e\\" "$1"
-      fi
-  }
-  vterm_prompt_end(){
-      vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
-  }
-  PS1=$PS1'\[$(vterm_prompt_end)\]'
+function vterm_printf(){
+		if [ -n "$TMUX" ]; then
+	# tell tmux to pass the escape sequences through
+	# (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
+	printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+		elif [ "${TERM%%-*}" = "screen" ]; then
+	# GNU screen (screen, screen-256color, screen-256color-bce)
+	printf "\eP\e]%s\007\e\\" "$1"
+		else
+	printf "\e]%s\e\\" "$1"
+		fi
+}
+vterm_prompt_end(){
+		vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
+}
+PS1=$PS1'\[$(vterm_prompt_end)\]'
 #+END_SRC
 ** go
-   :PROPERTIES:
-   :created:  2020-02-12 14:47:33 EST
-   :END:
+ :PROPERTIES:
+ :created:  2020-02-12 14:47:33 EST
+ :END:
 For the Go programming language.
 #+BEGIN_SRC sh
-  export GOPATH="${HOME}/go"
-  export PATH="${PATH}:${GOPATH}/bin"
+export GOPATH="${HOME}/go"
+export PATH="${PATH}:${GOPATH}/bin"
 #+END_SRC
 ** ime
 :PROPERTIES:
@@ -275,9 +274,9 @@ For the Go programming language.
 :END:
 EXWM chinese input
 #+BEGIN_SRC sh 
-	if [[ $DESKTOP_SESSION = "emacs" ]]; then
-			<<exwm-body>>
-	fi
+if [[ $DESKTOP_SESSION = "emacs" ]]; then
+		<<exwm-body>>
+fi
 #+END_SRC
 *** exwm-body
 :PROPERTIES:
@@ -287,31 +286,31 @@ EXWM chinese input
 Use ibus as the input method. For some reason, the Qt4 is necessary for
 anki. This is close to what [[https://wiki.archlinux.org/index.php/IBus][arch]] recommends. 
 #+BEGIN_SRC sh
-	export GTK_IM_MODULE=ibus
-	export QT_IM_MODULE=ibus
-	export QT4_IM_MODULE=ibus
-	export XMODIFIERS=@im=ibus
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export QT4_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
 #+END_SRC
 
 Start the daemon if it hasn't already. 
 #+BEGIN_SRC sh 
-	ibus-daemon -dx
+ibus-daemon -dx
 #+END_SRC
 * mobile
-  :PROPERTIES:
-  :created:  2020-02-01 17:48:49 EST
-  :header-args: :noweb-ref mobile :tangle no
-  :END:
+:PROPERTIES:
+:created:  2020-02-01 17:48:49 EST
+:header-args: :noweb-ref mobile :tangle no
+:END:
 I use the command line on my mobile device. I currently use termux. 
 
 Emacs doesn't make sense on mobile. Vim is workable.
 #+BEGIN_SRC sh
-  export TEXT_EDITOR="vim"
+export TEXT_EDITOR="vim"
 #+END_SRC
 
 Setup the =o= alias.
 #+BEGIN_SRC sh
-  alias o="termux-open"
+alias o="termux-open"
 #+END_SRC
 
 An oddity about my device as of [2020-02-01 Sat] is that I cannot mark
@@ -319,7 +318,7 @@ new files executable. To execute personal scripts, I need to use
 =bash(1)=, which is a valid executable, as an interpreter. I can emulate
 the feel of how it used to be with aliases. 
 #+BEGIN_SRC sh
-  alias wander="bash wander"
-  alias safe="bash safe"
-  alias agenda="bash agenda"
+alias wander="bash wander"
+alias safe="bash safe"
+alias agenda="bash agenda"
 #+END_SRC
