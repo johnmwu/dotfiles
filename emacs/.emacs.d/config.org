@@ -1189,6 +1189,16 @@ Window width for textual buffers. Resize to it.
 	
 #+END_SRC
 
+Useful for opening a LaTeX editing window next to Okular. 
+#+BEGIN_SRC emacs-lisp
+(defun jmw/split-text-window-right ()
+  (interactive)
+  (split-window-right)
+  (windmove-right)
+  (jmw/resize-text-window))
+(define-key 'jmw/prefix "3" 'jmw/split-text-window-right)
+#+END_SRC
+
 Tabs should display as 2 spaces wide. It's wide enough for my eyes. 
 #+BEGIN_SRC emacs-lisp
   (setq-default tab-width 2)
