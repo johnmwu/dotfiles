@@ -792,9 +792,9 @@ Setup the X system tray.
   (setq exwm-systemtray-height 16)
 #+END_SRC
 
-We want 4 workspaces by default. 
+We want 8 workspaces by default. 
 #+BEGIN_SRC emacs-lisp
-  (setq exwm-workspace-number 4)
+  (setq exwm-workspace-number 8)
 #+END_SRC
 
 These are the "most global" key bindings. They work in line mode and
