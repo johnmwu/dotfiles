@@ -946,14 +946,30 @@ Mark all themes as safe.
 
 Main loading. 
 #+BEGIN_SRC emacs-lisp 
-  (use-package smart-mode-line
-    :config
-    (setq sml/theme 'dark)
-    ;; this is needed to not push global modeline info off screen
-    (setq sml/shorten-modes t)
-    (setq sml/mode-width 40)
+(use-package smart-mode-line
+  :config
+  <<smart-mode-line-config>>
+  )
+#+END_SRC
+*** cfg
+:PROPERTIES:
+:created:  2020-06-02 22:05:42 EDT
+:header-args: :tangle no :noweb-ref smart-mode-line-config :results silent
+:END:
+Sml is supposed to automatically detect theme. It doesn't. 
+#+BEGIN_SRC emacs-lisp
+(setq sml/theme 'dark)
+#+END_SRC
 
-    (sml/setup))
+Makes modes more compact. Before, Narrow mode would be all the way at
+the right. 
+#+BEGIN_SRC emacs-lisp
+(setq sml/mode-width 0)
+#+END_SRC
+
+Main invocation.
+#+BEGIN_SRC emacs-lisp
+(sml/setup)
 #+END_SRC
 ** mini-modeline
    :PROPERTIES:
@@ -990,20 +1006,22 @@ line-number-mode. See [[https://github.com/kiennq/emacs-mini-modeline/issues/34]
 manually.
 #+BEGIN_SRC emacs-lisp
 (defun jmw/mode-line-buffer-pos ()
-  (concat "("
-          (number-to-string (line-number-at-pos))
-          ","
-          (number-to-string (current-column))
-          ")"))
+  (concat 
+   (number-to-string (line-number-at-pos))
+   ":"
+   (number-to-string (current-column))
+   ))
 #+END_SRC
 
 Main format.
 #+BEGIN_SRC emacs-lisp
 (setq mini-modeline-r-format
-      '("" ;; list needs to start with a string
+      '("" ;; mode line construct needs to start with a string
         "%e"
-        mode-line-front-space
+        ;; mode-line-front-space
 				(:eval (jmw/mode-line-buffer-pos))
+				mode-line-position
+        ;; (:eval (string-trim (format-mode-line mode-line-position)))
         mode-line-mule-info
         mode-line-client
         mode-line-modified
@@ -1011,12 +1029,11 @@ Main format.
 				;; empty if running in window system
         mode-line-frame-identification
         mode-line-buffer-identification
-				;; at some point, `mode-line-position` made things crash
-        " " mode-line-position " "
-				;; don't know what this is
+				"   "
+				;; I guess this is for evil mode
         ;; evil-mode-line-tag
         (:eval (string-trim (format-mode-line mode-line-modes)))
-				"     "
+				"   "
         mode-line-misc-info
         ))
 #+END_SRC
