@@ -1005,6 +1005,7 @@ For some reason, [2020-06-02 Tue] mini-modeline does not agree with
 line-number-mode. See [[https://github.com/kiennq/emacs-mini-modeline/issues/34][github issue]]. I'm turning it off and inserting
 manually.
 #+BEGIN_SRC emacs-lisp
+(line-number-mode 0)
 (defun jmw/mode-line-buffer-pos ()
   (concat 
    (number-to-string (line-number-at-pos))
@@ -1018,7 +1019,7 @@ Main format.
 (setq mini-modeline-r-format
       '("" ;; mode line construct needs to start with a string
         "%e"
-        ;; mode-line-front-space
+        mode-line-front-space
 				(:eval (jmw/mode-line-buffer-pos))
 				mode-line-position
         ;; (:eval (string-trim (format-mode-line mode-line-position)))
@@ -1254,7 +1255,8 @@ Useful for opening a LaTeX editing window next to Okular.
   (interactive)
   (split-window-right)
   (windmove-right)
-  (jmw/resize-text-window))
+  (jmw/resize-text-window)
+  (switch-to-buffer (get-buffer-create "*scratch*")))
 (define-key 'jmw/prefix "3" 'jmw/split-text-window-right)
 #+END_SRC
 
