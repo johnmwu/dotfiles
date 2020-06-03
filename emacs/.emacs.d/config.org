@@ -284,7 +284,7 @@ Don't prompt for confirmation when executing code blocks.
 By default, editing org source reorganizes the frame. I want the new
 buffer to appear in another window. 
 #+BEGIN_SRC emacs-lisp
-(setq org-src-window-setup 'other-window)
+(setq org-src-window-setup 'current-window)
 #+END_SRC
 
 Better templates for creating source blocks.
@@ -945,7 +945,7 @@ Mark all themes as safe.
 #+END_SRC
 
 Main loading. 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
   (use-package smart-mode-line
     :config
     (setq sml/theme 'dark)
@@ -968,12 +968,62 @@ horizontally split windows, the info wouldn't even fit.
 
 This is much cleaner. 
 #+BEGIN_SRC emacs-lisp
-  (use-package mini-modeline
-    :after smart-mode-line
+(use-package mini-modeline
+  :after smart-mode-line
 
-    :config
-    (setq mini-modeline-right-padding 20)
-    (mini-modeline-mode t))
+  :config
+  <<mini-modeline-config>>
+  )
+#+END_SRC
+*** cfg
+:PROPERTIES:
+:created:  2020-06-02 20:55:37 EDT
+:header-args: :tangle no :noweb-ref mini-modeline-config :results silent
+:END:
+Make space for systemtray. 
+#+BEGIN_SRC emacs-lisp
+(setq mini-modeline-right-padding 20)
+#+END_SRC
+
+For some reason, [2020-06-02 Tue] mini-modeline does not agree with
+line-number-mode. See [[https://github.com/kiennq/emacs-mini-modeline/issues/34][github issue]]. I'm turning it off and inserting
+manually.
+#+BEGIN_SRC emacs-lisp
+(defun jmw/mode-line-buffer-pos ()
+  (concat "("
+          (number-to-string (line-number-at-pos))
+          ","
+          (number-to-string (current-column))
+          ")"))
+#+END_SRC
+
+Main format.
+#+BEGIN_SRC emacs-lisp
+(setq mini-modeline-r-format
+      '("" ;; list needs to start with a string
+        "%e"
+        mode-line-front-space
+				(:eval (jmw/mode-line-buffer-pos))
+        mode-line-mule-info
+        mode-line-client
+        mode-line-modified
+        mode-line-remote
+				;; empty if running in window system
+        mode-line-frame-identification
+        mode-line-buffer-identification
+				;; at some point, `mode-line-position` made things crash
+        " " mode-line-position " "
+				;; don't know what this is
+        ;; evil-mode-line-tag
+        (:eval (string-trim (format-mode-line mode-line-modes)))
+				"     "
+        mode-line-misc-info
+        ))
+#+END_SRC
+
+Invoke. 
+#+BEGIN_SRC emacs-lisp
+(mini-modeline-mode t)
 #+END_SRC
 ** js2-mode
    :PROPERTIES:
@@ -1001,14 +1051,6 @@ do nothing anyway, but occasionally I'll do something that causes it to
 randomly pop back into my =init.el=. 
 #+BEGIN_SRC emacs-lisp 
   (setq custom-file (concat user-emacs-directory "/custom.el"))
-#+END_SRC
-** column-number-mode
-   :PROPERTIES:
-   :created:  2020-03-21 14:20:38 EDT
-   :END:
-Displays column number of point on the mode line. 
-#+BEGIN_SRC emacs-lisp
-  (column-number-mode 1)
 #+END_SRC
 ** size-indication-mode
    :PROPERTIES:
