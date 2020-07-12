@@ -196,6 +196,12 @@ Bolded vector.
 #+BEGIN_SRC latex
 \newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
 #+END_SRC
+
+Variance, covariance. 
+#+BEGIN_SRC latex
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Var}{Var}
+#+END_SRC
 ** other
 :PROPERTIES:
 :created:  2020-05-22 04:37:13 EDT
