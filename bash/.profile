@@ -19,6 +19,8 @@ unset __conda_setup
 
 export BIN_DIR="${HOME}/core/prod/bin"
 
+export BIN_ENV_DIR="$BIN_DIR/env"
+
 export ENV_STOW_DIR="${BIN_DIR}/env/stow"
 
 export PROC_DIR="${HOME}/core/mind/sys/short/proc"
@@ -45,6 +47,8 @@ export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
 export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
 
 export PATH="${PATH}:${BIN_DIR}/bin"
+
+export PYTHONPATH="$PYTHONPATH:$BIN_ENV_DIR/py"
 
 alias ls="ls --color"
 if [[ -f ~/.dircolors ]]; then

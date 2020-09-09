@@ -1319,6 +1319,11 @@ Insert the current time.
   (org-time-stamp-inactive '(16)))
 (define-key 'jmw/prefix "t" 'jmw/insert-instant)
 #+END_SRC
+
+Do not have ctl-z suspend.
+#+BEGIN_SRC emacs-lisp
+(global-unset-key (kbd "C-z"))
+#+END_SRC
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when

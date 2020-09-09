@@ -39,6 +39,11 @@ The root directory for "binary files". This contains the executables.
 export BIN_DIR="${HOME}/core/prod/bin"
 #+END_SRC
 
+Alterations to the "environment". Usually libraries.
+#+BEGIN_SRC sh
+export BIN_ENV_DIR="$BIN_DIR/env"
+#+END_SRC
+
 Root dotfile directory.
 #+BEGIN_SRC sh
 export ENV_STOW_DIR="${BIN_DIR}/env/stow"
@@ -101,6 +106,13 @@ Path alterations.
 This contains personal scripts. 
 #+BEGIN_SRC sh
 export PATH="${PATH}:${BIN_DIR}/bin" 
+#+END_SRC
+** pythonpath
+:PROPERTIES:
+:created:  2020-07-17 19:00:19 EDT
+:END:
+#+BEGIN_SRC sh
+export PYTHONPATH="$PYTHONPATH:$BIN_ENV_DIR/py"
 #+END_SRC
 ** LS_COLORS
 :PROPERTIES:
