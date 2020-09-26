@@ -9,7 +9,7 @@ Credit inspirations.
 #+END_SRC
 
 #+BEGIN_SRC latex
-\ProvidesPackage{jmwcommon}
+\ProvidesPackage{jmw}
 \newif\ifjmwmdfthm\jmwmdfthmfalse
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
 \DeclareOption{sexy}{\jmwmdfthmtrue\jmwcolorlinkstrue}
@@ -70,34 +70,55 @@ Better double-struck characters. Suggested by Harry Yu.
 #+BEGIN_SRC latex
 \usepackage{dsfont} % sexy double-struck chars
 #+END_SRC
+
+For the foreach macro. 
+#+BEGIN_SRC latex
+\usepackage{tikz}
+#+END_SRC
 * macro
 :PROPERTIES:
 :created:  2020-04-25 01:10:37 EDT
 :END:
+A macro almost certainly shouldn't take arguments. The ones that do
+should have a good reason, e.g.,
+- For =\norm=, the argument is placed inside the pair of double verts. 
+- For =\Pr=, it behaves like a function. You are always taking the
+  probability of something.
+
 Abbreviations. No semantics. 
+
+Suggested by Harry. 
 #+BEGIN_SRC latex
-\newcommand{\FF}{\ensuremath{\mathds{F}}}
-\newcommand{\PP}{\ensuremath{\mathds{P}}}
-\newcommand{\EE}{\ensuremath{\mathds{E}}}
+\foreach \x in {A,...,Z}{%
+\expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
+\expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
+\expandafter\xdef\csname frak\x\endcsname{\noexpand\ensuremath{\noexpand\mathfrak{\x}}}
+\expandafter\xdef\csname scr\x\endcsname{\noexpand\ensuremath{\noexpand\mathscr{\x}}}
+}
+#+END_SRC
+
+#+BEGIN_SRC latex
+\newcommand{\FF}{\dsF}
+\newcommand{\PP}{\dsP}
+\newcommand{\EE}{\dsE}
 \newcommand{\eps}{\ensuremath{\epsilon}}
 \newcommand{\dt}{\ensuremath{\delta}}
 \newcommand{\del}{\partial} 
-\newcommand{\scrG}{\ensuremath{\mathscr{G}}} % for sigma algebras
-\newcommand{\scrF}{\ensuremath{\mathscr{F}}} % for sigma algebras
-\newcommand{\scrB}{\ensuremath{\mathscr{B}}} % for borel algebras
 \newcommand{\cbrt}{\sqrt[3]} % "cube root"
 \renewcommand{\phi}{\varphi}
-\renewcommand{\d}[1]{\ensuremath{\mathrm{d}{#1}}}
+\let\d\relax
+\newcommand{\d}{\ensuremath{\mathrm{d}}}
 #+END_SRC
+
 
 Number systems. 
 #+BEGIN_SRC latex
-\newcommand{\NN}{\ensuremath{\mathds{N}}}
-\newcommand{\ZZ}{\ensuremath{\mathds{Z}}}
-\newcommand{\QQ}{\ensuremath{\mathds{Q}}}
-\newcommand{\RR}{\ensuremath{\mathds{R}}}
-\newcommand{\CC}{\ensuremath{\mathds{C}}} 
-\newcommand{\HH}{\ensuremath{\mathds{H}}} 
+\newcommand{\NN}{\dsN}
+\newcommand{\ZZ}{\dsZ}
+\newcommand{\QQ}{\dsQ}
+\newcommand{\RR}{\dsR}
+\newcommand{\CC}{\dsC} 
+\newcommand{\HH}{\dsH} 
 #+END_SRC
 
 Probability Distributions.
@@ -107,7 +128,8 @@ Probability Distributions.
 \newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
 \newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
 \newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
-\newcommand{\Gauss}{\mathcal{N}}
+\newcommand{\Gauss}{\calN}
+\newcommand{\Binom}{\ensuremath{\textsc{Binom}}}
 #+END_SRC
 
 Groups and representations. 
@@ -170,7 +192,7 @@ Misc stuff from 18.675.
 #+BEGIN_SRC latex
 \renewcommand{\Pr}[1]{\PP[#1]}
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-\newcommand{\Ev}{\EE} % expected value
+\newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
@@ -201,6 +223,70 @@ Variance, covariance.
 #+BEGIN_SRC latex
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Var}{Var}
+#+END_SRC
+
+Encoding and decoding in a communication system. Generation in a
+cryptosystem.
+#+BEGIN_SRC latex
+\newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
+\newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
+\newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
+#+END_SRC
+
+For realizing a random variable. 
+#+BEGIN_SRC latex
+\newcommand{\from}{\leftarrow}
+#+END_SRC
+
+Domain and Codomain.
+#+BEGIN_SRC latex
+\DeclareMathOperator{\Dom}{Dom} 
+\DeclareMathOperator{\Cod}{Cod} 
+#+END_SRC
+
+Better bars. 
+#+BEGIN_SRC latex
+\let\bar\relax
+\newcommand{\bar}[1]{\overline{#1}}
+#+END_SRC
+
+Categories. 
+#+BEGIN_SRC latex
+\newcommand{\Vect}[1]{#1\text{-\textbf{Vect}}}
+\newcommand{\Top}{\mathbf{Top}} % topological spaces
+\newcommand{\Man}{\mathbf{Man}} % smooth manifolds
+\newcommand{\Set}{\mathbf{Set}} 
+\newcommand{\Cat}{\mathbf{Cat}} 
+\newcommand{\Alg}[1]{#1\text{-\textbf{Alg}}} % algebra over a field
+#+END_SRC
+
+Category theory arrows. 
+#+BEGIN_SRC latex
+\newcommand{\monoto}[1]{\stackrel{#1}{\hookrightarrow}}
+\newcommand{\morto}[1]{\stackrel{#1}{\to}}
+\newcommand{\isoto}[1]{\stackrel{#1}{\xrightarrow{\sim}}}
+#+END_SRC
+
+Partial function. 
+#+BEGIN_SRC latex
+\newcommand{\partto}{\nrightarrow}
+#+END_SRC
+
+Objects of a category.
+#+BEGIN_SRC latex
+\newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
+#+END_SRC
+
+Tensor product. A binary operation on vector spaces, and a binary
+operation on tensors.
+#+BEGIN_SRC latex
+\newcommand{\tensor}{\otimes}
+#+END_SRC
+
+Automorphism group. 
+#+BEGIN_SRC latex
+\DeclareMathOperator{\Diff}{Diff} 
+\DeclareMathOperator{\Aut}{Aut} 
 #+END_SRC
 ** other
 :PROPERTIES:
