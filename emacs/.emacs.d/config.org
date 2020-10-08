@@ -611,7 +611,9 @@ Emacs's built-in hex editor.
 ** pyim
 A Chinese input method. Installed because ibus pinyin wasn't working
 with fullscreen emacs.
-#+BEGIN_SRC emacs-lisp
+
+[2020-10-06 Tue 11:45] Don't use it. 
+#+BEGIN_SRC emacs-lisp :tangle no
   (use-package pyim
     :config
     (require 'pyim-basedict)
@@ -1077,6 +1079,50 @@ An improved javascript major mode.
     (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
     (setq js-indent-level 2))
 #+END_SRC
+** smart-tabs-mode
+:PROPERTIES:
+:created:  2020-10-05 23:59:15 EDT
+:END:
+Tabs for indentation, spaces for alignment. 
+
+The [[https://docs.microsoft.com/en-us/archive/blogs/cyrusn/tabs-vs-spaces?utm_source=thenewstack&utm_medium=website&utm_campaign=platform][least wrong]] of the three opinions on tabs vs spaces. 
+
+#+BEGIN_SRC emacs-lisp
+(smart-tabs-insinuate 'c++ 'c)
+#+END_SRC
+** c++-mode
+:PROPERTIES:
+:created:  2020-10-06 11:41:15 EDT
+:END:
+#+BEGIN_SRC emacs-lisp
+(defun inside-class-enum-p (pos)
+  "Checks if POS is within the braces of a C++ \"enum class\"."
+  (ignore-errors
+    (save-excursion
+      (goto-char pos)
+      (up-list -1)
+      (backward-sexp 1)
+      (looking-back "enum[ \t]+class[ \t]+[^}]+"))))
+
+(defun align-enum-class (langelem)
+  (if (inside-class-enum-p (c-langelem-pos langelem))
+      0
+    (c-lineup-topmost-intro-cont langelem)))
+
+(defun align-enum-class-closing-brace (langelem)
+  (if (inside-class-enum-p (c-langelem-pos langelem))
+      '-
+    '+))
+
+(defun fix-enum-class ()
+  "Setup `c++-mode' to better handle \"class enum\"."
+  (add-to-list 'c-offsets-alist '(topmost-intro-cont . align-enum-class))
+  (add-to-list 'c-offsets-alist
+               '(statement-cont . align-enum-class-closing-brace)))
+
+(add-hook 'c++-mode-hook 'fix-enum-class)
+
+#+END_SRC
 * mode
 Related to a mode, minor or major. 
 ** custom
@@ -1132,7 +1178,7 @@ line. I almost never want the former. Using solution from [[https://emacs.stacke
 Look and feel of emacs upon after startup. 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
-  (set-default-font "Ubuntu Mono-12")
+  (set-frame-font "Ubuntu Mono-12" t t)
   (setq inhibit-startup-screen t)
 #+END_SRC
 
@@ -1284,9 +1330,12 @@ Useful for opening a LaTeX editing window next to Okular.
 (define-key 'jmw/prefix "3" 'jmw/split-text-window-right)
 #+END_SRC
 
-Tabs should display as 2 spaces wide. It's wide enough for my eyes. 
+Set the display tab stop. Tabs are displayed as a space that extends to
+the next tab stop column.
+
+This is unrelated to how ~<TAB>~ works as a command.
 #+BEGIN_SRC emacs-lisp
-  (setq-default tab-width 2)
+(setq-default tab-width 2)
 #+END_SRC
 
 These aren't bound to anything by default. Put them to good use. 
