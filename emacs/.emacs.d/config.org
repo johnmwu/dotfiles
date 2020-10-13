@@ -1,4 +1,4 @@
-#+PROPERTY: header-args    :results silent :noweb yes :tangle yes
+#+PROPERTY: header-args    :results silent :noweb yes :tangle config.el
 * use-package
    :PROPERTIES:
    :created:  2020-01-29 11:36:05 CST
@@ -105,12 +105,6 @@ Other:
    :END:
 The =org-clock= feature. 
 
-First, load. The functions are autoloaded, but I load it now to add
-=org-clock-out-if-current=.
-#+BEGIN_SRC emacs-lisp
-  (require 'org-clock) 
-#+END_SRC
-
 I want =org-clock-history= to be long. 
 #+BEGIN_SRC emacs-lisp
   (setq org-clock-history-length 35)
@@ -164,48 +158,20 @@ it can be done using ordinary TODO insertion.
 Popping a task off the stack. Not called =jmw/pop-task= because calling
 it doesn't mean the task is done.
 #+BEGIN_SRC emacs-lisp
-  (defun jmw/org-clock-out-up ()
-    "Clock out and go up a process in the stack."
-    (interactive)
-    (when (org-clocking-p)
-      (let ((org-log-note-clock-out nil)
-	    (org-clock-out-switch-to-state nil))
-	(org-clock-out)))
-    (pop org-clock-history)
-    (let* ((marker (pop org-clock-history))
-	   (buf (marker-buffer marker)))
-      (select-window (jmw/main-sched-window))
-      (goto-char marker)
-      (org-clock-in)))
-  (define-key 'jmw/org-prefix "o" 'jmw/org-clock-out-up)
-#+END_SRC
-
-If we're clocking and point is on the current task, =org-todo= should
-run =jmw/org-clock-out-up=. This isn't very clean, but I couldn't come
-up with anything better.
-#+BEGIN_SRC emacs-lisp 
-  ;; code copied from ~org-clock-out-if-current~
-  (defun jmw/org-clock-out-if-current ()
-    (when (and (org-clocking-p)
-	       org-clock-out-when-done
-	       (marker-buffer org-clock-marker)
-	       (or (and (eq t org-clock-out-when-done)
-			(member org-state org-done-keywords))
-		   (and (listp org-clock-out-when-done)
-			(member org-state org-clock-out-when-done)))
-	       (equal (or (buffer-base-buffer (org-clocking-buffer))
-			  (org-clocking-buffer))
-		      (or (buffer-base-buffer (current-buffer))
-			  (current-buffer)))
-	       (< (point) org-clock-marker)
-	       (> (save-excursion (outline-next-heading) (point))
-		  org-clock-marker))
-      (org-auto-repeat-maybe org-state)
-      (jmw/org-clock-out-up)))
-  (add-hook 'org-after-todo-state-change-hook
-	    'jmw/org-clock-out-if-current)
-  (remove-hook 'org-after-todo-state-change-hook
-	       'org-clock-out-if-current)
+(defun jmw/org-clock-out-up ()
+  "Clock out and go up a process in the stack."
+  (interactive)
+  (when (org-clocking-p)
+    (let ((org-log-note-clock-out nil)
+	        (org-clock-out-switch-to-state nil))
+	    (org-clock-out)))
+  (pop org-clock-history)
+  (let* ((marker (pop org-clock-history))
+	       (buf (marker-buffer marker)))
+    (select-window (jmw/main-sched-window))
+    (goto-char marker)
+    (org-clock-in)))
+(define-key 'jmw/org-prefix "o" 'jmw/org-clock-out-up)
 #+END_SRC
 
 Popping a task off the stack. This time, we're actually done the task.
@@ -214,6 +180,7 @@ Popping a task off the stack. This time, we're actually done the task.
     (interactive)
     (jmw/org-clock-goto)
     (org-todo "DONE") ;; calls `jmw/org-clock-out-up`
+		(jmw/org-clock-out-up)
     (org-clock-goto))
   (define-key 'jmw/org-prefix "d" 'jmw/org-done)
 #+END_SRC
@@ -228,6 +195,7 @@ Similarly, pop a task off the stack because we've decided not to do it.
     (interactive)
     (jmw/org-clock-goto)
     (org-todo "CANCEL")
+		(jmw/org-clock-out-up)
     (org-clock-goto))
   (define-key 'jmw/org-prefix "c" 'jmw/org-cancel)
 #+END_SRC
@@ -248,7 +216,7 @@ The window containing =main.org=.
 Org's system for dealing with source code. 
 
 Load it for go, because it isn't one of Org's default languages. 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp 
 (use-package ob-go)
 #+END_SRC
 
@@ -290,15 +258,22 @@ buffer to appear in another window.
 Better templates for creating source blocks.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-structure-template-alist
-	     '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+	     '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist
-	     '("py" "#+BEGIN_SRC python\n?\n#+END_SRC"))
+	     '("py" . "src python"))
+(add-to-list 'org-structure-template-alist
+	     '("sh" . "src sh"))
 #+END_SRC
 
 Don't auto-indent src blocks.
 #+BEGIN_SRC emacs-lisp
 (setq org-src-preserve-indentation t)
 #+END_SRC
+
+New in Emacs 27: enable old structured template insertion. 
+#+begin_src emacs-lisp
+(require 'org-tempo)
+#+end_src
 ** heading+list
    :PROPERTIES:
    :created:  2020-03-20 18:12:39 EDT
@@ -1087,9 +1062,11 @@ Tabs for indentation, spaces for alignment.
 
 The [[https://docs.microsoft.com/en-us/archive/blogs/cyrusn/tabs-vs-spaces?utm_source=thenewstack&utm_medium=website&utm_campaign=platform][least wrong]] of the three opinions on tabs vs spaces. 
 
-#+BEGIN_SRC emacs-lisp
-(smart-tabs-insinuate 'c++ 'c)
-#+END_SRC
+#+begin_src emacs-lisp
+(use-package smart-tabs-mode
+  :config
+  (smart-tabs-insinuate 'c++ 'c))
+#+end_src
 ** c++-mode
 :PROPERTIES:
 :created:  2020-10-06 11:41:15 EDT
@@ -1176,6 +1153,9 @@ line. I almost never want the former. Using solution from [[https://emacs.stacke
 #+END_SRC
 * startup
 Look and feel of emacs upon after startup. 
+
+[2020-10-07 Wed 22:16] Changed from =set-default-font= to
+=set-frame-font=, see [[https://blog.leiwang.info/posts/emacs-set-default-font/][here]]. 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-frame-font "Ubuntu Mono-12" t t)
@@ -1323,6 +1303,7 @@ Useful for opening a LaTeX editing window next to Okular.
 (defun jmw/split-text-window-right ()
   (interactive)
   (split-window-right)
+	(sit-for 0.001)
   (windmove-right)
   (jmw/resize-text-window)
   ;; (switch-to-buffer (get-buffer-create "*scratch*"))
@@ -1500,3 +1481,14 @@ The rest of these functions need serious work.
   (define-key 'jmw/timer-prefix "c" 'jmw/cancel-timer)
   (define-key 'jmw/timer-prefix "d" 'jmw/time-left) ;; "display"
 #+END_SRC
+** tests
+:PROPERTIES:
+:created:  2020-10-08 12:36:53 EDT
+:END:
+#+begin_src emacs-lisp
+(setq fst-test-001 567)
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(setq fst-test-002 567)
+#+end_src
