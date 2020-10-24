@@ -44,7 +44,9 @@ export SLS_DATA_HOME_REL="data/sls/temp/johnmwu"
 export SLS_HOME="$SLS_ROOT/$SLS_HOME_REL"
 export SLS_DATA_HOME="$SLS_ROOT/$SLS_DATA_HOME_REL"
 
-export EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
+export JMW_EMACS_CONFIG="$ENV_STOW_DIR/emacs/.emacs.d/config.org"
+export JMW_LATEX_CONFIG="$ENV_STOW_DIR/texmf/texmf/tex/latex/jmw/jmw.sty.org"
+export JMW_SH_CONFIG="$ENV_STOW_DIR/bash/.profile.org"
 
 export PATH="${PATH}:${BIN_DIR}/bin"
 

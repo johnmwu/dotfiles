@@ -288,6 +288,23 @@ Automorphism group.
 \DeclareMathOperator{\Diff}{Diff} 
 \DeclareMathOperator{\Aut}{Aut} 
 #+END_SRC
+
+Misc functions in sf. 
+#+BEGIN_SRC latex
+\newcommand{\negl}{\textsf{negl}}
+\newcommand{\len}{\textsf{len}}
+\newcommand{\poly}{\textsf{poly}} % means "polynomial in"
+#+END_SRC
+
+Isomorphic symbol. 
+#+BEGIN_SRC latex
+\newcommand{\iso}{\sim}
+#+END_SRC
+
+Determinant. 
+#+BEGIN_SRC latex
+\DeclareMathOperator{\Det}{Det} 
+#+END_SRC
 ** other
 :PROPERTIES:
 :created:  2020-05-22 04:37:13 EDT

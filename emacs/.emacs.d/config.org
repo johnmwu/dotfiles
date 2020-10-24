@@ -13,15 +13,13 @@ downloaded.
 #+END_SRC
 * org
 Related to =org-mode=. It's amazing how this has taken over my life. 
+#+BEGIN_SRC emacs-lisp
+(require 'org)
+#+END_SRC
 
 First, add the modules we use. 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-modules 'org-habit)
-#+END_SRC
-
-Now, load it. There's no point to delay. 
-#+BEGIN_SRC emacs-lisp
-(require 'org)
 #+END_SRC
 
 Define the prefix key and bind it. 
@@ -180,8 +178,7 @@ Popping a task off the stack. This time, we're actually done the task.
     (interactive)
     (jmw/org-clock-goto)
     (org-todo "DONE") ;; calls `jmw/org-clock-out-up`
-		(jmw/org-clock-out-up)
-    (org-clock-goto))
+		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "d" 'jmw/org-done)
 #+END_SRC
 In theory, the call to =jmw/org-clock-out-up= should bring us to the
@@ -1200,10 +1197,11 @@ Applications to run at login.
 
 These are the initial files I want open. 
 #+BEGIN_SRC emacs-lisp
-  (setq jmw/init-file-list
-	(list
-	 (getenv "EMACS_CONFIG")
-	 ))
+(setq jmw/init-file-list (list
+	                        (getenv "JMW_EMACS_CONFIG")
+                          (getenv "JMW_LATEX_CONFIG")
+                          (getenv "JMW_SH_CONFIG")
+	                        ))
 #+END_SRC
 
 The main thing. 

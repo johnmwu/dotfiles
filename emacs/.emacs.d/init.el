@@ -10,5 +10,6 @@
   (package-install 'use-package))
 
 ;; load literate configuration
-(setq vc-follow-symlinks nil) ; ignore warning
-(org-babel-load-file "~/.emacs.d/config.org")
+(setq vc-follow-symlinks t) ;; Answer y to "Symbolic link to
+                            ;; Git-controlled source file; follow link?"
+(load "~/.emacs.d/config.el")
