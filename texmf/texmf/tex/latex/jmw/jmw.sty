@@ -32,6 +32,8 @@
 
 \usepackage{tikz}
 
+\usepackage{mathtools}
+
 \foreach \x in {A,...,Z}{%
 \expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
 \expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
@@ -91,13 +93,22 @@
 
 \renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
 
-\renewcommand{\Pr}[1]{\PP[#1]}
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
 \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
 \newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}}
+
+\let\Pr\relax
+\DeclarePairedDelimiterXPP
+  \Pr
+  [1]
+  {\PP} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
 
 \newcommand{\card}[1]{\ensuremath{\abs{#1}}}
 
@@ -150,6 +161,9 @@
 \newcommand{\iso}{\sim}
 
 \DeclareMathOperator{\Det}{Det}
+
+\let\concat\relax
+\newcommand{\concat}{\mathbin{\|}}
 
 \renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
 \newcommand{\degrees}{^\circ} % "degrees"

@@ -75,6 +75,11 @@ For the foreach macro.
 #+BEGIN_SRC latex
 \usepackage{tikz}
 #+END_SRC
+
+Declaring paired delimiters.
+#+begin_src latex
+\usepackage{mathtools}
+#+end_src
 * macro
 :PROPERTIES:
 :created:  2020-04-25 01:10:37 EDT
@@ -190,7 +195,6 @@ Sphere. \SS^n is a subspace of \RR^{n+1}
 
 Misc stuff from 18.675. 
 #+BEGIN_SRC latex
-\renewcommand{\Pr}[1]{\PP[#1]}
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
 \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
@@ -198,6 +202,18 @@ Misc stuff from 18.675.
 \newcommand{\distto}{\xrightarrow{d}}
 \newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}} 
 #+END_SRC
+
+#+begin_src latex
+\let\Pr\relax
+\DeclarePairedDelimiterXPP
+  \Pr
+  [1]
+  {\PP} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+#+end_src
 
 Cardinality of a set. 
 #+BEGIN_SRC latex
@@ -305,6 +321,12 @@ Determinant.
 #+BEGIN_SRC latex
 \DeclareMathOperator{\Det}{Det} 
 #+END_SRC
+
+Concatenation of strings.
+#+begin_src latex
+\let\concat\relax
+\newcommand{\concat}{\mathbin{\|}}
+#+end_src
 ** other
 :PROPERTIES:
 :created:  2020-05-22 04:37:13 EDT
