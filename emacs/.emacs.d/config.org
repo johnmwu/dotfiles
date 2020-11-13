@@ -29,6 +29,17 @@ Define the prefix key and bind it.
 #+END_SRC
 ** sched
 My scheduling subsystem. Described in =~/core/mind/sys/meta=.
+
+The core class is the run. 
+#+begin_src emacs-lisp
+(cl-defstruct jmw/run
+  process-marker)
+#+end_src
+
+The run stack. 
+#+begin_src emacs-lisp
+(setq jmw/run-stack '())
+#+end_src
 *** agenda
    :PROPERTIES:
    :created:  2020-01-08 20:17:40 CST
@@ -101,7 +112,29 @@ Other:
    :PROPERTIES:
    :created:  2020-01-08 20:31:18 CST
    :END:
-The =org-clock= feature. 
+The =org-clock= feature. This corresponds to the "live" part of sched. 
+
+The interface is:
+- ~C-c C-x C-i~, =jmw/org-clock-in=. Clock in on process at point and
+  push onto the run stack.
+- ~C-c C-x C-o~, =org-clock-out=. Clock out, not touching the stack. One
+  of two ways to clock out without clocking into another function. The
+  other is calling =jmw/org-clock-out-up= on a stack with one run.
+- ~C-c C-x C-x~, =org-clock-in-last=. Clock into most recently clocked
+  task, not touching the stack.
+- ~C-c o o~, =jmw/org-clock-out-up=. Pop a run from the stack, and
+  clock into the next. 
+- ~C-c o d~, ~C-c o c~. =jmw/org-done=, =jmw/org-cancel=. Marks current
+  task complete, then calls =jmw/org-clock-out-up=. 
+- ~C-c o p~, =jmw/push-subtask=. Push a subtask onto the stack, and clock
+  in.
+
+#+begin_src emacs-lisp
+(defun jmw/org-clock-in ()
+  "Customized `org-clock-in`."
+  (interactive)
+  (push ))
+#+end_src
 
 I want =org-clock-history= to be long. 
 #+BEGIN_SRC emacs-lisp
@@ -177,14 +210,10 @@ Popping a task off the stack. This time, we're actually done the task.
   (defun jmw/org-done ()
     (interactive)
     (jmw/org-clock-goto)
-    (org-todo "DONE") ;; calls `jmw/org-clock-out-up`
+    (org-todo "DONE") 
 		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "d" 'jmw/org-done)
 #+END_SRC
-In theory, the call to =jmw/org-clock-out-up= should bring us to the
-parent task, so the call to =org-clock-goto= would be
-redundant. However, =org-todo= is wrapped in a big =save-excursion= so
-it's still necessary.
 
 Similarly, pop a task off the stack because we've decided not to do it.
 #+BEGIN_SRC emacs-lisp
@@ -192,8 +221,7 @@ Similarly, pop a task off the stack because we've decided not to do it.
     (interactive)
     (jmw/org-clock-goto)
     (org-todo "CANCEL")
-		(jmw/org-clock-out-up)
-    (org-clock-goto))
+		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "c" 'jmw/org-cancel)
 #+END_SRC
 
@@ -201,10 +229,13 @@ Similarly, pop a task off the stack because we've decided not to do it.
    :PROPERTIES:
    :created:  2020-01-08 20:33:25 CST
    :END:
-The window containing =main.org=. 
+The window and frame containing =main.org=. 
 #+BEGIN_SRC emacs-lisp
-  (defun jmw/main-sched-window ()
-    (get-buffer-window "main.org" t))
+;; this uses an internal function, not ideal
+(defun jmw/main-sched-frame ()
+  (exwm-workspace--workspace-from-frame-or-index 0))
+(defun jmw/main-sched-window ()
+  (get-buffer-window "main.org" (jmw/main-sched-frame)))
 #+END_SRC
 ** org-babel
    :PROPERTIES:

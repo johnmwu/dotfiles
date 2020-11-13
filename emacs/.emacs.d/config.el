@@ -1,12 +1,17 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t)
 
-(add-to-list 'org-modules 'org-habit)
-
 (require 'org)
+
+(add-to-list 'org-modules 'org-habit)
 
 (fset 'jmw/org-prefix (make-sparse-keymap))
 (global-set-key (kbd "C-c o") 'jmw/org-prefix)
+
+(cl-defstruct jmw/run
+  process-marker)
+
+(setq jmw/run-stack '())
 
   (global-set-key "\C-ca" 'org-agenda)
 
@@ -43,6 +48,11 @@
   (setq org-agenda-restore-windows-after-quit t)
   (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
   (setq org-habit-show-habits-only-for-today nil)
+
+(defun jmw/org-clock-in ()
+  "Customized `org-clock-in`."
+  (interactive)
+  (push ))
 
   (setq org-clock-history-length 35)
 
@@ -85,7 +95,7 @@
   (defun jmw/org-done ()
     (interactive)
     (jmw/org-clock-goto)
-    (org-todo "DONE") ;; calls `jmw/org-clock-out-up`
+    (org-todo "DONE") 
 		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "d" 'jmw/org-done)
 
@@ -93,12 +103,14 @@
     (interactive)
     (jmw/org-clock-goto)
     (org-todo "CANCEL")
-		(jmw/org-clock-out-up)
-    (org-clock-goto))
+		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "c" 'jmw/org-cancel)
 
-  (defun jmw/main-sched-window ()
-    (get-buffer-window "main.org" t))
+;; this uses an internal function, not ideal
+(defun jmw/main-sched-frame ()
+  (exwm-workspace--workspace-from-frame-or-index 0))
+(defun jmw/main-sched-window ()
+  (get-buffer-window "main.org" (jmw/main-sched-frame)))
 
 (use-package ob-go)
 
