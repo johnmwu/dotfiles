@@ -661,6 +661,11 @@ Bind functions
   (define-key 'jmw/vterm-prefix "o" 'vterm-other-window)
 #+END_SRC
 
+Recommended on [[https://github.com/akermu/emacs-libvterm][github]]. Easier way to do directory tracking. 
+#+begin_src emacs-lisp
+(add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
+#+end_src
+
 Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/2708042/4019495][SO]]. 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'vterm-mode-hook
