@@ -315,6 +315,8 @@
   (define-key 'jmw/vterm-prefix "b" 'vterm)
   (define-key 'jmw/vterm-prefix "o" 'vterm-other-window)
 
+(add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
+
   (add-hook 'vterm-mode-hook
 	    (lambda ()
 	      (set-process-query-on-exit-flag
@@ -573,7 +575,6 @@
 		)
 
 	(defun jmw/exwm-startup-apps ()
-		(start-process-shell-command "nm-applet" nil "nm-applet")
 		;; if megasync doesn't detect a system tray, it'll pop up a window.
 		;; sleep so it will detect a system tray
 		(start-process-shell-command "megasync" nil "sleep 5; megasync")
