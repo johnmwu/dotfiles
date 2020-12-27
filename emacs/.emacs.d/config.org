@@ -129,13 +129,6 @@ The interface is:
 - ~C-c o p~, =jmw/push-subtask=. Push a subtask onto the stack, and clock
   in.
 
-#+begin_src emacs-lisp
-(defun jmw/org-clock-in ()
-  "Customized `org-clock-in`."
-  (interactive)
-  (push ))
-#+end_src
-
 I want =org-clock-history= to be long. 
 #+BEGIN_SRC emacs-lisp
   (setq org-clock-history-length 35)
@@ -803,12 +796,12 @@ connection to =aloysius=.
    :END:
 The Emacs OS. For contessa, added desktop entry for emacs. 
 #+BEGIN_SRC emacs-lisp :noweb yes
-  (use-package exwm
-    :ensure nil 
-    :demand t
+(use-package exwm
+  :ensure nil 
+  :demand t
 
-    :config
-    <<exwm-config>>)  
+  :config
+  <<exwm-config>>)  
 #+END_SRC
 *** cfg
 :PROPERTIES:
@@ -833,23 +826,23 @@ We want 8 workspaces by default.
 These are the "most global" key bindings. They work in line mode and
 char mode.
 #+BEGIN_SRC emacs-lisp
-  (setq exwm-input-global-keys
-	`(
-	  ([?\s-r] . exwm-reset)
-	  ([?\s-w] . exwm-workspace-switch)
-	  ,@(mapcar (lambda (i)
-		      `(,(kbd (format "s-%d" i)) .
-			(lambda ()
-			  (interactive)
-			  (exwm-workspace-switch-create ,i))))
-		    (number-sequence 0 9))
-	  ([?\s-&] . (lambda (command)
-		       (interactive (list (read-shell-command "$ ")))
-		       (start-process-shell-command command nil command)))
-	  (,(kbd "C-;") . other-window)
-	  (,(kbd "C-'") . other-frame)
-	  (,(kbd "s-k") . exwm-workspace-delete)
-	  ))
+(setq exwm-input-global-keys
+      `(
+        ([?\s-r] . exwm-reset)
+        ([?\s-w] . exwm-workspace-switch)
+        ,@(mapcar (lambda (i)
+                    `(,(kbd (format "s-%d" i)) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-workspace-switch-create ,i))))
+                  (number-sequence 0 9))
+        ([?\s-&] . (lambda (command)
+                     (interactive (list (read-shell-command "$ ")))
+                     (start-process-shell-command command nil command)))
+        (,(kbd "C-;") . other-window)
+        (,(kbd "C-'") . other-frame)
+        (,(kbd "s-k") . exwm-workspace-delete)
+        ))
 #+END_SRC
 
 Key translations in line mode. For instance, ~C-c~ is normally captured
@@ -1177,12 +1170,12 @@ line. I almost never want the former. Using solution from [[https://emacs.stacke
 #+END_SRC
 ** other
 #+BEGIN_SRC emacs-lisp
-  (ignore-errors
-    (menu-bar-mode 0) 
-    (tool-bar-mode 0) 
-    (scroll-bar-mode 0)
-    (winner-mode 1)
-    (fringe-mode 1))
+(ignore-errors
+  (menu-bar-mode 0) 
+  (tool-bar-mode 0) 
+  (scroll-bar-mode 0)
+  (winner-mode 1)
+  (fringe-mode 1))
 #+END_SRC
 * startup
 Look and feel of emacs upon after startup. 
@@ -1241,26 +1234,28 @@ These are the initial files I want open.
 
 The main thing. 
 #+BEGIN_SRC emacs-lisp
-	(add-hook 'window-setup-hook
-			(lambda ()
-				(split-window-right) 
-				(split-window-right)
-				(balance-windows)
-				(dolist (fname jmw/init-file-list)
-		(find-file fname))
-				(find-file (concat (getenv "PROC_DIR")
-				 "/main.org"))
-				(set-window-dedicated-p (get-buffer-window "main.org")
-							t) 
-				(windmove-right)
-				(vterm)
-				(windmove-right)
-				(vterm)
-				(when (member 'exwm features)
-					;; We're using exwm
-					(jmw/exwm-startup-apps))
-				(select-window (jmw/main-sched-window))
-				))
+(add-hook 'window-setup-hook
+			    (lambda ()
+				    (split-window-right) 
+				    (split-window-right)
+				    (balance-windows)
+				    (dolist (fname jmw/init-file-list)
+		          (find-file fname))
+				    (find-file (concat (getenv "PROC_DIR")
+				                       "/main.org"))
+            (let ((main-window (get-buffer-window "main.org")))
+				      (set-window-dedicated-p main-window
+							                        t) 
+				      (windmove-right)
+				      (vterm)
+				      (windmove-right)
+				      (vterm)
+				      (when (member 'exwm features)
+					      ;; We're using exwm
+					      (jmw/exwm-startup-apps))
+				      (select-window main-window))
+            )
+          )
 #+END_SRC
 ** theme
    :PROPERTIES:

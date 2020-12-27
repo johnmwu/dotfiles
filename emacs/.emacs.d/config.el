@@ -49,11 +49,6 @@
   (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
   (setq org-habit-show-habits-only-for-today nil)
 
-(defun jmw/org-clock-in ()
-  "Customized `org-clock-in`."
-  (interactive)
-  (push ))
-
   (setq org-clock-history-length 35)
 
   (setq org-clock-mode-line-total 'today)
@@ -399,30 +394,30 @@
 
   (use-package exwm
     :ensure nil 
-    :demand t
+    :demand 
 
     :config
       (require 'exwm-systemtray)
       (exwm-systemtray-enable)
       (setq exwm-systemtray-height 16)
       (setq exwm-workspace-number 8)
-      (setq exwm-input-global-keys
-    	`(
-    	  ([?\s-r] . exwm-reset)
-    	  ([?\s-w] . exwm-workspace-switch)
-    	  ,@(mapcar (lambda (i)
-    		      `(,(kbd (format "s-%d" i)) .
-    			(lambda ()
-    			  (interactive)
-    			  (exwm-workspace-switch-create ,i))))
-    		    (number-sequence 0 9))
-    	  ([?\s-&] . (lambda (command)
-    		       (interactive (list (read-shell-command "$ ")))
-    		       (start-process-shell-command command nil command)))
-    	  (,(kbd "C-;") . other-window)
-    	  (,(kbd "C-'") . other-frame)
-    	  (,(kbd "s-k") . exwm-workspace-delete)
-    	  ))
+    (setq exwm-input-global-keys
+    	    `(
+    	      ([?\s-r] . exwm-reset)
+    	      ([?\s-w] . exwm-workspace-switch)
+    	      ,@(mapcar (lambda (i)
+    		                `(,(kbd (format "s-%d" i)) .
+    			                (lambda ()
+    			                  (interactive)
+    			                  (exwm-workspace-switch-create ,i))))
+    		              (number-sequence 0 9))
+    	      ([?\s-&] . (lambda (command)
+    		                 (interactive (list (read-shell-command "$ ")))
+    		                 (start-process-shell-command command nil command)))
+    	      (,(kbd "C-;") . other-window)
+    	      (,(kbd "C-'") . other-frame)
+    	      (,(kbd "s-k") . exwm-workspace-delete)
+    	      ))
       (setq exwm-input-simulation-keys
     	'(
     	  ([?\M-w] . [?\C-c])
@@ -586,26 +581,28 @@
                           (getenv "JMW_SH_CONFIG")
 	                        ))
 
-	(add-hook 'window-setup-hook
-			(lambda ()
-				(split-window-right) 
-				(split-window-right)
-				(balance-windows)
-				(dolist (fname jmw/init-file-list)
-		(find-file fname))
-				(find-file (concat (getenv "PROC_DIR")
-				 "/main.org"))
-				(set-window-dedicated-p (get-buffer-window "main.org")
-							t) 
-				(windmove-right)
-				(vterm)
-				(windmove-right)
-				(vterm)
-				(when (member 'exwm features)
-					;; We're using exwm
-					(jmw/exwm-startup-apps))
-				(select-window (jmw/main-sched-window))
-				))
+(add-hook 'window-setup-hook
+			    (lambda ()
+				    (split-window-right) 
+				    (split-window-right)
+				    (balance-windows)
+				    (dolist (fname jmw/init-file-list)
+		          (find-file fname))
+				    (find-file (concat (getenv "PROC_DIR")
+				                       "/main.org"))
+            (let ((main-window (get-buffer-window "main.org")))
+				      (set-window-dedicated-p main-window
+							                        t) 
+				      (windmove-right)
+				      (vterm)
+				      (windmove-right)
+				      (vterm)
+				      (when (member 'exwm features)
+					      ;; We're using exwm
+					      (jmw/exwm-startup-apps))
+				      (select-window main-window))
+            )
+          )
 
   (load-theme 'manoj-dark)
 
