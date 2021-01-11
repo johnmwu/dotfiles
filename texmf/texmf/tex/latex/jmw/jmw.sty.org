@@ -8,11 +8,24 @@ Credit inspirations.
 % Much of this is copied from Evan Chen. 
 #+END_SRC
 
-#+BEGIN_SRC latex
+#+begin_src latex
 \ProvidesPackage{jmw}
+#+end_src
+
+For Beamer, we *cannot* execute certain setup steps, like defining
+theorem environments.
+#+begin_src latex
+\newif\ifjmwsetup\jmwsetupfalse
+#+end_src
+
+Framed theorems with [[https://ctan.org/pkg/mdframed?lang=en][mdframed]]. 
+#+begin_src latex
 \newif\ifjmwmdfthm\jmwmdfthmfalse
+#+end_src
+
+#+BEGIN_SRC latex
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
-\DeclareOption{sexy}{\jmwmdfthmtrue\jmwcolorlinkstrue}
+\DeclareOption{sexy}{\jmwsetuptrue\jmwmdfthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
 #+END_SRC
 * use packages
@@ -76,9 +89,19 @@ For the foreach macro.
 \usepackage{tikz}
 #+END_SRC
 
+Nice plots made from within LaTeX. Fun to hack around. 
+#+begin_src latex
+\usepackage{pgfplots}
+#+end_src
+
 Declaring paired delimiters.
 #+begin_src latex
 \usepackage{mathtools}
+#+end_src
+
+Better =\newtheorem=.
+#+begin_src latex
+\usepackage{thmtools}
 #+end_src
 * macro
 :PROPERTIES:
@@ -129,6 +152,7 @@ Number systems.
 Probability Distributions.
 #+BEGIN_SRC latex
 \newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
+\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
 \newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
 \newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
 \newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
@@ -150,6 +174,7 @@ Groups and representations.
 Big-O and co.
 #+BEGIN_SRC latex
 \newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\LittleO}{\mathcal{o}} 
 \newcommand{\BigOm}{\Omega} 
 #+END_SRC
 
@@ -183,9 +208,16 @@ Absolute value of a complex number (or more generally, a quaternion).
 \newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
 #+END_SRC
 
-Floor function. 
+Floor and ceiling
 #+BEGIN_SRC latex
-\newcommand{\floor}[1]{\ensuremath{\left\lfloor #1\right\rfloor}}
+\let\floor\relax
+\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
+  #1
+}
+\let\ceil\relax
+\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
+  #1
+}
 #+END_SRC
 
 Sphere. \SS^n is a subspace of \RR^{n+1}
@@ -196,7 +228,7 @@ Sphere. \SS^n is a subspace of \RR^{n+1}
 Misc stuff from 18.675. 
 #+BEGIN_SRC latex
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-\newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
+% \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
@@ -213,11 +245,32 @@ Misc stuff from 18.675.
   {]}
   {} % post code
   {#1}
+
+\let\Var\relax
+\DeclarePairedDelimiterXPP
+  \Var
+  [1]
+  {\text{Var}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+
+\let\Ev\relax
+\DeclarePairedDelimiterXPP
+  \Ev
+  [1]
+  {\EE} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
 #+end_src
 
 Cardinality of a set. 
 #+BEGIN_SRC latex
-\newcommand{\card}[1]{\ensuremath{\abs{#1}}} 
+\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
+% \newcommand{\card}[1]{\ensuremath{\abs{#1}}} 
 #+END_SRC
 
 Inner product.
@@ -230,15 +283,16 @@ Inner product.
 \DeclareMathOperator{\D}{D} % Jacobian
 #+END_SRC
 
-Bolded vector.
+Bolded vector and matrix. 
 #+BEGIN_SRC latex
 \newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}} 
 #+END_SRC
 
 Variance, covariance. 
 #+BEGIN_SRC latex
 \DeclareMathOperator{\Cov}{Cov}
-\DeclareMathOperator{\Var}{Var}
+% \DeclareMathOperator{\Var}{Var}
 #+END_SRC
 
 Encoding and decoding in a communication system. Generation in a
@@ -249,6 +303,10 @@ cryptosystem.
 \newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
 \newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
 \newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
+\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
+\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
+\newcommand{\pk}{\ensuremath{\textsf{pk}}}
+\newcommand{\sk}{\ensuremath{\textsf{sk}}}
 #+END_SRC
 
 For realizing a random variable. 
@@ -329,6 +387,40 @@ Concatenation of strings.
 \let\concat\relax
 \newcommand{\concat}{\mathbin{\|}}
 #+end_src
+
+Miscellaneous 6.875 stuff. 
+#+begin_src latex
+\newcommand{\compind}{\approx_c}
+\newcommand{\distas}{\sim}
+\let\Rv\relax
+\DeclarePairedDelimiterXPP
+  \Rv
+  [1]
+  {} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+#+end_src
+
+Better parentheses.
+#+begin_src latex
+% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
+\newcommand\GivenSymbol[1][]{%
+  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
+}
+\let\given\relax
+\newcommand\given{\GivenSymbol[\delimsize]}
+\DeclarePairedDelimiterX\Paren[1](){
+  #1
+}
+#+end_src
+
+Identity map. 
+#+begin_src latex
+\newcommand{\id}{\mathrm{id}}
+#+end_src
 ** other
 :PROPERTIES:
 :created:  2020-05-22 04:37:13 EDT
@@ -352,14 +444,14 @@ This is probably better in a document class
 :created:  2020-04-25 01:12:50 EDT
 :END:
 #+BEGIN_SRC latex
-\usepackage{thmtools}
-
-\ifjmwmdfthm
-  <<mdf-thm>>
-\else
-  \newtheorem{theorem}{Theorem}[section]
-  \newtheorem{lemma}[theorem]{Lemma}
-  \newtheorem{definition}[theorem]{Definition}
+\ifjmwsetup
+  \ifjmwmdfthm
+    <<mdf-thm>>
+  \else
+    \newtheorem{theorem}{Theorem}[section]
+    \newtheorem{lemma}[theorem]{Lemma}
+    \newtheorem{definition}[theorem]{Definition}
+  \fi
 \fi
 #+END_SRC
 ** mdf-thm
@@ -409,6 +501,23 @@ Evan's boxes and theorem styles.
 ]{thmgreenbox}
 
 \mdfdefinestyle{mdfredbox}{%
+  roundcorner=10pt,
+  linewidth=1pt,
+  skipabove=12pt,
+  innerbottommargin=9pt,
+  skipbelow=2pt,
+  linecolor=red,
+  nobreak=true,
+  backgroundcolor=Red!5,
+}
+\declaretheoremstyle[
+  headfont=\sffamily\bfseries\color{Maroon},
+  mdframed={style=mdfredbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
+]{thmredbox}
+
+\mdfdefinestyle{mdftanbox}{%
   linewidth=0.5pt,
   skipabove=12pt,
   frametitleaboveskip=5pt,
@@ -423,17 +532,19 @@ Evan's boxes and theorem styles.
 }
 \declaretheoremstyle[
   headfont=\bfseries\color{RawSienna},
-  mdframed={style=mdfredbox},
+  mdframed={style=mdftanbox},
   headpunct={\\[3pt]},
   postheadspace={0pt},
-]{thmredbox}
+]{thmtanbox}
 
 % numbered
 \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
 \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
 \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
 \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
-\declaretheorem[style=thmredbox,name=Argument]{argument}
+\declaretheorem[style=thmredbox,name=Problem,sibling=theorem]{problem}
+\declaretheorem[style=thmtanbox,name=Example,sibling=theorem]{example}
+\declaretheorem[style=thmtanbox,name=Argument]{argument}
 
 % no number
 \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}

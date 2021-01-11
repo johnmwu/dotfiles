@@ -1,9 +1,13 @@
 % Much of this is copied from Evan Chen.
 
 \ProvidesPackage{jmw}
+
+\newif\ifjmwsetup\jmwsetupfalse
+
 \newif\ifjmwmdfthm\jmwmdfthmfalse
+
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
-\DeclareOption{sexy}{\jmwmdfthmtrue\jmwcolorlinkstrue}
+\DeclareOption{sexy}{\jmwsetuptrue\jmwmdfthmtrue\jmwcolorlinkstrue}
 \ProcessOptions\relax
 
 \usepackage{amsmath}
@@ -32,7 +36,11 @@
 
 \usepackage{tikz}
 
+\usepackage{pgfplots}
+
 \usepackage{mathtools}
+
+\usepackage{thmtools}
 
 \foreach \x in {A,...,Z}{%
 \expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
@@ -60,6 +68,7 @@
 \newcommand{\HH}{\dsH}
 
 \newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
+\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
 \newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
 \newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
 \newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
@@ -75,6 +84,7 @@
 \DeclareMathOperator{\SU}{SU}
 
 \newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\LittleO}{\mathcal{o}} 
 \newcommand{\BigOm}{\Omega}
 
 \DeclareMathOperator{\fl}{fl}
@@ -89,12 +99,19 @@
 
 \newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
 
-\newcommand{\floor}[1]{\ensuremath{\left\lfloor #1\right\rfloor}}
+\let\floor\relax
+\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
+  #1
+}
+\let\ceil\relax
+\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
+  #1
+}
 
 \renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
 
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-\newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
+% \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
@@ -110,23 +127,49 @@
   {} % post code
   {#1}
 
-\newcommand{\card}[1]{\ensuremath{\abs{#1}}}
+\let\Var\relax
+\DeclarePairedDelimiterXPP
+  \Var
+  [1]
+  {\text{Var}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+
+\let\Ev\relax
+\DeclarePairedDelimiterXPP
+  \Ev
+  [1]
+  {\EE} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+
+\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
+% \newcommand{\card}[1]{\ensuremath{\abs{#1}}}
 
 \newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}}
 
 \DeclareMathOperator{\Tr}{Tr} % "Trace"
 \DeclareMathOperator{\D}{D} % Jacobian
 
-\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}}
 
 \DeclareMathOperator{\Cov}{Cov}
-\DeclareMathOperator{\Var}{Var}
+% \DeclareMathOperator{\Var}{Var}
 
 \newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
 \newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
 \newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
 \newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
 \newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
+\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
+\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
+\newcommand{\pk}{\ensuremath{\textsf{pk}}}
+\newcommand{\sk}{\ensuremath{\textsf{sk}}}
 
 \newcommand{\from}{\leftarrow}
 
@@ -167,85 +210,129 @@
 \let\concat\relax
 \newcommand{\concat}{\mathbin{\|}}
 
+\newcommand{\compind}{\approx_c}
+\newcommand{\distas}{\sim}
+\let\Rv\relax
+\DeclarePairedDelimiterXPP
+  \Rv
+  [1]
+  {} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+
+% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
+\newcommand\GivenSymbol[1][]{%
+  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
+}
+\let\given\relax
+\newcommand\given{\GivenSymbol[\delimsize]}
+\DeclarePairedDelimiterX\Paren[1](){
+  #1
+}
+
+\newcommand{\id}{\mathrm{id}}
+
 \renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
 \newcommand{\degrees}{^\circ} % "degrees"
 
 \setlength{\parskip}{0.5\baselineskip}
 \setlength{\parindent}{0pt}
 
-\usepackage{thmtools}
-
-\ifjmwmdfthm
-  \usepackage[framemethod=TikZ]{mdframed}
-  \mdfdefinestyle{mdfbluebox}{%
-    roundcorner=10pt,
-    linewidth=1pt,
-    skipabove=12pt,
-    innerbottommargin=9pt,
-    skipbelow=2pt,
-    linecolor=blue,
-    nobreak=true,
-    backgroundcolor=TealBlue!5,
-  }
-  \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{MidnightBlue},
-    mdframed={style=mdfbluebox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
-  ]{thmbluebox}
-  
-  \mdfdefinestyle{mdfgreenbox}{%
-    roundcorner=10pt,
-    linewidth=1pt,
-    skipabove=12pt,
-    innerbottommargin=9pt,
-    skipbelow=2pt,
-    linecolor=green,
-    nobreak=true,
-    backgroundcolor=LimeGreen!5,
-  }
-  \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{OliveGreen},
-    mdframed={style=mdfgreenbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
-  ]{thmgreenbox}
-  
-  \mdfdefinestyle{mdfredbox}{%
-    linewidth=0.5pt,
-    skipabove=12pt,
-    frametitleaboveskip=5pt,
-    frametitlebelowskip=0pt,
-    skipbelow=2pt,
-    frametitlefont=\bfseries,
-    innertopmargin=4pt,
-    innerbottommargin=8pt,
-    nobreak=true,
-    backgroundcolor=Salmon!5,
-    linecolor=RawSienna,
-  }
-  \declaretheoremstyle[
-    headfont=\bfseries\color{RawSienna},
-    mdframed={style=mdfredbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt},
-  ]{thmredbox}
-  
-  % numbered
-  \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
-  \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
-  \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
-  \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
-  \declaretheorem[style=thmredbox,name=Argument]{argument}
-  
-  % no number
-  \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
-  \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
-  \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
-\else
-  \newtheorem{theorem}{Theorem}[section]
-  \newtheorem{lemma}[theorem]{Lemma}
-  \newtheorem{definition}[theorem]{Definition}
+\ifjmwsetup
+  \ifjmwmdfthm
+    \usepackage[framemethod=TikZ]{mdframed}
+    \mdfdefinestyle{mdfbluebox}{%
+      roundcorner=10pt,
+      linewidth=1pt,
+      skipabove=12pt,
+      innerbottommargin=9pt,
+      skipbelow=2pt,
+      linecolor=blue,
+      nobreak=true,
+      backgroundcolor=TealBlue!5,
+    }
+    \declaretheoremstyle[
+      headfont=\sffamily\bfseries\color{MidnightBlue},
+      mdframed={style=mdfbluebox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
+    ]{thmbluebox}
+    
+    \mdfdefinestyle{mdfgreenbox}{%
+      roundcorner=10pt,
+      linewidth=1pt,
+      skipabove=12pt,
+      innerbottommargin=9pt,
+      skipbelow=2pt,
+      linecolor=green,
+      nobreak=true,
+      backgroundcolor=LimeGreen!5,
+    }
+    \declaretheoremstyle[
+      headfont=\sffamily\bfseries\color{OliveGreen},
+      mdframed={style=mdfgreenbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
+    ]{thmgreenbox}
+    
+    \mdfdefinestyle{mdfredbox}{%
+      roundcorner=10pt,
+      linewidth=1pt,
+      skipabove=12pt,
+      innerbottommargin=9pt,
+      skipbelow=2pt,
+      linecolor=red,
+      nobreak=true,
+      backgroundcolor=Red!5,
+    }
+    \declaretheoremstyle[
+      headfont=\sffamily\bfseries\color{Maroon},
+      mdframed={style=mdfredbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
+    ]{thmredbox}
+    
+    \mdfdefinestyle{mdftanbox}{%
+      linewidth=0.5pt,
+      skipabove=12pt,
+      frametitleaboveskip=5pt,
+      frametitlebelowskip=0pt,
+      skipbelow=2pt,
+      frametitlefont=\bfseries,
+      innertopmargin=4pt,
+      innerbottommargin=8pt,
+      nobreak=true,
+      backgroundcolor=Salmon!5,
+      linecolor=RawSienna,
+    }
+    \declaretheoremstyle[
+      headfont=\bfseries\color{RawSienna},
+      mdframed={style=mdftanbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt},
+    ]{thmtanbox}
+    
+    % numbered
+    \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+    \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+    \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
+    \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+    \declaretheorem[style=thmredbox,name=Problem,sibling=theorem]{problem}
+    \declaretheorem[style=thmtanbox,name=Example,sibling=theorem]{example}
+    \declaretheorem[style=thmtanbox,name=Argument]{argument}
+    
+    % no number
+    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
+    \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
+    \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
+  \else
+    \newtheorem{theorem}{Theorem}[section]
+    \newtheorem{lemma}[theorem]{Lemma}
+    \newtheorem{definition}[theorem]{Definition}
+  \fi
 \fi
 
 \@ifundefined{KOMAClassName}
