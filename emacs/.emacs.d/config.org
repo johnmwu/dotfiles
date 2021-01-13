@@ -154,6 +154,7 @@ schedule.
 #+BEGIN_SRC emacs-lisp
   (defun jmw/org-clock-goto ()
     (interactive)
+    (select-frame-set-input-focus (jmw/main-sched-frame))
     (select-window (jmw/main-sched-window))
     (org-clock-goto))
   (define-key 'jmw/org-prefix "g" 'jmw/org-clock-goto)
@@ -226,7 +227,7 @@ The window and frame containing =main.org=.
 #+BEGIN_SRC emacs-lisp
 ;; this uses an internal function, not ideal
 (defun jmw/main-sched-frame ()
-  (exwm-workspace--workspace-from-frame-or-index 0))
+  jmw/main-frame)
 (defun jmw/main-sched-window ()
   (get-buffer-window "main.org" (jmw/main-sched-frame)))
 #+END_SRC
@@ -1243,18 +1244,18 @@ The main thing.
 		          (find-file fname))
 				    (find-file (concat (getenv "PROC_DIR")
 				                       "/main.org"))
-            (let ((main-window (get-buffer-window "main.org")))
-				      (set-window-dedicated-p main-window
-							                        t) 
-				      (windmove-right)
-				      (vterm)
-				      (windmove-right)
-				      (vterm)
-				      (when (member 'exwm features)
-					      ;; We're using exwm
-					      (jmw/exwm-startup-apps))
-				      (select-window main-window))
-            )
+            (setq jmw/main-window (get-buffer-window "main.org"))
+            (setq jmw/main-frame (selected-frame))
+				    (set-window-dedicated-p jmw/main-window
+							                      t) 
+				    (windmove-right)
+				    (vterm)
+				    (windmove-right)
+				    (vterm)
+				    (when (member 'exwm features)
+					    ;; We're using exwm
+					    (jmw/exwm-startup-apps))
+				    (select-window jmw/main-window))
           )
 #+END_SRC
 ** theme

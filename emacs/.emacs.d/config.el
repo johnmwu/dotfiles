@@ -57,6 +57,7 @@
 
   (defun jmw/org-clock-goto ()
     (interactive)
+    (select-frame-set-input-focus (jmw/main-sched-frame))
     (select-window (jmw/main-sched-window))
     (org-clock-goto))
   (define-key 'jmw/org-prefix "g" 'jmw/org-clock-goto)
@@ -103,7 +104,7 @@
 
 ;; this uses an internal function, not ideal
 (defun jmw/main-sched-frame ()
-  (exwm-workspace--workspace-from-frame-or-index 0))
+  jmw/main-frame)
 (defun jmw/main-sched-window ()
   (get-buffer-window "main.org" (jmw/main-sched-frame)))
 
@@ -392,60 +393,60 @@
 
 (setq ivy-rich-parse-remote-buffer nil)
 
-  (use-package exwm
-    :ensure nil 
-    :demand 
+(use-package exwm
+  :ensure nil 
+  :demand t
 
-    :config
-      (require 'exwm-systemtray)
-      (exwm-systemtray-enable)
-      (setq exwm-systemtray-height 16)
-      (setq exwm-workspace-number 8)
-    (setq exwm-input-global-keys
-    	    `(
-    	      ([?\s-r] . exwm-reset)
-    	      ([?\s-w] . exwm-workspace-switch)
-    	      ,@(mapcar (lambda (i)
-    		                `(,(kbd (format "s-%d" i)) .
-    			                (lambda ()
-    			                  (interactive)
-    			                  (exwm-workspace-switch-create ,i))))
-    		              (number-sequence 0 9))
-    	      ([?\s-&] . (lambda (command)
-    		                 (interactive (list (read-shell-command "$ ")))
-    		                 (start-process-shell-command command nil command)))
-    	      (,(kbd "C-;") . other-window)
-    	      (,(kbd "C-'") . other-frame)
-    	      (,(kbd "s-k") . exwm-workspace-delete)
-    	      ))
-      (setq exwm-input-simulation-keys
-    	'(
-    	  ([?\M-w] . [?\C-c])
-    	  ([?\C-y] . [?\C-v])
-    	  ))
-      (setq exwm-workspace-show-all-buffers t)
-      (setq exwm-layout-show-all-buffers t)
-      (add-hook 'exwm-update-class-hook
-    	    (lambda ()
-    	      (exwm-workspace-rename-buffer exwm-class-name)))
-      (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
-      (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
-      (exwm-enable)
-      (use-package desktop-environment
-        :ensure nil
-    
-        :config
-        ;; For some reason, this has to be after exwm setup
-        (setq desktop-environment-update-exwm-global-keys :global)
-        (desktop-environment-mode))
-      (defun desktop-environment-screenshot ()
-        (interactive)
-        (shell-command "sleep 0.2; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
-        (setq display-time-day-and-date t)
-        (setq display-time-24hr-format t)
-        (setq display-time-default-load-average nil)
-        (display-time-mode 1)
-        (display-battery-mode 1))
+  :config
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (setq exwm-systemtray-height 16)
+    (setq exwm-workspace-number 8)
+  (setq exwm-input-global-keys
+        `(
+          ([?\s-r] . exwm-reset)
+          ([?\s-w] . exwm-workspace-switch)
+          ,@(mapcar (lambda (i)
+                      `(,(kbd (format "s-%d" i)) .
+                        (lambda ()
+                          (interactive)
+                          (exwm-workspace-switch-create ,i))))
+                    (number-sequence 0 9))
+          ([?\s-&] . (lambda (command)
+                       (interactive (list (read-shell-command "$ ")))
+                       (start-process-shell-command command nil command)))
+          (,(kbd "C-;") . other-window)
+          (,(kbd "C-'") . other-frame)
+          (,(kbd "s-k") . exwm-workspace-delete)
+          ))
+    (setq exwm-input-simulation-keys
+  	'(
+  	  ([?\M-w] . [?\C-c])
+  	  ([?\C-y] . [?\C-v])
+  	  ))
+    (setq exwm-workspace-show-all-buffers t)
+    (setq exwm-layout-show-all-buffers t)
+    (add-hook 'exwm-update-class-hook
+  	    (lambda ()
+  	      (exwm-workspace-rename-buffer exwm-class-name)))
+    (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
+    (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
+    (exwm-enable)
+    (use-package desktop-environment
+      :ensure nil
+  
+      :config
+      ;; For some reason, this has to be after exwm setup
+      (setq desktop-environment-update-exwm-global-keys :global)
+      (desktop-environment-mode))
+    (defun desktop-environment-screenshot ()
+      (interactive)
+      (shell-command "sleep 0.2; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+      (setq display-time-day-and-date t)
+      (setq display-time-24hr-format t)
+      (setq display-time-default-load-average nil)
+      (display-time-mode 1)
+      (display-battery-mode 1))
 
   (setq custom-safe-themes t)
 
@@ -537,12 +538,12 @@
 
 (setq-default electric-indent-inhibit t)
 
-  (ignore-errors
-    (menu-bar-mode 0) 
-    (tool-bar-mode 0) 
-    (scroll-bar-mode 0)
-    (winner-mode 1)
-    (fringe-mode 1))
+(ignore-errors
+  (menu-bar-mode 0) 
+  (tool-bar-mode 0) 
+  (scroll-bar-mode 0)
+  (winner-mode 1)
+  (fringe-mode 1))
 
   (add-to-list 'default-frame-alist '(fullscreen . fullboth))
   (set-frame-font "Ubuntu Mono-12" t t)
@@ -590,18 +591,18 @@
 		          (find-file fname))
 				    (find-file (concat (getenv "PROC_DIR")
 				                       "/main.org"))
-            (let ((main-window (get-buffer-window "main.org")))
-				      (set-window-dedicated-p main-window
-							                        t) 
-				      (windmove-right)
-				      (vterm)
-				      (windmove-right)
-				      (vterm)
-				      (when (member 'exwm features)
-					      ;; We're using exwm
-					      (jmw/exwm-startup-apps))
-				      (select-window main-window))
-            )
+            (setq jmw/main-window (get-buffer-window "main.org"))
+            (setq jmw/main-frame (selected-frame))
+				    (set-window-dedicated-p jmw/main-window
+							                      t) 
+				    (windmove-right)
+				    (vterm)
+				    (windmove-right)
+				    (vterm)
+				    (when (member 'exwm features)
+					    ;; We're using exwm
+					    (jmw/exwm-startup-apps))
+				    (select-window jmw/main-window))
           )
 
   (load-theme 'manoj-dark)
