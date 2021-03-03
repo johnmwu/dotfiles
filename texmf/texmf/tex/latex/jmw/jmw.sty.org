@@ -56,7 +56,6 @@ LaTeX's standard package for colors. =usenames= and co make more colors
 available.
 #+BEGIN_SRC latex
 \usepackage[usenames,svgnames,dvipsnames]{xcolor}
-  \definecolor{lightred}{rgb}{0.5,0,0}
 #+END_SRC
 
 Hyperlink support---make =\ref= clickable. 
@@ -102,6 +101,30 @@ Declaring paired delimiters.
 Better =\newtheorem=.
 #+begin_src latex
 \usepackage{thmtools}
+#+end_src
+
+Better bibliography styles. 
+#+begin_src latex
+\usepackage{natbib}
+#+end_src
+
+Provides the =restatable= environment. See [[https://tex.stackexchange.com/a/51288/171101][this SE answer]]. 
+#+begin_src latex
+\usepackage{thm-restate}
+#+end_src
+
+Provides =\fatsemi=.
+#+begin_src latex
+\usepackage{stmaryrd}
+#+end_src
+
+#+begin_src latex
+\usepackage{tikz-cd}
+#+end_src
+
+Better =\not=. From [[https://tex.stackexchange.com/a/16183/171101][this SE answer]].
+#+begin_src latex
+\usepackage{centernot}
 #+end_src
 * macro
 :PROPERTIES:
@@ -203,7 +226,7 @@ Norm (normed vector spaces).
 \newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
 #+END_SRC
 
-Absolute value of a complex number (or more generally, a quaternion).
+Absolute value of a complex number.
 #+BEGIN_SRC latex
 \newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
 #+END_SRC
@@ -228,7 +251,6 @@ Sphere. \SS^n is a subspace of \RR^{n+1}
 Misc stuff from 18.675. 
 #+BEGIN_SRC latex
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-% \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
@@ -292,7 +314,6 @@ Bolded vector and matrix.
 Variance, covariance. 
 #+BEGIN_SRC latex
 \DeclareMathOperator{\Cov}{Cov}
-% \DeclareMathOperator{\Var}{Var}
 #+END_SRC
 
 Encoding and decoding in a communication system. Generation in a
@@ -329,18 +350,33 @@ Better bars.
 Categories. 
 #+BEGIN_SRC latex
 \newcommand{\Vect}[1]{#1\text{-\textbf{Vect}}}
+\newcommand{\Mod}[1]{#1\text{-\textbf{Mod}}}
+\newcommand{\FinVect}[1]{#1\text{-\textbf{FinVect}}}
+\let\Top\relax
 \newcommand{\Top}{\mathbf{Top}} % topological spaces
 \newcommand{\Man}{\mathbf{Man}} % smooth manifolds
 \newcommand{\Set}{\mathbf{Set}} 
+\newcommand{\Grp}{\mathbf{Grp}} 
+\newcommand{\Ab}{\mathbf{Ab}} 
 \newcommand{\Cat}{\mathbf{Cat}} 
 \newcommand{\Alg}[1]{#1\text{-\textbf{Alg}}} % algebra over a field
+\newcommand{\Meas}{\mathbf{Meas}} 
+\newcommand{\CRing}{\mathbf{CRing}}
+\newcommand{\Topp}{\mathbf{Top_\bullet}} % pointed topological spaces
 #+END_SRC
 
 Category theory arrows. 
 #+BEGIN_SRC latex
-\newcommand{\monoto}[1]{\stackrel{#1}{\hookrightarrow}}
-\newcommand{\morto}[1]{\stackrel{#1}{\to}}
+\newcommand{\monoto}[1]{\xhookrightarrow{#1}}
+% there is no \xtwoheadrightarrow
+% from https://tex.stackexchange.com/a/260563/171101
+\newcommand{\xtwoheadrightarrow}[2][]{%
+  \xrightarrow[#1]{#2}\mathrel{\mkern-14mu}\rightarrow
+}
+\newcommand{\epito}[1]{\xtwoheadrightarrow{#1}}
+\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\isoto}[1]{\stackrel{#1}{\xrightarrow{\sim}}}
+\newcommand{\To}{\Rightarrow}
 #+END_SRC
 
 Partial function. 
@@ -348,9 +384,17 @@ Partial function.
 \newcommand{\partto}{\nrightarrow}
 #+END_SRC
 
+Decreases / increases to. 
+#+begin_src latex
+\newcommand{\downto}{\downarrow}
+\newcommand{\upto}{\uparrow}
+#+end_src
+
 Objects of a category.
 #+BEGIN_SRC latex
 \newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
+\newcommand{\Hom}{\ensuremath{\text{Hom}}}
+\newcommand{\Nat}{\ensuremath{\text{Nat}}}
 #+END_SRC
 
 Tensor product. A binary operation on vector spaces, and a binary
@@ -370,6 +414,8 @@ Misc functions in sf.
 \newcommand{\negl}{\textsf{negl}}
 \newcommand{\len}{\textsf{len}}
 \newcommand{\poly}{\textsf{poly}} % means "polynomial in"
+\let\eval\relax
+\newcommand{\eval}{\textsf{eval}}
 #+END_SRC
 
 Isomorphic symbol. 
@@ -379,8 +425,22 @@ Isomorphic symbol.
 
 Determinant. 
 #+BEGIN_SRC latex
-\DeclareMathOperator{\Det}{Det} 
+\let\Det\relax
+\DeclarePairedDelimiterXPP
+  \Det
+  [1]
+  {\det} % pre code
+  {(}
+  {)}
+  {} % post code
+  {#1}
 #+END_SRC
+
+Jacobian.
+#+begin_src latex
+\let\Jacobian\relax
+\newcommand{\Jacobian}[1]{\ensuremath{D#1}}
+#+end_src
 
 Concatenation of strings.
 #+begin_src latex
@@ -404,7 +464,7 @@ Miscellaneous 6.875 stuff.
 \newcommand{\IPS}[2]{\langle#1, #2\rangle}
 #+end_src
 
-Better parentheses.
+Better parentheses, given symbol. 
 #+begin_src latex
 % copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
 \newcommand\GivenSymbol[1][]{%
@@ -421,6 +481,72 @@ Identity map.
 #+begin_src latex
 \newcommand{\id}{\mathrm{id}}
 #+end_src
+
+Legendre, Jacobi symbol.
+#+begin_src latex
+\DeclarePairedDelimiterX\Legendre[2](){
+  \frac{#1}{#2}
+}
+\DeclarePairedDelimiterX\Jacobi[2](){
+  \frac{#1}{#2}
+}
+#+end_src
+
+Closed ball. 
+#+begin_src latex
+\newcommand{\DD}{\dsD}
+#+end_src
+
+#+begin_src latex
+\let\implies\relax
+\newcommand{\implies}{\Longrightarrow}
+\let\revimplies\relax
+\newcommand{\revimplies}{\Longleftarrow}
+\let\notimplies\relax
+\newcommand{\notimplies}{\centernot\Longrightarrow}
+#+end_src
+
+#+begin_src latex
+\DeclareMathOperator{\SeqCl}{SeqCl}
+#+end_src
+
+#+begin_src latex
+\let\of\relax
+\newcommand{\of}{\circ}
+\let\then\relax
+\newcommand{\then}{\fatsemi }
+#+end_src
+
+Image of a function.
+#+begin_src latex
+\let\Image\relax
+\DeclareMathOperator{\Image}{Im}
+#+end_src
+
+Span and dimension.
+#+begin_src latex
+\let\Span\relax
+\DeclareMathOperator{\Span}{Span}
+\let\Dim\relax
+\DeclareMathOperator{\Dim}{Dim}
+#+end_src
+
+Argmin, argmax.
+#+begin_src latex
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+#+end_src
+
+Independent symbol. From [[https://tex.stackexchange.com/questions/79434/double-perpendicular-symbol-for-independence][SE]].
+#+begin_src latex
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+#+end_src
+
+"Distributionally equal", or "equal in law".
+#+begin_src latex
+\newcommand{\disteq}{\ensuremath{\overset{\text{d}}{=}}}
+#+end_src
 ** other
 :PROPERTIES:
 :created:  2020-05-22 04:37:13 EDT
@@ -434,11 +560,18 @@ Not satisfied with calling signature. Hope a better solution exists.
 :PROPERTIES:
 :created:  2020-04-25 01:11:50 EDT
 :END:
-This is probably better in a document class
+This is probably better in a document class.
 #+BEGIN_SRC latex
 \setlength{\parskip}{0.5\baselineskip}
 \setlength{\parindent}{0pt}
 #+END_SRC
+
+Redefine =\emph=. Not a fan of italics for emphasizing terms in a math
+text.
+#+begin_src 
+\let\emph\relax
+\DeclareTextFontCommand{\emph}{\color{blue}\bfseries}
+#+end_src
 * thm
 :PROPERTIES:
 :created:  2020-04-25 01:12:50 EDT
@@ -477,10 +610,10 @@ Evan's boxes and theorem styles.
   backgroundcolor=TealBlue!5,
 }
 \declaretheoremstyle[
-  headfont=\sffamily\bfseries\color{MidnightBlue},
-  mdframed={style=mdfbluebox},
-  headpunct={\\[3pt]},
-  postheadspace={0pt}
+headfont=\sffamily\bfseries\color{MidnightBlue},
+mdframed={style=mdfbluebox},
+headpunct={\\[3pt]},
+postheadspace={0pt}
 ]{thmbluebox}
 
 \mdfdefinestyle{mdfgreenbox}{%
@@ -489,15 +622,15 @@ Evan's boxes and theorem styles.
   skipabove=12pt,
   innerbottommargin=9pt,
   skipbelow=2pt,
-  linecolor=green,
+  linecolor=Green,
   nobreak=true,
-  backgroundcolor=LimeGreen!5,
+  backgroundcolor=Green!5,
 }
 \declaretheoremstyle[
-  headfont=\sffamily\bfseries\color{OliveGreen},
-  mdframed={style=mdfgreenbox},
-  headpunct={\\[3pt]},
-  postheadspace={0pt}
+headfont=\sffamily\bfseries\color{OliveGreen},
+mdframed={style=mdfgreenbox},
+headpunct={\\[3pt]},
+postheadspace={0pt}
 ]{thmgreenbox}
 
 \mdfdefinestyle{mdfredbox}{%
@@ -511,11 +644,28 @@ Evan's boxes and theorem styles.
   backgroundcolor=Red!5,
 }
 \declaretheoremstyle[
-  headfont=\sffamily\bfseries\color{Maroon},
-  mdframed={style=mdfredbox},
-  headpunct={\\[3pt]},
-  postheadspace={0pt}
+headfont=\sffamily\bfseries\color{Maroon},
+mdframed={style=mdfredbox},
+headpunct={\\[3pt]},
+postheadspace={0pt}
 ]{thmredbox}
+
+\mdfdefinestyle{mdfcyanbox}{%
+  roundcorner=10pt,
+  linewidth=1pt,
+  skipabove=12pt,
+  innerbottommargin=9pt,
+  skipbelow=2pt,
+  linecolor=cyan,
+  nobreak=true,
+  backgroundcolor=Cyan!5,
+}
+\declaretheoremstyle[
+headfont=\sffamily\bfseries\color{CornflowerBlue},
+mdframed={style=mdfcyanbox},
+headpunct={\\[3pt]},
+postheadspace={0pt}
+]{thmcyanbox}
 
 \mdfdefinestyle{mdftanbox}{%
   linewidth=0.5pt,
@@ -531,20 +681,48 @@ Evan's boxes and theorem styles.
   linecolor=RawSienna,
 }
 \declaretheoremstyle[
-  headfont=\bfseries\color{RawSienna},
-  mdframed={style=mdftanbox},
-  headpunct={\\[3pt]},
-  postheadspace={0pt},
+headfont=\bfseries\color{RawSienna},
+mdframed={style=mdftanbox},
+headpunct={\\[3pt]},
+postheadspace={0pt},
 ]{thmtanbox}
 
+\mdfdefinestyle{mdfblackbox}{%
+  linewidth=0.8pt,
+  skipabove=12pt,
+  frametitleaboveskip=5pt,
+  frametitlebelowskip=0pt,
+  skipbelow=2pt,
+  innertopmargin=4pt,
+  innerbottommargin=8pt,
+  nobreak=true,
+  backgroundcolor=Black!5,
+  linecolor=Black,
+}
+\declaretheoremstyle[
+headfont=\bfseries,
+mdframed={style=mdfblackbox},
+headpunct={\\[3pt]},
+postheadspace={0pt},
+]{thmblackbox}
+
 % numbered
-\declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+\declaretheorem[style=thmbluebox,name=Theorem,numberwithin=section]{theorem}
+\declaretheorem[style=thmcyanbox,name=Conjecture,sibling=theorem]{conjecture}
+\declaretheorem[style=thmcyanbox,name=Pseudo-theorem,sibling=theorem]{pseudotheorem}
 \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+\declaretheorem[style=thmbluebox,name=Corollary,sibling=theorem]{corollary}
 \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
 \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+\declaretheorem[style=thmcyanbox,name=Pseudo-definition,sibling=theorem]{pseudodefinition}
 \declaretheorem[style=thmredbox,name=Problem,sibling=theorem]{problem}
 \declaretheorem[style=thmtanbox,name=Example,sibling=theorem]{example}
-\declaretheorem[style=thmtanbox,name=Argument]{argument}
+\declaretheorem[style=thmtanbox,name=Argument,sibling=theorem]{argument}
+\declaretheorem[style=thmtanbox,name=Remark,sibling=theorem]{remark}    
+\declaretheorem[style=thmblackbox,name=Idea,sibling=theorem]{idea}
+
+% numbered, no box
+\declaretheorem[name=Lemma,sibling=theorem]{lemma-nobox}
 
 % no number
 \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}

@@ -19,7 +19,6 @@
 \usepackage{mathrsfs}
 
 \usepackage[usenames,svgnames,dvipsnames]{xcolor}
-  \definecolor{lightred}{rgb}{0.5,0,0}
 
 \ifjmwcolorlinks
   \usepackage[colorlinks=true]{hyperref}
@@ -41,6 +40,16 @@
 \usepackage{mathtools}
 
 \usepackage{thmtools}
+
+\usepackage{natbib}
+
+\usepackage{thm-restate}
+
+\usepackage{stmaryrd}
+
+\usepackage{tikz-cd}
+
+\usepackage{centernot}
 
 \foreach \x in {A,...,Z}{%
 \expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
@@ -111,7 +120,6 @@
 \renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
 
 \newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-% \newcommand{\Ev}[1]{\EE\left[#1\right]} % expected value
 \newcommand{\probto}{\xrightarrow{p}}
 \newcommand{\asto}{\xrightarrow{a.s.}}
 \newcommand{\distto}{\xrightarrow{d}}
@@ -159,7 +167,6 @@
 \newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}}
 
 \DeclareMathOperator{\Cov}{Cov}
-% \DeclareMathOperator{\Var}{Var}
 
 \newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
 \newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
@@ -180,19 +187,39 @@
 \newcommand{\bar}[1]{\overline{#1}}
 
 \newcommand{\Vect}[1]{#1\text{-\textbf{Vect}}}
+\newcommand{\Mod}[1]{#1\text{-\textbf{Mod}}}
+\newcommand{\FinVect}[1]{#1\text{-\textbf{FinVect}}}
+\let\Top\relax
 \newcommand{\Top}{\mathbf{Top}} % topological spaces
 \newcommand{\Man}{\mathbf{Man}} % smooth manifolds
 \newcommand{\Set}{\mathbf{Set}} 
+\newcommand{\Grp}{\mathbf{Grp}} 
+\newcommand{\Ab}{\mathbf{Ab}} 
 \newcommand{\Cat}{\mathbf{Cat}} 
 \newcommand{\Alg}[1]{#1\text{-\textbf{Alg}}} % algebra over a field
+\newcommand{\Meas}{\mathbf{Meas}} 
+\newcommand{\CRing}{\mathbf{CRing}}
+\newcommand{\Topp}{\mathbf{Top_\bullet}} % pointed topological spaces
 
-\newcommand{\monoto}[1]{\stackrel{#1}{\hookrightarrow}}
-\newcommand{\morto}[1]{\stackrel{#1}{\to}}
+\newcommand{\monoto}[1]{\xhookrightarrow{#1}}
+% there is no \xtwoheadrightarrow
+% from https://tex.stackexchange.com/a/260563/171101
+\newcommand{\xtwoheadrightarrow}[2][]{%
+  \xrightarrow[#1]{#2}\mathrel{\mkern-14mu}\rightarrow
+}
+\newcommand{\epito}[1]{\xtwoheadrightarrow{#1}}
+\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\isoto}[1]{\stackrel{#1}{\xrightarrow{\sim}}}
+\newcommand{\To}{\Rightarrow}
 
 \newcommand{\partto}{\nrightarrow}
 
+\newcommand{\downto}{\downarrow}
+\newcommand{\upto}{\uparrow}
+
 \newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
+\newcommand{\Hom}{\ensuremath{\text{Hom}}}
+\newcommand{\Nat}{\ensuremath{\text{Nat}}}
 
 \newcommand{\tensor}{\otimes}
 
@@ -202,10 +229,23 @@
 \newcommand{\negl}{\textsf{negl}}
 \newcommand{\len}{\textsf{len}}
 \newcommand{\poly}{\textsf{poly}} % means "polynomial in"
+\let\eval\relax
+\newcommand{\eval}{\textsf{eval}}
 
 \newcommand{\iso}{\sim}
 
-\DeclareMathOperator{\Det}{Det}
+\let\Det\relax
+\DeclarePairedDelimiterXPP
+  \Det
+  [1]
+  {\det} % pre code
+  {(}
+  {)}
+  {} % post code
+  {#1}
+
+\let\Jacobian\relax
+\newcommand{\Jacobian}[1]{\ensuremath{D#1}}
 
 \let\concat\relax
 \newcommand{\concat}{\mathbin{\|}}
@@ -235,6 +275,45 @@
 
 \newcommand{\id}{\mathrm{id}}
 
+\DeclarePairedDelimiterX\Legendre[2](){
+  \frac{#1}{#2}
+}
+\DeclarePairedDelimiterX\Jacobi[2](){
+  \frac{#1}{#2}
+}
+
+\newcommand{\DD}{\dsD}
+
+\let\implies\relax
+\newcommand{\implies}{\Longrightarrow}
+\let\revimplies\relax
+\newcommand{\revimplies}{\Longleftarrow}
+\let\notimplies\relax
+\newcommand{\notimplies}{\centernot\Longrightarrow}
+
+\DeclareMathOperator{\SeqCl}{SeqCl}
+
+\let\of\relax
+\newcommand{\of}{\circ}
+\let\then\relax
+\newcommand{\then}{\fatsemi }
+
+\let\Image\relax
+\DeclareMathOperator{\Image}{Im}
+
+\let\Span\relax
+\DeclareMathOperator{\Span}{Span}
+\let\Dim\relax
+\DeclareMathOperator{\Dim}{Dim}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\newcommand{\disteq}{\ensuremath{\overset{\text{d}}{=}}}
+
 \renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
 \newcommand{\degrees}{^\circ} % "degrees"
 
@@ -255,10 +334,10 @@
       backgroundcolor=TealBlue!5,
     }
     \declaretheoremstyle[
-      headfont=\sffamily\bfseries\color{MidnightBlue},
-      mdframed={style=mdfbluebox},
-      headpunct={\\[3pt]},
-      postheadspace={0pt}
+    headfont=\sffamily\bfseries\color{MidnightBlue},
+    mdframed={style=mdfbluebox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
     ]{thmbluebox}
     
     \mdfdefinestyle{mdfgreenbox}{%
@@ -267,15 +346,15 @@
       skipabove=12pt,
       innerbottommargin=9pt,
       skipbelow=2pt,
-      linecolor=green,
+      linecolor=Green,
       nobreak=true,
-      backgroundcolor=LimeGreen!5,
+      backgroundcolor=Green!5,
     }
     \declaretheoremstyle[
-      headfont=\sffamily\bfseries\color{OliveGreen},
-      mdframed={style=mdfgreenbox},
-      headpunct={\\[3pt]},
-      postheadspace={0pt}
+    headfont=\sffamily\bfseries\color{OliveGreen},
+    mdframed={style=mdfgreenbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
     ]{thmgreenbox}
     
     \mdfdefinestyle{mdfredbox}{%
@@ -289,11 +368,28 @@
       backgroundcolor=Red!5,
     }
     \declaretheoremstyle[
-      headfont=\sffamily\bfseries\color{Maroon},
-      mdframed={style=mdfredbox},
-      headpunct={\\[3pt]},
-      postheadspace={0pt}
+    headfont=\sffamily\bfseries\color{Maroon},
+    mdframed={style=mdfredbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
     ]{thmredbox}
+    
+    \mdfdefinestyle{mdfcyanbox}{%
+      roundcorner=10pt,
+      linewidth=1pt,
+      skipabove=12pt,
+      innerbottommargin=9pt,
+      skipbelow=2pt,
+      linecolor=cyan,
+      nobreak=true,
+      backgroundcolor=Cyan!5,
+    }
+    \declaretheoremstyle[
+    headfont=\sffamily\bfseries\color{CornflowerBlue},
+    mdframed={style=mdfcyanbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt}
+    ]{thmcyanbox}
     
     \mdfdefinestyle{mdftanbox}{%
       linewidth=0.5pt,
@@ -309,20 +405,48 @@
       linecolor=RawSienna,
     }
     \declaretheoremstyle[
-      headfont=\bfseries\color{RawSienna},
-      mdframed={style=mdftanbox},
-      headpunct={\\[3pt]},
-      postheadspace={0pt},
+    headfont=\bfseries\color{RawSienna},
+    mdframed={style=mdftanbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt},
     ]{thmtanbox}
     
+    \mdfdefinestyle{mdfblackbox}{%
+      linewidth=0.8pt,
+      skipabove=12pt,
+      frametitleaboveskip=5pt,
+      frametitlebelowskip=0pt,
+      skipbelow=2pt,
+      innertopmargin=4pt,
+      innerbottommargin=8pt,
+      nobreak=true,
+      backgroundcolor=Black!5,
+      linecolor=Black,
+    }
+    \declaretheoremstyle[
+    headfont=\bfseries,
+    mdframed={style=mdfblackbox},
+    headpunct={\\[3pt]},
+    postheadspace={0pt},
+    ]{thmblackbox}
+    
     % numbered
-    \declaretheorem[style=thmbluebox,name=Theorem]{theorem}
+    \declaretheorem[style=thmbluebox,name=Theorem,numberwithin=section]{theorem}
+    \declaretheorem[style=thmcyanbox,name=Conjecture,sibling=theorem]{conjecture}
+    \declaretheorem[style=thmcyanbox,name=Pseudo-theorem,sibling=theorem]{pseudotheorem}
     \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
+    \declaretheorem[style=thmbluebox,name=Corollary,sibling=theorem]{corollary}
     \declaretheorem[style=thmbluebox,name=Proposition,sibling=theorem]{proposition}
     \declaretheorem[style=thmgreenbox,name=Definition,sibling=theorem]{definition}
+    \declaretheorem[style=thmcyanbox,name=Pseudo-definition,sibling=theorem]{pseudodefinition}
     \declaretheorem[style=thmredbox,name=Problem,sibling=theorem]{problem}
     \declaretheorem[style=thmtanbox,name=Example,sibling=theorem]{example}
-    \declaretheorem[style=thmtanbox,name=Argument]{argument}
+    \declaretheorem[style=thmtanbox,name=Argument,sibling=theorem]{argument}
+    \declaretheorem[style=thmtanbox,name=Remark,sibling=theorem]{remark}    
+    \declaretheorem[style=thmblackbox,name=Idea,sibling=theorem]{idea}
+    
+    % numbered, no box
+    \declaretheorem[name=Lemma,sibling=theorem]{lemma-nobox}
     
     % no number
     \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
