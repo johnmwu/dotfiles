@@ -256,10 +256,10 @@ CAPABILITY 32;41;01	# file with capability
 # files that may be used by the computer
 
 ## not text
-.o 35;41;01
-.so 35;41;01
-.pyc 35;41;01
-.class 35;41;01
+.o 35;42;01
+.so 35;42;01
+.pyc 35;42;01
+.class 35;42;01
 
 ## src
 .c 35
@@ -271,6 +271,7 @@ CAPABILITY 32;41;01	# file with capability
 .java 35
 .el 35
 .scm 35
+.cpp 35
 
 ## env
 .conf 35;44;01

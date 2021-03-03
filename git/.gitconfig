@@ -5,3 +5,5 @@
         # env variable GIT_EDITOR should override this
 	# editor = emacs
         
+[alias]
+	lol = log --graph --oneline --decorate --color --all

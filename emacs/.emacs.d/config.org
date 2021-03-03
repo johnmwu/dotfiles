@@ -257,7 +257,8 @@ actually execute something.
 	 (C . t)
 	 (shell . t)
 	 (go . t)
-	 (js . t)))
+	 (js . t)
+   (java . t)))
 #+END_SRC
 
 This is romantically named the "Library of Babel". As of
