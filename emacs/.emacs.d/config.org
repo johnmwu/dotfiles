@@ -1170,6 +1170,14 @@ line. I almost never want the former. Using solution from [[https://emacs.stacke
 #+BEGIN_SRC emacs-lisp
 (setq-default electric-indent-inhibit t)
 #+END_SRC
+** indent-tabs-mode
+:PROPERTIES:
+:created:  2021-04-29 17:55:45 EDT
+:END:
+By default, don't indent using tabs. 
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+end_src
 ** other
 #+BEGIN_SRC emacs-lisp
 (ignore-errors

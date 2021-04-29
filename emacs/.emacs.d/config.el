@@ -119,7 +119,8 @@
 	 (C . t)
 	 (shell . t)
 	 (go . t)
-	 (js . t)))
+	 (js . t)
+   (java . t)))
 
 	(org-babel-lob-ingest "~/.emacs.d/library-of-babel.org")
 
@@ -537,6 +538,8 @@
           (lambda () (setq indent-tabs-mode nil)))
 
 (setq-default electric-indent-inhibit t)
+
+(setq-default indent-tabs-mode nil)
 
 (ignore-errors
   (menu-bar-mode 0) 
