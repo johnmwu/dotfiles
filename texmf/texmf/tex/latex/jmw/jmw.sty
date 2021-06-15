@@ -6,8 +6,11 @@
 
 \newif\ifjmwmdfthm\jmwmdfthmfalse
 
+\newif\ifjmwsecthm\jmwsecthmfalse
+
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
 \DeclareOption{sexy}{\jmwsetuptrue\jmwmdfthmtrue\jmwcolorlinkstrue}
+\DeclareOption{secthm}{\jmwsecthmtrue}
 \ProcessOptions\relax
 
 \usepackage{amsmath}
@@ -18,9 +21,8 @@
 
 \usepackage{mathrsfs}
 
-\usepackage[usenames,svgnames,dvipsnames]{xcolor}
-
 \ifjmwcolorlinks
+  \usepackage[usenames,svgnames,dvipsnames]{xcolor}
   \usepackage[colorlinks=true]{hyperref}
   \hypersetup{urlcolor=RubineRed,linkcolor=RoyalBlue,citecolor=ForestGreen}
 \else
@@ -31,7 +33,7 @@
 
 \usepackage{siunitx}
 
-\usepackage{dsfont} % sexy double-struck chars
+\usepackage{dsfont}
 
 \usepackage{tikz}
 
@@ -51,140 +53,45 @@
 
 \usepackage{centernot}
 
-\foreach \x in {A,...,Z}{%
-\expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
-\expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
-\expandafter\xdef\csname frak\x\endcsname{\noexpand\ensuremath{\noexpand\mathfrak{\x}}}
-\expandafter\xdef\csname scr\x\endcsname{\noexpand\ensuremath{\noexpand\mathscr{\x}}}
-}
+\usepackage{xparse}
 
-\newcommand{\FF}{\dsF}
-\newcommand{\PP}{\dsP}
-\newcommand{\EE}{\dsE}
-\newcommand{\eps}{\ensuremath{\epsilon}}
-\newcommand{\dt}{\ensuremath{\delta}}
-\newcommand{\del}{\partial} 
+\DeclareMathOperator{\Diff}{Diff} 
+\DeclareMathOperator{\Aut}{Aut}
+\newcommand{\iso}{\sim}
 \newcommand{\cbrt}{\sqrt[3]} % "cube root"
-\renewcommand{\phi}{\varphi}
-\let\d\relax
-\newcommand{\d}{\ensuremath{\mathrm{d}}}
-
-\newcommand{\NN}{\dsN}
-\newcommand{\ZZ}{\dsZ}
-\newcommand{\QQ}{\dsQ}
-\newcommand{\RR}{\dsR}
-\newcommand{\CC}{\dsC} 
-\newcommand{\HH}{\dsH}
-
-\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
-\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
-\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
-\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
-\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
-\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
-\newcommand{\Gauss}{\calN}
-\newcommand{\Binom}{\ensuremath{\textsc{Binom}}}
-
-\DeclareMathOperator{\GL}{GL} 
-\DeclareMathOperator{\SL}{SL} 
-\DeclareMathOperator{\GO}{GO} 
-\DeclareMathOperator{\SO}{SO} 
-\DeclareMathOperator{\GU}{GU} 
-\DeclareMathOperator{\SU}{SU}
-
-\newcommand{\BigO}{\mathcal{O}} 
-\newcommand{\LittleO}{\mathcal{o}} 
-\newcommand{\BigOm}{\Omega}
-
-\DeclareMathOperator{\fl}{fl}
-
-\newcommand{\KL}[2]{\ensuremath{D_{KL}\left(#1, #2\right)}}
-
-\newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}}
-
-\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
-
-\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
-
-\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
-
-\let\floor\relax
-\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
-  #1
-}
-\let\ceil\relax
-\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
-  #1
-}
-
-\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
-
-\newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-\newcommand{\probto}{\xrightarrow{p}}
-\newcommand{\asto}{\xrightarrow{a.s.}}
-\newcommand{\distto}{\xrightarrow{d}}
-\newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}}
-
-\let\Pr\relax
-\DeclarePairedDelimiterXPP
-  \Pr
-  [1]
-  {\PP} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
-
-\let\Var\relax
-\DeclarePairedDelimiterXPP
-  \Var
-  [1]
-  {\text{Var}} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
-
-\let\Ev\relax
-\DeclarePairedDelimiterXPP
-  \Ev
-  [1]
-  {\EE} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
-
-\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
-% \newcommand{\card}[1]{\ensuremath{\abs{#1}}}
-
-\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}}
-
-\DeclareMathOperator{\Tr}{Tr} % "Trace"
 \DeclareMathOperator{\D}{D} % Jacobian
-
-\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
-\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}}
-
 \DeclareMathOperator{\Cov}{Cov}
+\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
+\newcommand{\degrees}{^\circ} % "degrees"
 
-\newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
-\newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
-\newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
-\newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
-\newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
-\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
-\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
-\newcommand{\pk}{\ensuremath{\textsf{pk}}}
-\newcommand{\sk}{\ensuremath{\textsf{sk}}}
+\newcommand{\defeq}{\ensuremath{\overset{\text{def}}{=}}}
+\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
+\newcommand{\partto}{\nrightarrow}
+\DeclarePairedDelimiterX\Paren[1](){
+  #1
+}
+\DeclarePairedDelimiterX\Bracket[1][]{
+  #1
+}
+\DeclarePairedDelimiterX\Brace[1]\{\}{
+  #1
+}
+\let\implies\relax
+\newcommand{\implies}{\Longrightarrow}
+\let\revimplies\relax
+\newcommand{\revimplies}{\Longleftarrow}
+\let\notimplies\relax
+\newcommand{\notimplies}{\centernot\Longrightarrow}
+\let\Image\relax
+\DeclareMathOperator{\Image}{Im}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 
-\newcommand{\from}{\leftarrow}
-
+\newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
+\newcommand{\Hom}{\ensuremath{\text{Hom}}}
 \DeclareMathOperator{\Dom}{Dom} 
 \DeclareMathOperator{\Cod}{Cod}
-
-\let\bar\relax
-\newcommand{\bar}[1]{\overline{#1}}
+\newcommand{\id}{\mathrm{id}}
 
 \newcommand{\Vect}[1]{#1\text{-\textbf{Vect}}}
 \newcommand{\Mod}[1]{#1\text{-\textbf{Mod}}}
@@ -201,6 +108,7 @@
 \newcommand{\CRing}{\mathbf{CRing}}
 \newcommand{\Topp}{\mathbf{Top_\bullet}} % pointed topological spaces
 
+\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\monoto}[1]{\xhookrightarrow{#1}}
 % there is no \xtwoheadrightarrow
 % from https://tex.stackexchange.com/a/260563/171101
@@ -208,31 +116,58 @@
   \xrightarrow[#1]{#2}\mathrel{\mkern-14mu}\rightarrow
 }
 \newcommand{\epito}[1]{\xtwoheadrightarrow{#1}}
-\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\isoto}[1]{\stackrel{#1}{\xrightarrow{\sim}}}
-\newcommand{\To}{\Rightarrow}
-
-\newcommand{\partto}{\nrightarrow}
-
-\newcommand{\downto}{\downarrow}
-\newcommand{\upto}{\uparrow}
-
-\newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
-\newcommand{\Hom}{\ensuremath{\text{Hom}}}
-\newcommand{\Nat}{\ensuremath{\text{Nat}}}
+\newcommand{\To}{\Rightarrow} % natural transformation
 
 \newcommand{\tensor}{\otimes}
 
-\DeclareMathOperator{\Diff}{Diff} 
-\DeclareMathOperator{\Aut}{Aut}
+\let\of\relax
+\newcommand{\of}{\circ}
+\let\then\relax
+\newcommand{\then}{\fatsemi }
 
-\newcommand{\negl}{\textsf{negl}}
-\newcommand{\len}{\textsf{len}}
-\newcommand{\poly}{\textsf{poly}} % means "polynomial in"
-\let\eval\relax
+\newcommand{\meet}{\wedge}
+
+\newcommand{\Nat}{\ensuremath{\text{Nat}}}
+
 \newcommand{\eval}{\textsf{eval}}
 
-\newcommand{\iso}{\sim}
+\DeclareMathOperator{\GL}{GL} 
+\DeclareMathOperator{\SL}{SL} 
+\DeclareMathOperator{\GO}{GO} 
+\DeclareMathOperator{\SO}{SO} 
+\DeclareMathOperator{\GU}{GU} 
+\DeclareMathOperator{\SU}{SU}
+
+\newcommand{\NN}{\dsN}
+\newcommand{\ZZ}{\dsZ}
+\newcommand{\QQ}{\dsQ}
+\newcommand{\RR}{\dsR}
+\newcommand{\CC}{\dsC} 
+\newcommand{\HH}{\dsH}
+
+\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
+\let\floor\relax
+\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
+  #1
+}
+\let\ceil\relax
+\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
+  #1
+}
+\newcommand{\sign}{\textsf{sign}}
+
+\newcommand{\FF}{\dsF}
+
+\DeclarePairedDelimiterX\Legendre[2](){
+  \frac{#1}{#2}
+}
+\DeclarePairedDelimiterX\Jacobi[2](){
+  \frac{#1}{#2}
+}
+
+\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}}
 
 \let\Det\relax
 \DeclarePairedDelimiterXPP
@@ -243,15 +178,152 @@
   {)}
   {} % post code
   {#1}
+\DeclareMathOperator{\Tr}{Tr} % "Trace"
+\let\Span\relax
+\DeclareMathOperator{\Span}{Span}
+\let\Dim\relax
+\DeclareMathOperator{\Dim}{Dim}
 
+\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
+\let\Norm\relax
+\DeclarePairedDelimiterXPP
+  \Normaux
+  [1]
+  {} % pre code
+  {\lVert}
+  {\rVert}
+  {} % post code
+  {#1}
+\NewDocumentCommand\Norm{somO{}}{
+  \IfBooleanTF{#1}
+    {\Normaux*{#3}_{#4}}
+    {\IfNoValueTF{#2}
+      {\Normaux{#3}_{#4}}
+      {\Normaux[#2]{#3}_{#4}}
+    }
+}
+
+\DeclarePairedDelimiterXPP
+  \ipaux
+  [3]
+  {} % pre code
+  {\langle}
+  {\rangle}
+  {_{#3}} % post code
+  {#1,#2}
+\NewDocumentCommand\ip{sommO{}}{
+  \IfBooleanTF{#1}
+    {\ipaux*{#3}{#4}{#5}}
+    {\IfNoValueTF{#2}
+      {\ipaux{#3}{#4}{#5}}
+      {\ipaux[#2]{#3}{#4}{#5}}
+    }
+}
+
+\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
+\newcommand{\DD}{\dsD}
+\DeclareMathOperator{\SeqCl}{SeqCl}
+
+\newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\LittleO}{o} 
+\newcommand{\BigOm}{\Omega}
+\newcommand{\negl}{\textsf{negl}}
+\newcommand{\poly}{\textsf{poly}} % means "polynomial in"
+\let\eval\relax
+
+\newcommand{\del}{\partial} 
+\let\d\relax
+\newcommand{\d}{\ensuremath{\mathrm{d}}}
 \let\Jacobian\relax
-\newcommand{\Jacobian}[1]{\ensuremath{D#1}}
+\DeclarePairedDelimiterXPP
+  \Jacobianaux
+  [2]
+  {D_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Jacobian{somO{}}{
+  \IfBooleanTF{#1}
+    {\Jacobianaux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Jacobianaux{#4}{#3}}
+      {\Jacobianaux[#2]{#4}{#3}}
+    }
+}
 
-\let\concat\relax
-\newcommand{\concat}{\mathbin{\|}}
+\newcommand{\downto}{\downarrow}
+\newcommand{\upto}{\uparrow}
 
-\newcommand{\compind}{\approx_c}
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\erfc}{erfc}
+
+\newcommand{\PP}{\dsP} % the probability symbol
+\newcommand{\EE}{\dsE} % the EV symbol
+
+\let\Pr\relax
+\DeclarePairedDelimiterXPP
+  \Praux
+  [2]
+  {\PP_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Pr{somO{}}{
+  \IfBooleanTF{#1}
+    {\Praux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Praux{#4}{#3}}
+      {\Praux[#2]{#4}{#3}}
+    }
+}
+\let\Var\relax
+\DeclarePairedDelimiterXPP
+  \Var
+  [1]
+  {\text{Var}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+\let\Ev\relax
+\DeclarePairedDelimiterXPP
+  \Evaux
+  [2]
+  {\EE_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Ev{somO{}}{
+  \IfBooleanTF{#1}
+    {\Evaux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Evaux{#4}{#3}}
+      {\Evaux[#2]{#4}{#3}}
+    }
+}
+
+% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
+\newcommand\GivenSymbol[1][]{%
+  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
+}
+\let\given\relax
+\newcommand\given{\GivenSymbol[\delimsize]}
+
+\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
+\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
+\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
+\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
+\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
+\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
+\newcommand{\Gauss}{\calN}
+\newcommand{\Binom}{\ensuremath{\textsc{Binom}}}
+\newcommand{\Laplace}{\ensuremath{\textsc{Laplace}}}
+
 \newcommand{\distas}{\sim}
+\newcommand{\iiddistas}{\overset{\text{iid}}{\sim}}
 \let\Rv\relax
 \DeclarePairedDelimiterXPP
   \Rv
@@ -261,66 +333,86 @@
   {]}
   {} % post code
   {#1}
-\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+\newcommand{\from}{\leftarrow}
 
-% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
-\newcommand\GivenSymbol[1][]{%
-  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
-}
-\let\given\relax
-\newcommand\given{\GivenSymbol[\delimsize]}
-\DeclarePairedDelimiterX\Paren[1](){
-  #1
-}
-
-\newcommand{\id}{\mathrm{id}}
-
-\DeclarePairedDelimiterX\Legendre[2](){
-  \frac{#1}{#2}
-}
-\DeclarePairedDelimiterX\Jacobi[2](){
-  \frac{#1}{#2}
-}
-
-\newcommand{\DD}{\dsD}
-
-\let\implies\relax
-\newcommand{\implies}{\Longrightarrow}
-\let\revimplies\relax
-\newcommand{\revimplies}{\Longleftarrow}
-\let\notimplies\relax
-\newcommand{\notimplies}{\centernot\Longrightarrow}
-
-\DeclareMathOperator{\SeqCl}{SeqCl}
-
-\let\of\relax
-\newcommand{\of}{\circ}
-\let\then\relax
-\newcommand{\then}{\fatsemi }
-
-\let\Image\relax
-\DeclareMathOperator{\Image}{Im}
-
-\let\Span\relax
-\DeclareMathOperator{\Span}{Span}
-\let\Dim\relax
-\DeclareMathOperator{\Dim}{Dim}
-
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-
+% from https://tex.stackexchange.com/questions/79434/double-perpendicular-symbol-for-independence
 \newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 
-\newcommand{\disteq}{\ensuremath{\overset{\text{d}}{=}}}
+\newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}}
 
-\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
-\newcommand{\degrees}{^\circ} % "degrees"
+\newcommand{\ind}[1]{\ensuremath{\mathds{1}\Brace*{#1}}} % indicator func
+
+\newcommand{\probto}{\xrightarrow{p}}
+\newcommand{\asto}{\xrightarrow{a.s.}}
+\newcommand{\distto}{\xrightarrow{d}}
+
+\newcommand{\disteq}{\ensuremath{\overset{\text{d}}{=}}}
+\newcommand{\aseq}{\ensuremath{\overset{\text{a.s.}}{=}}}
+
+% reuse inner product aux
+\NewDocumentCommand\QCov{sommO{}}{
+  \IfBooleanTF{#1}
+    {\ipaux*{#3}{#4}{#5}}
+    {\IfNoValueTF{#2}
+      {\ipaux{#3}{#4}{#5}}
+      {\ipaux[#2]{#3}{#4}{#5}}
+    }
+}
+
+\foreach \x in {A,...,Z}{%
+\expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
+\expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
+\expandafter\xdef\csname frak\x\endcsname{\noexpand\ensuremath{\noexpand\mathfrak{\x}}}
+\expandafter\xdef\csname scr\x\endcsname{\noexpand\ensuremath{\noexpand\mathscr{\x}}}
+}
+\newcommand{\eps}{\ensuremath{\varepsilon}}
+\newcommand{\dt}{\ensuremath{\delta}}
+\let\phi\relax
+\newcommand{\phi}{\varphi}
+
+\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
+\let\bar\relax
+\newcommand{\bar}[1]{\overline{#1}}
+\newcommand{\pheq}{\phantom{{}={}}}
+% from https://tex.stackexchange.com/questions/42726/align-but-show-one-equation-number-at-the-end
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\DeclareMathOperator{\fl}{fl}
+\newcommand{\KL}[2]{\ensuremath{D\left(#1\| #2\right)}}
+
+\newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
+\newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
+\newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
+\newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
+\newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
+\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
+\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
+\newcommand{\pk}{\ensuremath{\textsf{pk}}}
+\newcommand{\sk}{\ensuremath{\textsf{sk}}}
+\newcommand{\compind}{\approx_c}
+\let\concat\relax
+\newcommand{\concat}{\mathbin{\|}}
+\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+\newcommand{\len}{\textsf{len}}
+
+\DeclarePairedDelimiterX\Delim[1]..{
+  #1
+}
+
+\newcommand{\Brier}{\text{BS}} % Brier score
+\newcommand{\ConfidenceCalibration}{\text{CC}} % Confidence calibration
 
 \setlength{\parskip}{0.5\baselineskip}
 \setlength{\parindent}{0pt}
 
+\let\emph\relax
+\DeclareTextFontCommand{\emph}{\color{blue}\bfseries}
+
+\bibliographystyle{plainnat}
+
 \ifjmwsetup
+  \renewcommand{\qedsymbol}{$\blacksquare$}
   \ifjmwmdfthm
     \usepackage[framemethod=TikZ]{mdframed}
     \mdfdefinestyle{mdfbluebox}{%
@@ -334,10 +426,10 @@
       backgroundcolor=TealBlue!5,
     }
     \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{MidnightBlue},
-    mdframed={style=mdfbluebox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
+      headfont=\sffamily\bfseries\color{MidnightBlue},
+      mdframed={style=mdfbluebox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
     ]{thmbluebox}
     
     \mdfdefinestyle{mdfgreenbox}{%
@@ -351,10 +443,10 @@
       backgroundcolor=Green!5,
     }
     \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{OliveGreen},
-    mdframed={style=mdfgreenbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
+      headfont=\sffamily\bfseries\color{OliveGreen},
+      mdframed={style=mdfgreenbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
     ]{thmgreenbox}
     
     \mdfdefinestyle{mdfredbox}{%
@@ -368,10 +460,10 @@
       backgroundcolor=Red!5,
     }
     \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{Maroon},
-    mdframed={style=mdfredbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
+      headfont=\sffamily\bfseries\color{Maroon},
+      mdframed={style=mdfredbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
     ]{thmredbox}
     
     \mdfdefinestyle{mdfcyanbox}{%
@@ -385,10 +477,10 @@
       backgroundcolor=Cyan!5,
     }
     \declaretheoremstyle[
-    headfont=\sffamily\bfseries\color{CornflowerBlue},
-    mdframed={style=mdfcyanbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt}
+      headfont=\sffamily\bfseries\color{CornflowerBlue},
+      mdframed={style=mdfcyanbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt}
     ]{thmcyanbox}
     
     \mdfdefinestyle{mdftanbox}{%
@@ -405,10 +497,10 @@
       linecolor=RawSienna,
     }
     \declaretheoremstyle[
-    headfont=\bfseries\color{RawSienna},
-    mdframed={style=mdftanbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt},
+      headfont=\bfseries\color{RawSienna},
+      mdframed={style=mdftanbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt},
     ]{thmtanbox}
     
     \mdfdefinestyle{mdfblackbox}{%
@@ -424,14 +516,18 @@
       linecolor=Black,
     }
     \declaretheoremstyle[
-    headfont=\bfseries,
-    mdframed={style=mdfblackbox},
-    headpunct={\\[3pt]},
-    postheadspace={0pt},
+      headfont=\bfseries,
+      mdframed={style=mdfblackbox},
+      headpunct={\\[3pt]},
+      postheadspace={0pt},
     ]{thmblackbox}
     
     % numbered
-    \declaretheorem[style=thmbluebox,name=Theorem,numberwithin=section]{theorem}
+    \declaretheorem[
+      style=thmbluebox,
+      name=Theorem,
+      numberwithin=\ifjmwsecthm section\else \fi
+    ]{theorem}
     \declaretheorem[style=thmcyanbox,name=Conjecture,sibling=theorem]{conjecture}
     \declaretheorem[style=thmcyanbox,name=Pseudo-theorem,sibling=theorem]{pseudotheorem}
     \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
@@ -447,9 +543,11 @@
     
     % numbered, no box
     \declaretheorem[name=Lemma,sibling=theorem]{lemma-nobox}
+    \declaretheorem[name=Lemma,numbered=no]{lemma-nobox*}
     
     % no number
-    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
+    \declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}    
+    \declaretheorem[style=thmbluebox,name=Lemma,numbered=no]{lemma*}
     \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
     \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
   \else
@@ -458,6 +556,15 @@
     \newtheorem{definition}[theorem]{Definition}
   \fi
 \fi
+
+\NewDocumentEnvironment{prooflight}{O{}}
+  {
+    \begin{proof}[#1]
+    \renewcommand{\qedsymbol}{$\square$}
+  }
+  {
+    \end{proof}
+  }
 
 \@ifundefined{KOMAClassName}
 {}

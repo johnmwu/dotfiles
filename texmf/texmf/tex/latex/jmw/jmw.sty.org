@@ -23,9 +23,15 @@ Framed theorems with [[https://ctan.org/pkg/mdframed?lang=en][mdframed]].
 \newif\ifjmwmdfthm\jmwmdfthmfalse
 #+end_src
 
+If true, number theorems by section, otherwise use global numbering.
+#+begin_src latex
+\newif\ifjmwsecthm\jmwsecthmfalse
+#+end_src
+
 #+BEGIN_SRC latex
 \newif\ifjmwcolorlinks\jmwcolorlinksfalse
 \DeclareOption{sexy}{\jmwsetuptrue\jmwmdfthmtrue\jmwcolorlinkstrue}
+\DeclareOption{secthm}{\jmwsecthmtrue}
 \ProcessOptions\relax
 #+END_SRC
 * use packages
@@ -52,15 +58,10 @@ Script fonts. See [[https://www.stat.colostate.edu/~vollmer/pdfs/typesetting-scr
 \usepackage{mathrsfs} 
 #+END_SRC
 
-LaTeX's standard package for colors. =usenames= and co make more colors
-available.
-#+BEGIN_SRC latex
-\usepackage[usenames,svgnames,dvipsnames]{xcolor}
-#+END_SRC
-
 Hyperlink support---make =\ref= clickable. 
 #+BEGIN_SRC latex
 \ifjmwcolorlinks
+  \usepackage[usenames,svgnames,dvipsnames]{xcolor}
   \usepackage[colorlinks=true]{hyperref}
   \hypersetup{urlcolor=RubineRed,linkcolor=RoyalBlue,citecolor=ForestGreen}
 \else
@@ -80,7 +81,7 @@ Typeset nice SI units, like kg*m/s^2. [2020-05-22 Fri] not used often.
 
 Better double-struck characters. Suggested by Harry Yu. 
 #+BEGIN_SRC latex
-\usepackage{dsfont} % sexy double-struck chars
+\usepackage{dsfont} 
 #+END_SRC
 
 For the foreach macro. 
@@ -126,229 +127,74 @@ Better =\not=. From [[https://tex.stackexchange.com/a/16183/171101][this SE answ
 #+begin_src latex
 \usepackage{centernot}
 #+end_src
+
+Defines =\NewDocumentCommand=, a better =\newcommand=. Inspired by [[https://tex.stackexchange.com/a/383228/171101][this]]
+SE answer. [[https://www.texdev.net/2010/05/23/from-newcommand-to-newdocumentcommand/][This]] is a good overview.
+#+begin_src latex
+\usepackage{xparse}
+#+end_src
 * macro
 :PROPERTIES:
 :created:  2020-04-25 01:10:37 EDT
 :END:
-A macro almost certainly shouldn't take arguments. The ones that do
-should have a good reason, e.g.,
-- For =\norm=, the argument is placed inside the pair of double verts. 
-- For =\Pr=, it behaves like a function. You are always taking the
-  probability of something.
-
-Abbreviations. No semantics. 
-
-Suggested by Harry. 
-#+BEGIN_SRC latex
-\foreach \x in {A,...,Z}{%
-\expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
-\expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
-\expandafter\xdef\csname frak\x\endcsname{\noexpand\ensuremath{\noexpand\mathfrak{\x}}}
-\expandafter\xdef\csname scr\x\endcsname{\noexpand\ensuremath{\noexpand\mathscr{\x}}}
-}
-#+END_SRC
-
-#+BEGIN_SRC latex
-\newcommand{\FF}{\dsF}
-\newcommand{\PP}{\dsP}
-\newcommand{\EE}{\dsE}
-\newcommand{\eps}{\ensuremath{\epsilon}}
-\newcommand{\dt}{\ensuremath{\delta}}
-\newcommand{\del}{\partial} 
-\newcommand{\cbrt}{\sqrt[3]} % "cube root"
-\renewcommand{\phi}{\varphi}
-\let\d\relax
-\newcommand{\d}{\ensuremath{\mathrm{d}}}
-#+END_SRC
-
-
-Number systems. 
-#+BEGIN_SRC latex
-\newcommand{\NN}{\dsN}
-\newcommand{\ZZ}{\dsZ}
-\newcommand{\QQ}{\dsQ}
-\newcommand{\RR}{\dsR}
-\newcommand{\CC}{\dsC} 
-\newcommand{\HH}{\dsH} 
-#+END_SRC
-
-Probability Distributions.
-#+BEGIN_SRC latex
-\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
-\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
-\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
-\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
-\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
-\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
-\newcommand{\Gauss}{\calN}
-\newcommand{\Binom}{\ensuremath{\textsc{Binom}}}
-#+END_SRC
-
-Groups and representations. 
-#+BEGIN_SRC latex
-\DeclareMathOperator{\GL}{GL} 
-\DeclareMathOperator{\SL}{SL} 
-\DeclareMathOperator{\GO}{GO} 
-\DeclareMathOperator{\SO}{SO} 
-\DeclareMathOperator{\GU}{GU} 
-\DeclareMathOperator{\SU}{SU} 
-#+END_SRC
-
-Big-O and co.
-#+BEGIN_SRC latex
-\newcommand{\BigO}{\mathcal{O}} 
-\newcommand{\LittleO}{\mathcal{o}} 
-\newcommand{\BigOm}{\Omega} 
-#+END_SRC
-
-Maps \RR to some significance space. 
-#+BEGIN_SRC latex
-\DeclareMathOperator{\fl}{fl} 
-#+END_SRC
-
-KL divergence.
-#+BEGIN_SRC latex
-\newcommand{\KL}[2]{\ensuremath{D_{KL}\left(#1, #2\right)}}
-#+END_SRC
-
-Equals sign that defines something.
-#+BEGIN_SRC latex
-\newcommand{\defeq}{\ensuremath{\stackrel{\mathrm{def}}{=}}} 
-#+END_SRC
-
-Insert an email address.
-#+BEGIN_SRC latex
-\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
-#+END_SRC
-
-Norm (normed vector spaces).
-#+BEGIN_SRC latex
-\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
-#+END_SRC
-
-Absolute value of a complex number.
-#+BEGIN_SRC latex
-\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
-#+END_SRC
-
-Floor and ceiling
-#+BEGIN_SRC latex
-\let\floor\relax
-\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
-  #1
-}
-\let\ceil\relax
-\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
-  #1
-}
-#+END_SRC
-
-Sphere. \SS^n is a subspace of \RR^{n+1}
-#+BEGIN_SRC latex
-\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
-#+END_SRC
-
-Misc stuff from 18.675. 
-#+BEGIN_SRC latex
-\newcommand{\ind}[1]{\ensuremath{\mathbf{1}_{#1}}} % indicator func
-\newcommand{\probto}{\xrightarrow{p}}
-\newcommand{\asto}{\xrightarrow{a.s.}}
-\newcommand{\distto}{\xrightarrow{d}}
-\newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}} 
-#+END_SRC
-
+** deprecated
+:PROPERTIES:
+:created:  2021-05-27 20:44:25 EDT
+:END:
 #+begin_src latex
-\let\Pr\relax
-\DeclarePairedDelimiterXPP
-  \Pr
-  [1]
-  {\PP} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
-
-\let\Var\relax
-\DeclarePairedDelimiterXPP
-  \Var
-  [1]
-  {\text{Var}} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
-
-\let\Ev\relax
-\DeclarePairedDelimiterXPP
-  \Ev
-  [1]
-  {\EE} % pre code
-  {[}
-  {]}
-  {} % post code
-  {#1}
+\DeclareMathOperator{\Diff}{Diff} 
+\DeclareMathOperator{\Aut}{Aut}
+\newcommand{\iso}{\sim}
+\newcommand{\cbrt}{\sqrt[3]} % "cube root"
+\DeclareMathOperator{\D}{D} % Jacobian
+\DeclareMathOperator{\Cov}{Cov}
+\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
+\newcommand{\degrees}{^\circ} % "degrees"
+#+end_src
+** foundations
+:PROPERTIES:
+:created:  2021-05-29 12:55:17 EDT
+:END:
+#+begin_src latex
+\newcommand{\defeq}{\ensuremath{\overset{\text{def}}{=}}}
+\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
+\newcommand{\partto}{\nrightarrow}
+\DeclarePairedDelimiterX\Paren[1](){
+  #1
+}
+\DeclarePairedDelimiterX\Bracket[1][]{
+  #1
+}
+\DeclarePairedDelimiterX\Brace[1]\{\}{
+  #1
+}
+\let\implies\relax
+\newcommand{\implies}{\Longrightarrow}
+\let\revimplies\relax
+\newcommand{\revimplies}{\Longleftarrow}
+\let\notimplies\relax
+\newcommand{\notimplies}{\centernot\Longrightarrow}
+\let\Image\relax
+\DeclareMathOperator{\Image}{Im}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 #+end_src
 
-Cardinality of a set. 
-#+BEGIN_SRC latex
-\newcommand{\Card}[1]{\ensuremath{\abs{#1}}}
-% \newcommand{\card}[1]{\ensuremath{\abs{#1}}} 
-#+END_SRC
-
-Inner product.
-#+BEGIN_SRC latex
-\newcommand{\ip}[2]{\ensuremath{\left\langle #1, #2\right\rangle}} 
-#+END_SRC
-
-#+BEGIN_SRC latex
-\DeclareMathOperator{\Tr}{Tr} % "Trace"
-\DeclareMathOperator{\D}{D} % Jacobian
-#+END_SRC
-
-Bolded vector and matrix. 
-#+BEGIN_SRC latex
-\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
-\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}} 
-#+END_SRC
-
-Variance, covariance. 
-#+BEGIN_SRC latex
-\DeclareMathOperator{\Cov}{Cov}
-#+END_SRC
-
-Encoding and decoding in a communication system. Generation in a
-cryptosystem.
-#+BEGIN_SRC latex
-\newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
-\newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
-\newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
-\newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
-\newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
-\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
-\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
-\newcommand{\pk}{\ensuremath{\textsf{pk}}}
-\newcommand{\sk}{\ensuremath{\textsf{sk}}}
-#+END_SRC
-
-For realizing a random variable. 
-#+BEGIN_SRC latex
-\newcommand{\from}{\leftarrow}
-#+END_SRC
-
-Domain and Codomain.
-#+BEGIN_SRC latex
+** category theory
+:PROPERTIES:
+:created:  2021-05-27 20:35:05 EDT
+:END:
+Basic notation.
+#+begin_src latex
+\newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
+\newcommand{\Hom}{\ensuremath{\text{Hom}}}
 \DeclareMathOperator{\Dom}{Dom} 
-\DeclareMathOperator{\Cod}{Cod} 
-#+END_SRC
+\DeclareMathOperator{\Cod}{Cod}
+\newcommand{\id}{\mathrm{id}}
+#+end_src
 
-Better bars. 
-#+BEGIN_SRC latex
-\let\bar\relax
-\newcommand{\bar}[1]{\overline{#1}}
-#+END_SRC
-
-Categories. 
-#+BEGIN_SRC latex
+Categories.
+#+begin_src latex
 \newcommand{\Vect}[1]{#1\text{-\textbf{Vect}}}
 \newcommand{\Mod}[1]{#1\text{-\textbf{Mod}}}
 \newcommand{\FinVect}[1]{#1\text{-\textbf{FinVect}}}
@@ -363,10 +209,11 @@ Categories.
 \newcommand{\Meas}{\mathbf{Meas}} 
 \newcommand{\CRing}{\mathbf{CRing}}
 \newcommand{\Topp}{\mathbf{Top_\bullet}} % pointed topological spaces
-#+END_SRC
+#+end_src
 
-Category theory arrows. 
-#+BEGIN_SRC latex
+Categorical arrows.
+#+begin_src latex
+\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\monoto}[1]{\xhookrightarrow{#1}}
 % there is no \xtwoheadrightarrow
 % from https://tex.stackexchange.com/a/260563/171101
@@ -374,57 +221,104 @@ Category theory arrows.
   \xrightarrow[#1]{#2}\mathrel{\mkern-14mu}\rightarrow
 }
 \newcommand{\epito}[1]{\xtwoheadrightarrow{#1}}
-\newcommand{\morto}[1]{\xrightarrow{#1}}
 \newcommand{\isoto}[1]{\stackrel{#1}{\xrightarrow{\sim}}}
-\newcommand{\To}{\Rightarrow}
-#+END_SRC
-
-Partial function. 
-#+BEGIN_SRC latex
-\newcommand{\partto}{\nrightarrow}
-#+END_SRC
-
-Decreases / increases to. 
-#+begin_src latex
-\newcommand{\downto}{\downarrow}
-\newcommand{\upto}{\uparrow}
+\newcommand{\To}{\Rightarrow} % natural transformation
 #+end_src
 
-Objects of a category.
-#+BEGIN_SRC latex
-\newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
-\newcommand{\Hom}{\ensuremath{\text{Hom}}}
-\newcommand{\Nat}{\ensuremath{\text{Nat}}}
-#+END_SRC
-
-Tensor product. A binary operation on vector spaces, and a binary
-operation on tensors.
-#+BEGIN_SRC latex
+Tensor (monoidal categories).
+#+begin_src latex
 \newcommand{\tensor}{\otimes}
-#+END_SRC
+#+end_src
 
-Automorphism group. 
-#+BEGIN_SRC latex
-\DeclareMathOperator{\Diff}{Diff} 
-\DeclareMathOperator{\Aut}{Aut} 
-#+END_SRC
+Two methods of composition.
+#+begin_src latex
+\let\of\relax
+\newcommand{\of}{\circ}
+\let\then\relax
+\newcommand{\then}{\fatsemi }
+#+end_src
 
-Misc functions in sf. 
-#+BEGIN_SRC latex
-\newcommand{\negl}{\textsf{negl}}
-\newcommand{\len}{\textsf{len}}
-\newcommand{\poly}{\textsf{poly}} % means "polynomial in"
-\let\eval\relax
+Categorical meet. In *Fin*, this is the min.
+#+begin_src latex
+\newcommand{\meet}{\wedge}
+#+end_src
+
+Natural transformations between two functors. This is a hom-set in the
+functor category.
+#+begin_src latex
+\newcommand{\Nat}{\ensuremath{\text{Nat}}}
+#+end_src
+
+Evaluation map.
+#+begin_src latex
 \newcommand{\eval}{\textsf{eval}}
-#+END_SRC
+#+end_src
+** algebra
+:PROPERTIES:
+:created:  2021-05-27 21:07:23 EDT
+:END:
+Important groups.
+#+begin_src latex
+\DeclareMathOperator{\GL}{GL} 
+\DeclareMathOperator{\SL}{SL} 
+\DeclareMathOperator{\GO}{GO} 
+\DeclareMathOperator{\SO}{SO} 
+\DeclareMathOperator{\GU}{GU} 
+\DeclareMathOperator{\SU}{SU}
+#+end_src
 
-Isomorphic symbol. 
-#+BEGIN_SRC latex
-\newcommand{\iso}{\sim}
-#+END_SRC
 
-Determinant. 
-#+BEGIN_SRC latex
+Number systems.
+#+begin_src latex
+\newcommand{\NN}{\dsN}
+\newcommand{\ZZ}{\dsZ}
+\newcommand{\QQ}{\dsQ}
+\newcommand{\RR}{\dsR}
+\newcommand{\CC}{\dsC} 
+\newcommand{\HH}{\dsH}
+#+end_src
+
+Basic functions.
+#+begin_src latex
+\newcommand{\abs}[1]{\ensuremath{\left\lvert #1\right\rvert}}
+\let\floor\relax
+\DeclarePairedDelimiterX\floor[1]\lfloor\rfloor{
+  #1
+}
+\let\ceil\relax
+\DeclarePairedDelimiterX\ceil[1]\lceil\rceil{
+  #1
+}
+\newcommand{\sign}{\textsf{sign}}
+#+end_src
+
+For finite fields.
+#+begin_src latex
+\newcommand{\FF}{\dsF}
+#+end_src
+
+
+Legendre and Jacobi symbols.
+#+begin_src latex
+\DeclarePairedDelimiterX\Legendre[2](){
+  \frac{#1}{#2}
+}
+\DeclarePairedDelimiterX\Jacobi[2](){
+  \frac{#1}{#2}
+}
+#+end_src
+*** linear algebra
+:PROPERTIES:
+:created:  2021-05-29 14:51:22 EDT
+:END:
+Bold notation for vectors and matrices.
+#+begin_src latex
+\newcommand{\bvec}[1]{\ensuremath{\mathbf{#1}}} 
+\newcommand{\bmat}[1]{\ensuremath{\mathbf{#1}}}
+#+end_src
+
+Basics.
+#+begin_src latex
 \let\Det\relax
 \DeclarePairedDelimiterXPP
   \Det
@@ -434,24 +328,197 @@ Determinant.
   {)}
   {} % post code
   {#1}
-#+END_SRC
+\DeclareMathOperator{\Tr}{Tr} % "Trace"
+\let\Span\relax
+\DeclareMathOperator{\Span}{Span}
+\let\Dim\relax
+\DeclareMathOperator{\Dim}{Dim}
+#+end_src
 
-Jacobian.
+Normed vector space operation. [2021-05-29 Sat 14:52] Should phase out
+=\norm=.
 #+begin_src latex
+\newcommand{\norm}[1]{\ensuremath{\left\lVert #1\right\rVert}}
+\let\Norm\relax
+\DeclarePairedDelimiterXPP
+  \Normaux
+  [1]
+  {} % pre code
+  {\lVert}
+  {\rVert}
+  {} % post code
+  {#1}
+\NewDocumentCommand\Norm{somO{}}{
+  \IfBooleanTF{#1}
+    {\Normaux*{#3}_{#4}}
+    {\IfNoValueTF{#2}
+      {\Normaux{#3}_{#4}}
+      {\Normaux[#2]{#3}_{#4}}
+    }
+}
+#+end_src
+
+Inner product.
+#+begin_src latex
+\DeclarePairedDelimiterXPP
+  \ipaux
+  [3]
+  {} % pre code
+  {\langle}
+  {\rangle}
+  {_{#3}} % post code
+  {#1,#2}
+\NewDocumentCommand\ip{sommO{}}{
+  \IfBooleanTF{#1}
+    {\ipaux*{#3}{#4}{#5}}
+    {\IfNoValueTF{#2}
+      {\ipaux{#3}{#4}{#5}}
+      {\ipaux[#2]{#3}{#4}{#5}}
+    }
+}
+#+end_src
+** topology
+:PROPERTIES:
+:created:  2021-05-27 21:07:34 EDT
+:END:
+#+begin_src latex
+\renewcommand{\SS}{\ensuremath{\mathds{S}}} % sphere
+\newcommand{\DD}{\dsD}
+\DeclareMathOperator{\SeqCl}{SeqCl}
+#+end_src
+** analysis
+:PROPERTIES:
+:created:  2021-05-27 21:07:28 EDT
+:END:
+Asymptotic analysis.
+#+begin_src latex
+\newcommand{\BigO}{\mathcal{O}} 
+\newcommand{\LittleO}{o} 
+\newcommand{\BigOm}{\Omega}
+\newcommand{\negl}{\textsf{negl}}
+\newcommand{\poly}{\textsf{poly}} % means "polynomial in"
+\let\eval\relax
+#+end_src
+
+Differentiation.
+#+begin_src latex
+\newcommand{\del}{\partial} 
+\let\d\relax
+\newcommand{\d}{\ensuremath{\mathrm{d}}}
 \let\Jacobian\relax
-\newcommand{\Jacobian}[1]{\ensuremath{D#1}}
+\DeclarePairedDelimiterXPP
+  \Jacobianaux
+  [2]
+  {D_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Jacobian{somO{}}{
+  \IfBooleanTF{#1}
+    {\Jacobianaux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Jacobianaux{#4}{#3}}
+      {\Jacobianaux[#2]{#4}{#3}}
+    }
+}
 #+end_src
 
-Concatenation of strings.
+How you approach a limit.
 #+begin_src latex
-\let\concat\relax
-\newcommand{\concat}{\mathbin{\|}}
+\newcommand{\downto}{\downarrow}
+\newcommand{\upto}{\uparrow}
 #+end_src
 
-Miscellaneous 6.875 stuff. 
+Special functions.
 #+begin_src latex
-\newcommand{\compind}{\approx_c}
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\erfc}{erfc}
+#+end_src
+** probability
+:PROPERTIES:
+:created:  2021-05-27 20:54:45 EDT
+:END:
+Basic notation.
+#+begin_src latex
+\newcommand{\PP}{\dsP} % the probability symbol
+\newcommand{\EE}{\dsE} % the EV symbol
+#+end_src
+
+Basic operators.
+#+begin_src latex
+\let\Pr\relax
+\DeclarePairedDelimiterXPP
+  \Praux
+  [2]
+  {\PP_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Pr{somO{}}{
+  \IfBooleanTF{#1}
+    {\Praux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Praux{#4}{#3}}
+      {\Praux[#2]{#4}{#3}}
+    }
+}
+\let\Var\relax
+\DeclarePairedDelimiterXPP
+  \Var
+  [1]
+  {\text{Var}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#1}
+\let\Ev\relax
+\DeclarePairedDelimiterXPP
+  \Evaux
+  [2]
+  {\EE_{#1}} % pre code
+  {[}
+  {]}
+  {} % post code
+  {#2}
+\NewDocumentCommand\Ev{somO{}}{
+  \IfBooleanTF{#1}
+    {\Evaux*{#4}{#3}}
+    {\IfNoValueTF{#2}
+      {\Evaux{#4}{#3}}
+      {\Evaux[#2]{#4}{#3}}
+    }
+}
+#+end_src
+
+Conditioning. To be used inside the brackets of above operators.
+#+begin_src latex
+% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
+\newcommand\GivenSymbol[1][]{%
+  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
+}
+\let\given\relax
+\newcommand\given{\GivenSymbol[\delimsize]}
+#+end_src
+
+Probability distributions.
+#+begin_src latex
+\newcommand{\Unif}{\ensuremath{\textsc{Unif}}} 
+\newcommand{\Ber}{\ensuremath{\textsc{Ber}}}
+\newcommand{\Geom}{\ensuremath{\textsc{Geom}}} 
+\newcommand{\Exp}{\ensuremath{\textsc{Exp}}} 
+\newcommand{\Cauchy}{\ensuremath{\textsc{Cauchy}}}
+\newcommand{\Pois}{\ensuremath{\textsc{Pois}}}
+\newcommand{\Gauss}{\calN}
+\newcommand{\Binom}{\ensuremath{\textsc{Binom}}}
+\newcommand{\Laplace}{\ensuremath{\textsc{Laplace}}}
+#+end_src
+
+Sample from a distribution.
+#+begin_src latex
 \newcommand{\distas}{\sim}
+\newcommand{\iiddistas}{\overset{\text{iid}}{\sim}}
 \let\Rv\relax
 \DeclarePairedDelimiterXPP
   \Rv
@@ -461,101 +528,115 @@ Miscellaneous 6.875 stuff.
   {]}
   {} % post code
   {#1}
-\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+\newcommand{\from}{\leftarrow}
 #+end_src
 
-Better parentheses, given symbol. 
+Independence.
 #+begin_src latex
-% copied from http://texdoc.net/texmf-dist/doc/latex/mathtools/mathtools.pdf
-\newcommand\GivenSymbol[1][]{%
-  \nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}
-}
-\let\given\relax
-\newcommand\given{\GivenSymbol[\delimsize]}
-\DeclarePairedDelimiterX\Paren[1](){
-  #1
-}
-#+end_src
-
-Identity map. 
-#+begin_src latex
-\newcommand{\id}{\mathrm{id}}
-#+end_src
-
-Legendre, Jacobi symbol.
-#+begin_src latex
-\DeclarePairedDelimiterX\Legendre[2](){
-  \frac{#1}{#2}
-}
-\DeclarePairedDelimiterX\Jacobi[2](){
-  \frac{#1}{#2}
-}
-#+end_src
-
-Closed ball. 
-#+begin_src latex
-\newcommand{\DD}{\dsD}
-#+end_src
-
-#+begin_src latex
-\let\implies\relax
-\newcommand{\implies}{\Longrightarrow}
-\let\revimplies\relax
-\newcommand{\revimplies}{\Longleftarrow}
-\let\notimplies\relax
-\newcommand{\notimplies}{\centernot\Longrightarrow}
-#+end_src
-
-#+begin_src latex
-\DeclareMathOperator{\SeqCl}{SeqCl}
-#+end_src
-
-#+begin_src latex
-\let\of\relax
-\newcommand{\of}{\circ}
-\let\then\relax
-\newcommand{\then}{\fatsemi }
-#+end_src
-
-Image of a function.
-#+begin_src latex
-\let\Image\relax
-\DeclareMathOperator{\Image}{Im}
-#+end_src
-
-Span and dimension.
-#+begin_src latex
-\let\Span\relax
-\DeclareMathOperator{\Span}{Span}
-\let\Dim\relax
-\DeclareMathOperator{\Dim}{Dim}
-#+end_src
-
-Argmin, argmax.
-#+begin_src latex
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-#+end_src
-
-Independent symbol. From [[https://tex.stackexchange.com/questions/79434/double-perpendicular-symbol-for-independence][SE]].
-#+begin_src latex
+% from https://tex.stackexchange.com/questions/79434/double-perpendicular-symbol-for-independence
 \newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 #+end_src
 
-"Distributionally equal", or "equal in law".
+Pushforward.
+#+begin_src latex
+\newcommand{\Law}[1]{\ensuremath{\mathcal{L}_{#1}}}
+#+end_src
+
+Indicator on an event. The event should be descriptive,
+e.g. ~\ind{x<5}~. Doesn't work for the indicator of an event denoted by
+a variable, for example "the indicator of A".
+#+begin_src latex
+\newcommand{\ind}[1]{\ensuremath{\mathds{1}\Brace*{#1}}} % indicator func
+#+end_src
+
+Convergence.
+#+begin_src latex
+\newcommand{\probto}{\xrightarrow{p}}
+\newcommand{\asto}{\xrightarrow{a.s.}}
+\newcommand{\distto}{\xrightarrow{d}}
+#+end_src
+
+Equality.
 #+begin_src latex
 \newcommand{\disteq}{\ensuremath{\overset{\text{d}}{=}}}
+\newcommand{\aseq}{\ensuremath{\overset{\text{a.s.}}{=}}}
+#+end_src
+
+Quadratic covariation.
+#+begin_src latex
+% reuse inner product aux
+\NewDocumentCommand\QCov{sommO{}}{
+  \IfBooleanTF{#1}
+    {\ipaux*{#3}{#4}{#5}}
+    {\IfNoValueTF{#2}
+      {\ipaux{#3}{#4}{#5}}
+      {\ipaux[#2]{#3}{#4}{#5}}
+    }
+}
 #+end_src
 ** other
 :PROPERTIES:
-:created:  2020-05-22 04:37:13 EDT
+:created:  2021-05-29 12:42:03 EDT
 :END:
-Not satisfied with calling signature. Hope a better solution exists.
-#+BEGIN_SRC latex
-\renewcommand\th{^{\text{\normalfont{th}}}} % Harry likes this
-\newcommand{\degrees}{^\circ} % "degrees"
-#+END_SRC
+Glyphs.
+#+begin_src latex
+\foreach \x in {A,...,Z}{%
+\expandafter\xdef\csname ds\x\endcsname{\noexpand\ensuremath{\noexpand\mathds{\x}}}
+\expandafter\xdef\csname cal\x\endcsname{\noexpand\ensuremath{\noexpand\mathcal{\x}}}
+\expandafter\xdef\csname frak\x\endcsname{\noexpand\ensuremath{\noexpand\mathfrak{\x}}}
+\expandafter\xdef\csname scr\x\endcsname{\noexpand\ensuremath{\noexpand\mathscr{\x}}}
+}
+\newcommand{\eps}{\ensuremath{\varepsilon}}
+\newcommand{\dt}{\ensuremath{\delta}}
+\let\phi\relax
+\newcommand{\phi}{\varphi}
+#+end_src
+
+#+begin_src latex
+\newcommand{\mailto}[1]{\href{mailto:#1}{\texttt{#1}}}
+\let\bar\relax
+\newcommand{\bar}[1]{\overline{#1}}
+\newcommand{\pheq}{\phantom{{}={}}}
+% from https://tex.stackexchange.com/questions/42726/align-but-show-one-equation-number-at-the-end
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+#+end_src
+
+Random other math subjects.
+#+begin_src latex
+\DeclareMathOperator{\fl}{fl}
+\newcommand{\KL}[2]{\ensuremath{D\left(#1\| #2\right)}}
+#+end_src
+
+Cryptography, cs.
+#+begin_src latex
+\newcommand{\Enc}{\ensuremath{\textsc{Enc}}}
+\newcommand{\Dec}{\ensuremath{\textsc{Dec}}}
+\newcommand{\Gen}{\ensuremath{\textsc{Gen}}}
+\newcommand{\Sign}{\ensuremath{\textsc{Sign}}}
+\newcommand{\Verify}{\ensuremath{\textsc{Verify}}}
+\newcommand{\MAC}{\ensuremath{\textsc{MAC}}}
+\newcommand{\Comm}{\ensuremath{\textsc{Comm}}}
+\newcommand{\pk}{\ensuremath{\textsf{pk}}}
+\newcommand{\sk}{\ensuremath{\textsf{sk}}}
+\newcommand{\compind}{\approx_c}
+\let\concat\relax
+\newcommand{\concat}{\mathbin{\|}}
+\newcommand{\IPS}[2]{\langle#1, #2\rangle}
+\newcommand{\len}{\textsf{len}}
+#+end_src
+
+Empty delimiters. Should only be used as ~\Delim*~.
+#+begin_src latex
+\DeclarePairedDelimiterX\Delim[1]..{
+  #1
+}
+#+end_src
+
+#+begin_src latex
+\newcommand{\Brier}{\text{BS}} % Brier score
+\newcommand{\ConfidenceCalibration}{\text{CC}} % Confidence calibration
+#+end_src
 * style
 :PROPERTIES:
 :created:  2020-04-25 01:11:50 EDT
@@ -568,16 +649,23 @@ This is probably better in a document class.
 
 Redefine =\emph=. Not a fan of italics for emphasizing terms in a math
 text.
-#+begin_src 
+#+begin_src latex
 \let\emph\relax
 \DeclareTextFontCommand{\emph}{\color{blue}\bfseries}
+#+end_src
+
+Choose a bib style (see [[https://www.overleaf.com/learn/latex/Natbib_bibliography_styles][here]]).
+#+begin_src latex
+\bibliographystyle{plainnat}
 #+end_src
 * thm
 :PROPERTIES:
 :created:  2020-04-25 01:12:50 EDT
 :END:
+Theorem boxes.
 #+BEGIN_SRC latex
 \ifjmwsetup
+  \renewcommand{\qedsymbol}{$\blacksquare$}
   \ifjmwmdfthm
     <<mdf-thm>>
   \else
@@ -587,6 +675,19 @@ text.
   \fi
 \fi
 #+END_SRC
+
+Lightweight proofs. Generally used for nested proofs inside lemma-nobox
+environments.
+#+begin_src latex
+\NewDocumentEnvironment{prooflight}{O{}}
+  {
+    \begin{proof}[#1]
+    \renewcommand{\qedsymbol}{$\square$}
+  }
+  {
+    \end{proof}
+  }
+#+end_src
 ** mdf-thm
 :PROPERTIES:
 :created:  2020-05-24 18:07:43 EDT
@@ -598,7 +699,7 @@ Main framing package.
 #+END_SRC
 
 Evan's boxes and theorem styles. 
-#+BEGIN_SRC latex
+#+begin_src latex
 \mdfdefinestyle{mdfbluebox}{%
   roundcorner=10pt,
   linewidth=1pt,
@@ -610,10 +711,10 @@ Evan's boxes and theorem styles.
   backgroundcolor=TealBlue!5,
 }
 \declaretheoremstyle[
-headfont=\sffamily\bfseries\color{MidnightBlue},
-mdframed={style=mdfbluebox},
-headpunct={\\[3pt]},
-postheadspace={0pt}
+  headfont=\sffamily\bfseries\color{MidnightBlue},
+  mdframed={style=mdfbluebox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
 ]{thmbluebox}
 
 \mdfdefinestyle{mdfgreenbox}{%
@@ -627,10 +728,10 @@ postheadspace={0pt}
   backgroundcolor=Green!5,
 }
 \declaretheoremstyle[
-headfont=\sffamily\bfseries\color{OliveGreen},
-mdframed={style=mdfgreenbox},
-headpunct={\\[3pt]},
-postheadspace={0pt}
+  headfont=\sffamily\bfseries\color{OliveGreen},
+  mdframed={style=mdfgreenbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
 ]{thmgreenbox}
 
 \mdfdefinestyle{mdfredbox}{%
@@ -644,10 +745,10 @@ postheadspace={0pt}
   backgroundcolor=Red!5,
 }
 \declaretheoremstyle[
-headfont=\sffamily\bfseries\color{Maroon},
-mdframed={style=mdfredbox},
-headpunct={\\[3pt]},
-postheadspace={0pt}
+  headfont=\sffamily\bfseries\color{Maroon},
+  mdframed={style=mdfredbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
 ]{thmredbox}
 
 \mdfdefinestyle{mdfcyanbox}{%
@@ -661,10 +762,10 @@ postheadspace={0pt}
   backgroundcolor=Cyan!5,
 }
 \declaretheoremstyle[
-headfont=\sffamily\bfseries\color{CornflowerBlue},
-mdframed={style=mdfcyanbox},
-headpunct={\\[3pt]},
-postheadspace={0pt}
+  headfont=\sffamily\bfseries\color{CornflowerBlue},
+  mdframed={style=mdfcyanbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt}
 ]{thmcyanbox}
 
 \mdfdefinestyle{mdftanbox}{%
@@ -681,10 +782,10 @@ postheadspace={0pt}
   linecolor=RawSienna,
 }
 \declaretheoremstyle[
-headfont=\bfseries\color{RawSienna},
-mdframed={style=mdftanbox},
-headpunct={\\[3pt]},
-postheadspace={0pt},
+  headfont=\bfseries\color{RawSienna},
+  mdframed={style=mdftanbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt},
 ]{thmtanbox}
 
 \mdfdefinestyle{mdfblackbox}{%
@@ -700,14 +801,18 @@ postheadspace={0pt},
   linecolor=Black,
 }
 \declaretheoremstyle[
-headfont=\bfseries,
-mdframed={style=mdfblackbox},
-headpunct={\\[3pt]},
-postheadspace={0pt},
+  headfont=\bfseries,
+  mdframed={style=mdfblackbox},
+  headpunct={\\[3pt]},
+  postheadspace={0pt},
 ]{thmblackbox}
 
 % numbered
-\declaretheorem[style=thmbluebox,name=Theorem,numberwithin=section]{theorem}
+\declaretheorem[
+  style=thmbluebox,
+  name=Theorem,
+  numberwithin=\ifjmwsecthm section\else \fi
+]{theorem}
 \declaretheorem[style=thmcyanbox,name=Conjecture,sibling=theorem]{conjecture}
 \declaretheorem[style=thmcyanbox,name=Pseudo-theorem,sibling=theorem]{pseudotheorem}
 \declaretheorem[style=thmbluebox,name=Lemma,sibling=theorem]{lemma}
@@ -723,12 +828,14 @@ postheadspace={0pt},
 
 % numbered, no box
 \declaretheorem[name=Lemma,sibling=theorem]{lemma-nobox}
+\declaretheorem[name=Lemma,numbered=no]{lemma-nobox*}
 
 % no number
-\declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}
+\declaretheorem[style=thmbluebox,name=Theorem,numbered=no]{theorem*}    
+\declaretheorem[style=thmbluebox,name=Lemma,numbered=no]{lemma*}
 \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
 \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
-#+END_SRC
+#+end_src
 * other
 :PROPERTIES:
 :created:  2020-04-25 01:13:55 EDT
