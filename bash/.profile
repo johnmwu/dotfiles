@@ -25,7 +25,7 @@ export ENV_STOW_DIR="${BIN_DIR}/env/stow"
 
 export PROC_DIR="${HOME}/core/mind/sys/short/proc"
 
-export TEMP="${HOME}/other/temp"
+export JMW_TEMP="${HOME}/other/temp"
 
 export SAFE_ARCHIVE="${HOME}/core/state/env/safe.org.7z"
 export WANDER_ARCHIVE="${HOME}/core/mind/sys/other/wander.txt.7z"
@@ -69,7 +69,7 @@ alias e="emacsclient"
 alias v="vim"
 
 alias python="python3"
-alias ju="jupyter notebook &> /dev/null & disown"
+alias ju="jupyter lab &> /dev/null & disown"
 
 shopt -s globstar
 

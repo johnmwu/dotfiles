@@ -62,7 +62,7 @@ including
 Semantically, it is a place where file permanence is not guaranteed. In
 practice, files are not deleted often. 
 #+BEGIN_SRC sh
-export TEMP="${HOME}/other/temp"
+export JMW_TEMP="${HOME}/other/temp"
 #+END_SRC
 
 These are important regular files for me
@@ -153,7 +153,7 @@ alias v="vim"
 More aliases. 
 #+BEGIN_SRC sh
 alias python="python3"
-alias ju="jupyter notebook &> /dev/null & disown"
+alias ju="jupyter lab &> /dev/null & disown"
 #+END_SRC
 
 Make =**= match zero or more dirs in globs.
