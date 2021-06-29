@@ -897,6 +897,16 @@ can be anywhere in your config.
 #+BEGIN_SRC emacs-lisp
   (exwm-enable)
 #+END_SRC
+
+[2021-06-28 Mon 20:56] My pinyin IME, [[https://wiki.archlinux.org/title/IBus][IBus]]. This is Arch's recommended
+command for starting the daemon. Options (~man ibus-daemon~):
+- d: daemonize
+- r: replace
+- x: execute ibus XIM server (??)
+- R: not in manual
+#+begin_src emacs-lisp
+(call-process-shell-command "ibus-daemon -drxR")
+#+end_src
 **** desktop-environment
      :PROPERTIES:
      :created:  2020-03-10 00:22:02 EDT
@@ -1128,6 +1138,15 @@ The [[https://docs.microsoft.com/en-us/archive/blogs/cyrusn/tabs-vs-spaces?utm_s
 (add-hook 'c++-mode-hook 'fix-enum-class)
 
 #+END_SRC
+** typescript-mode
+:PROPERTIES:
+:created:  2021-05-13 12:53:45 EDT
+:END:
+Indent with two spaces. Changing =tab-stop-list= doesn't work, not sure
+why.
+#+begin_src emacs-lisp
+(setq typescript-indent-level 2)
+#+end_src
 * mode
 Related to a mode, minor or major. 
 ** custom
@@ -1428,7 +1447,7 @@ first called, and rearchived when called again.
 		      (concat "7z e -p"
 			      (read-passwd "Password? ")
 			      " -o"
-			      (getenv "TEMP") 
+			      (getenv "JMW_TEMP") 
 			      " "
 			      zfile
 			      " "
@@ -1447,7 +1466,7 @@ month.
     (interactive)
     (jmw/7z (getenv "WANDER_ARCHIVE")
 	    "wander.txt"
-	    (concat (getenv "TEMP")
+	    (concat (getenv "JMW_TEMP")
 		    "/wander.txt")))
   (define-key 'jmw/prefix "w" 'jmw/wander)
 #+END_SRC
@@ -1458,7 +1477,7 @@ The safe archive contains passwords.
     (interactive)
     (jmw/7z (getenv "SAFE_ARCHIVE")
 	    "safe.org"
-	    (concat (getenv "TEMP")
+	    (concat (getenv "JMW_TEMP")
 		    "/safe.org")))
   (define-key 'jmw/prefix "s" 'jmw/safe)
 #+END_SRC

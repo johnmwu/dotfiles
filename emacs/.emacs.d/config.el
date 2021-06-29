@@ -433,6 +433,7 @@
     (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
     (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
     (exwm-enable)
+  (call-process-shell-command "ibus-daemon -drxR")
     (use-package desktop-environment
       :ensure nil
   
@@ -529,6 +530,8 @@
                '(statement-cont . align-enum-class-closing-brace)))
 
 (add-hook 'c++-mode-hook 'fix-enum-class)
+
+(setq typescript-indent-level 2)
 
   (setq custom-file (concat user-emacs-directory "/custom.el"))
 
@@ -694,7 +697,7 @@
 		      (concat "7z e -p"
 			      (read-passwd "Password? ")
 			      " -o"
-			      (getenv "TEMP") 
+			      (getenv "JMW_TEMP") 
 			      " "
 			      zfile
 			      " "
@@ -708,7 +711,7 @@
     (interactive)
     (jmw/7z (getenv "WANDER_ARCHIVE")
 	    "wander.txt"
-	    (concat (getenv "TEMP")
+	    (concat (getenv "JMW_TEMP")
 		    "/wander.txt")))
   (define-key 'jmw/prefix "w" 'jmw/wander)
 
@@ -716,7 +719,7 @@
     (interactive)
     (jmw/7z (getenv "SAFE_ARCHIVE")
 	    "safe.org"
-	    (concat (getenv "TEMP")
+	    (concat (getenv "JMW_TEMP")
 		    "/safe.org")))
   (define-key 'jmw/prefix "s" 'jmw/safe)
 
