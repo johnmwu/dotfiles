@@ -394,61 +394,66 @@
 
 (setq ivy-rich-parse-remote-buffer nil)
 
-(use-package exwm
-  :ensure nil 
-  :demand t
+(setq jmw/use-exwmp
+      (not (eq (call-process-shell-command "wmctrl -m")
+               0)))
 
-  :config
-    (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
-    (setq exwm-systemtray-height 16)
-    (setq exwm-workspace-number 8)
-  (setq exwm-input-global-keys
-        `(
-          ([?\s-r] . exwm-reset)
-          ([?\s-w] . exwm-workspace-switch)
-          ,@(mapcar (lambda (i)
-                      `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                          (interactive)
-                          (exwm-workspace-switch-create ,i))))
-                    (number-sequence 0 9))
-          ([?\s-&] . (lambda (command)
-                       (interactive (list (read-shell-command "$ ")))
-                       (start-process-shell-command command nil command)))
-          (,(kbd "C-;") . other-window)
-          (,(kbd "C-'") . other-frame)
-          (,(kbd "s-k") . exwm-workspace-delete)
-          ))
-    (setq exwm-input-simulation-keys
-  	'(
-  	  ([?\M-w] . [?\C-c])
-  	  ([?\C-y] . [?\C-v])
-  	  ))
-    (setq exwm-workspace-show-all-buffers t)
-    (setq exwm-layout-show-all-buffers t)
-    (add-hook 'exwm-update-class-hook
-  	    (lambda ()
-  	      (exwm-workspace-rename-buffer exwm-class-name)))
-    (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
-    (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
-    (exwm-enable)
-  (call-process-shell-command "ibus-daemon -drxR")
-    (use-package desktop-environment
-      :ensure nil
-  
-      :config
-      ;; For some reason, this has to be after exwm setup
-      (setq desktop-environment-update-exwm-global-keys :global)
-      (desktop-environment-mode))
-    (defun desktop-environment-screenshot ()
-      (interactive)
-      (shell-command "sleep 0.2; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
-      (setq display-time-day-and-date t)
-      (setq display-time-24hr-format t)
-      (setq display-time-default-load-average nil)
-      (display-time-mode 1)
-      (display-battery-mode 1))
+(when jmw/use-exwmp
+  (use-package exwm
+    :ensure nil 
+    :demand t
+
+    :config
+      (require 'exwm-systemtray)
+      (exwm-systemtray-enable)
+      (setq exwm-systemtray-height 16)
+      (setq exwm-workspace-number 8)
+    (setq exwm-input-global-keys
+          `(
+            ([?\s-r] . exwm-reset)
+            ([?\s-w] . exwm-workspace-switch)
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9))
+            ([?\s-&] . (lambda (command)
+                         (interactive (list (read-shell-command "$ ")))
+                         (start-process-shell-command command nil command)))
+            (,(kbd "C-;") . other-window)
+            (,(kbd "C-'") . other-frame)
+            (,(kbd "s-k") . exwm-workspace-delete)
+            ))
+      (setq exwm-input-simulation-keys
+    	'(
+    	  ([?\M-w] . [?\C-c])
+    	  ([?\C-y] . [?\C-v])
+    	  ))
+      (setq exwm-workspace-show-all-buffers t)
+      (setq exwm-layout-show-all-buffers t)
+      (add-hook 'exwm-update-class-hook
+    	    (lambda ()
+    	      (exwm-workspace-rename-buffer exwm-class-name)))
+      (setq exwm-input-prefix-keys (delete ?\C-h exwm-input-prefix-keys))
+      (setq exwm-input-prefix-keys (add-to-list 'exwm-input-prefix-keys ?\C-g))
+      (exwm-enable)
+    (call-process-shell-command "ibus-daemon -drxR")
+      (use-package desktop-environment
+        :ensure nil
+    
+        :config
+        ;; For some reason, this has to be after exwm setup
+        (setq desktop-environment-update-exwm-global-keys :global)
+        (desktop-environment-mode))
+      (defun desktop-environment-screenshot ()
+        (interactive)
+        (shell-command "sleep 0.2; scrot -s '/tmp/%F_%T_$wx$h.png' -e 'xclip -selection clipboard -target image/png -i $f &>/dev/null'"))
+        (setq display-time-day-and-date t)
+        (setq display-time-24hr-format t)
+        (setq display-time-default-load-average nil)
+        (display-time-mode 1)
+        (display-battery-mode 1)))
 
   (setq custom-safe-themes t)
 

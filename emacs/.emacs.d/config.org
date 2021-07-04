@@ -797,13 +797,34 @@ connection to =aloysius=.
    :created:  2020-03-01 19:11:44 EST
    :END:
 The Emacs OS. For contessa, added desktop entry for emacs. 
-#+BEGIN_SRC emacs-lisp :noweb yes
-(use-package exwm
-  :ensure nil 
-  :demand t
 
-  :config
-  <<exwm-config>>)  
+Whether to use EXWM and load its config. Currently very simple: use
+=wmctrl(1)= to test if a WM is already running.
+#+begin_src emacs-lisp 
+(setq jmw/use-exwmp
+      (not (eq (call-process-shell-command "wmctrl -m")
+               0)))
+#+end_src
+
+The following doesn't work. When using EXWM, then these lines are run
+the DE hasn't been set up yet, causing =wmctrl= to give an error. 
+#+begin_src emacs-lisp :tangle no
+(setq jmw/current-wm
+      (shell-command-to-string
+       "wmctrl -m | grep 'Name' | cut -d':' -f2 | xargs echo -n"))
+(setq jmw/use-exwmp
+      (string= jmw/current-wm "EXWM"))
+#+end_src
+
+Load.
+#+BEGIN_SRC emacs-lisp 
+(when jmw/use-exwmp
+  (use-package exwm
+    :ensure nil 
+    :demand t
+
+    :config
+    <<exwm-config>>))
 #+END_SRC
 *** cfg
 :PROPERTIES:
