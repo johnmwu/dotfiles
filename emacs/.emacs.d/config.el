@@ -671,6 +671,11 @@
 
 (global-unset-key (kbd "C-z"))
 
+(defun jmw/kill-buffer-filename ()
+  (interactive)
+  (kill-new (buffer-file-name)))
+(define-key 'jmw/prefix "b" 'jmw/kill-buffer-filename)
+
   (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
 	;; If outfile exists, put it back into the zfile (the 7z archive)

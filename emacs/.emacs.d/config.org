@@ -1432,6 +1432,14 @@ Do not have ctl-z suspend.
 #+BEGIN_SRC emacs-lisp
 (global-unset-key (kbd "C-z"))
 #+END_SRC
+
+Yank current buffer.
+#+begin_src emacs-lisp
+(defun jmw/kill-buffer-filename ()
+  (interactive)
+  (kill-new (buffer-file-name)))
+(define-key 'jmw/prefix "b" 'jmw/kill-buffer-filename)
+#+end_src
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when
