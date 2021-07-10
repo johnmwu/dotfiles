@@ -209,7 +209,7 @@ if jmw_on_desktop; then
 		vterm_set_directory() {
 		    vterm_cmd update-pwd "$PWD/"
 		}
-		PROMPT_COMMAND="$PROMPT_COMMAND;vterm_set_directory"
+		PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }vterm_set_directory"
 		export GOPATH="${HOME}/go"
 		export PATH="${PATH}:${GOPATH}/bin"
 		if [[ $DESKTOP_SESSION = "emacs" ]]; then
