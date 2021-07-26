@@ -424,6 +424,7 @@
             (,(kbd "C-;") . other-window)
             (,(kbd "C-'") . other-frame)
             (,(kbd "s-k") . exwm-workspace-delete)
+            (,(kbd "s-l") . jmw/lock-screen)
             ))
       (setq exwm-input-simulation-keys
     	'(
@@ -675,6 +676,9 @@
   (interactive)
   (kill-new (buffer-file-name)))
 (define-key 'jmw/prefix "b" 'jmw/kill-buffer-filename)
+
+(defun jmw/lock-screen ()
+    (call-process-shell-command "slock"))
 
   (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
