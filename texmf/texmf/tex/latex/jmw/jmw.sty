@@ -87,6 +87,16 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
+\let\PowerSet\relax
+\DeclarePairedDelimiterXPP
+  \PowerSet
+  [1]
+  {\calP} % pre code
+  {(}
+  {)}
+  {} % post code
+  {#1}
+
 \newcommand{\Ob}[1]{\ensuremath{\text{Ob}(#1)}}
 \newcommand{\Hom}{\ensuremath{\text{Hom}}}
 \DeclareMathOperator{\Dom}{Dom} 

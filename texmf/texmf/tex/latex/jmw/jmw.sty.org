@@ -180,6 +180,18 @@ SE answer. [[https://www.texdev.net/2010/05/23/from-newcommand-to-newdocumentcom
 \DeclareMathOperator*{\argmin}{arg\,min}
 #+end_src
 
+Power set.
+#+begin_src latex
+\let\PowerSet\relax
+\DeclarePairedDelimiterXPP
+  \PowerSet
+  [1]
+  {\calP} % pre code
+  {(}
+  {)}
+  {} % post code
+  {#1}
+#+end_src
 ** category theory
 :PROPERTIES:
 :created:  2021-05-27 20:35:05 EDT

@@ -9,6 +9,6 @@ Doing this in literate programming is a bit extra.
   (require 'org)
   (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
   (org-agenda-list)
-  (org-agenda-write (concat (getenv "TEMP")
+  (org-agenda-write (concat (getenv "JMW_TEMP")
 			    "/agenda.txt"))
 #+END_SRC
