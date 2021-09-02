@@ -680,6 +680,11 @@
 (defun jmw/lock-screen ()
     (call-process-shell-command "slock"))
 
+(defun jmw/swap-caps ()
+  (interactive)
+  (call-process-shell-command "/usr/bin/setxkbmap -option 'ctrl:swapcaps'"))
+(define-key 'jmw/prefix "k" 'jmw/swap-caps)
+
   (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
 	;; If outfile exists, put it back into the zfile (the 7z archive)
