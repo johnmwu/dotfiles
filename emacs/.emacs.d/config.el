@@ -102,6 +102,13 @@
 		(jmw/org-clock-out-up))
   (define-key 'jmw/org-prefix "c" 'jmw/org-cancel)
 
+(defun jmw/org-daily-goto ()
+  (interactive)
+  (select-frame-set-input-focus (jmw/main-sched-frame))
+  (select-window (jmw/main-sched-window))
+  (goto-char (org-find-exact-headline-in-buffer "daily")))
+(define-key 'jmw/org-prefix "f" 'jmw/daily-goto)
+
 ;; this uses an internal function, not ideal
 (defun jmw/main-sched-frame ()
   jmw/main-frame)
@@ -185,6 +192,14 @@
                               "google search")
                "* %U %?\n %i"))
 
+(add-to-list 'org-capture-templates
+             '("m"
+               "other-mind"
+               entry
+               (file+headline "~/core/mind/sys/short/proc/main.org"
+                              "other mind")
+               "* %U %?\n %i"))
+
   (defun jmw/ad-org-capture-place-template (oldfun args)
     (cl-letf (((symbol-function 'delete-other-windows) 'ignore))
       (apply oldfun args)))      
@@ -250,6 +265,14 @@
   (setq TeX-parse-self t)
   (setq-default TeX-master nil)
   (setq font-latex-fontify-script nil)
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (add-to-list 'TeX-symbol-list
+                '("autoref" TeX-arg-ref))
+              (font-latex-add-keywords
+               '(("autoref" "*{"))
+               'reference)
+              ))
 
   :defer t
   :ensure auctex)
@@ -539,6 +562,9 @@
 
 (setq typescript-indent-level 2)
 
+(define-key 'jmw/emms-prefix (kbd "+") 'emms-volume-raise)
+(define-key 'jmw/emms-prefix (kbd "-") 'emms-volume-lower)
+
   (setq custom-file (concat user-emacs-directory "/custom.el"))
 
   (size-indication-mode 1)
@@ -592,6 +618,7 @@
 	                        (getenv "JMW_EMACS_CONFIG")
                           (getenv "JMW_LATEX_CONFIG")
                           (getenv "JMW_SH_CONFIG")
+                          "/home/michael/core/mind/ob/hum/ex/misc.org"
 	                        ))
 
 (add-hook 'window-setup-hook
