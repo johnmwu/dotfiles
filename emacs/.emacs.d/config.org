@@ -226,7 +226,7 @@ Similarly, pop a task off the stack because we've decided not to do it.
   (select-frame-set-input-focus (jmw/main-sched-frame))
   (select-window (jmw/main-sched-window))
   (goto-char (org-find-exact-headline-in-buffer "daily")))
-(define-key 'jmw/org-prefix "f" 'jmw/daily-goto)
+(define-key 'jmw/org-prefix "f" 'jmw/org-daily-goto)
 #+end_src
 *** other
    :PROPERTIES:
@@ -552,16 +552,13 @@ Don't raise/lower sub/superscripts. It looks weird.
 #+END_SRC
 
 Add completion for =\autoref=. [2022-03-01 Tue 00:06] There's probably
-an easier way to do this.
+an easier way to do this. [2022-05-13 Fri 23:04] edited. Yes, there
+was. See
+https://emacs.stackexchange.com/questions/22205/declaring-custom-completions-to-auctex.
 #+begin_src emacs-lisp
 (add-hook 'LaTeX-mode-hook
           (lambda ()
-            (add-to-list 'TeX-symbol-list
-              '("autoref" TeX-arg-ref))
-            (font-latex-add-keywords
-             '(("autoref" "*{"))
-             'reference)
-            ))
+            (TeX-add-symbols '("autoref" TeX-arg-ref))))
 #+end_src
 ** elpy
 For editing Python source files. 
@@ -1494,6 +1491,10 @@ Swap caps lock and left control.
   (interactive)
   (call-process-shell-command "/usr/bin/setxkbmap -option 'ctrl:swapcaps'"))
 (define-key 'jmw/prefix "k" 'jmw/swap-caps)
+#+end_src
+
+#+begin_src emacs-lisp
+(define-key 'jmw/prefix "r" 'rename-buffer)
 #+end_src
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the

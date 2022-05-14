@@ -107,7 +107,7 @@
   (select-frame-set-input-focus (jmw/main-sched-frame))
   (select-window (jmw/main-sched-window))
   (goto-char (org-find-exact-headline-in-buffer "daily")))
-(define-key 'jmw/org-prefix "f" 'jmw/daily-goto)
+(define-key 'jmw/org-prefix "f" 'jmw/org-daily-goto)
 
 ;; this uses an internal function, not ideal
 (defun jmw/main-sched-frame ()
@@ -267,12 +267,7 @@
   (setq font-latex-fontify-script nil)
   (add-hook 'LaTeX-mode-hook
             (lambda ()
-              (add-to-list 'TeX-symbol-list
-                '("autoref" TeX-arg-ref))
-              (font-latex-add-keywords
-               '(("autoref" "*{"))
-               'reference)
-              ))
+              (TeX-add-symbols '("autoref" TeX-arg-ref))))
 
   :defer t
   :ensure auctex)
@@ -711,6 +706,8 @@
   (interactive)
   (call-process-shell-command "/usr/bin/setxkbmap -option 'ctrl:swapcaps'"))
 (define-key 'jmw/prefix "k" 'jmw/swap-caps)
+
+(define-key 'jmw/prefix "r" 'rename-buffer)
 
   (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
