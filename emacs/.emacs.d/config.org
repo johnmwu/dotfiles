@@ -1496,6 +1496,11 @@ Swap caps lock and left control.
 #+begin_src emacs-lisp
 (define-key 'jmw/prefix "r" 'rename-buffer)
 #+end_src
+
+#+begin_src emacs-lisp
+(define-key 'jmw/prefix (kbd "<right>") 'buf-move-right)
+(define-key 'jmw/prefix (kbd "<left>") 'buf-move-left)
+#+end_src
 ** 7z
 I use 7z as my default encryption format. This opens 7z files in the
 style I want: the file will be extracted to my temporary directory when

@@ -709,6 +709,9 @@
 
 (define-key 'jmw/prefix "r" 'rename-buffer)
 
+(define-key 'jmw/prefix (kbd "<right>") 'buf-move-right)
+(define-key 'jmw/prefix (kbd "<left>") 'buf-move-left)
+
   (defun jmw/7z (zfile file outfile)
     (if (file-exists-p outfile)
 	;; If outfile exists, put it back into the zfile (the 7z archive)
