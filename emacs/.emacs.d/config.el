@@ -377,41 +377,6 @@
 	      :before 'jmw/ad-counsel-org-goto)
   (setq org-mark-ring-length 16)
 
-  (use-package ivy-rich
-    :config
-    ;; (ivy-rich-mode 1)
-    )
-
-  (defun ivy-rich-file-size (candidate)
-    (let ((fname (expand-file-name candidate ivy--directory)))
-      (if (or (not (file-exists-p fname)) (file-remote-p fname))
-	  ""
-	(file-size-human-readable (file-attribute-size
-				   (file-attributes fname))
-				  "si"))))
-
-  (plist-put ivy-rich-display-transformers-list
-	     'counsel-find-file
-	     '(:columns
-	      ((ivy-rich-candidate
-		(:width 40))
-	       ;; (ivy-rich-file-user
-	       ;;  (:width 4 :face font-lock-doc-face))
-	       ;; (ivy-rich-file-group
-	       ;;  (:width 4 :face font-lock-doc-face))
-	       ;; (ivy-rich-file-modes
-		;; (:width 11 :face font-lock-doc-face))
-	       (ivy-rich-file-size
-		(:width 6 :face font-lock-doc-face))
-	       (ivy-rich-counsel-find-file-truename
-		(:face font-lock-doc-face))
-	       ;; (ivy-rich-file-last-modified-time
-	       ;;  (:width 30 :face font-lock-doc-face))
-	       )))
-  (ivy-rich-set-display-transformer)
-
-(setq ivy-rich-parse-remote-buffer nil)
-
 (setq jmw/use-exwmp
       (not (eq (call-process-shell-command "wmctrl -m")
                0)))

@@ -680,12 +680,6 @@ Define my vterm prefix
   (global-set-key (kbd "C-c v") 'jmw/vterm-prefix)
 #+END_SRC
 
-Bind functions
-#+BEGIN_SRC emacs-lisp
-  (define-key 'jmw/vterm-prefix "b" 'vterm)
-  (define-key 'jmw/vterm-prefix "o" 'vterm-other-window)
-#+END_SRC
-
 Recommended on [[https://github.com/akermu/emacs-libvterm][github]]. Easier way to do directory tracking. 
 #+begin_src emacs-lisp
 (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
@@ -698,6 +692,41 @@ Don't prompt for killing vterm buffers. Code from [[https://stackoverflow.com/a/
 	      (set-process-query-on-exit-flag
 	       (get-buffer-process (current-buffer)) nil)))	  
 #+END_SRC
+
+Open the misc vterm buffer in same window, and cd to directory of
+previous buffer.
+#+begin_src emacs-lisp
+(defun jmw/vterm--cd-helper (vterm-callback)
+  (let* ((fname (buffer-file-name)))
+    (funcall vterm-callback)
+    (when fname
+      (vterm-send-string
+       (concat "cd "
+               (file-name-directory fname)
+               "\n")))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun jmw/vterm-cd-other-window ()
+  (interactive)
+  (jmw/vterm--cd-helper
+   (lambda ()
+     (other-window 1)
+     (vterm 0)))) 
+(define-key 'jmw/vterm-prefix "o" 'jmw/vterm-cd-other-window)
+#+end_src
+
+Open vterm buffer (generally for temporary usage) below.
+#+begin_src emacs-lisp
+(defun jmw/vterm-below ()
+  (interactive)
+  (jmw/vterm--cd-helper
+   (lambda ()
+     (split-window-below)
+     (windmove-down)
+     (vterm 0)))) 
+(define-key 'jmw/vterm-prefix "b" 'jmw/vterm-below)
+#+end_src
 ** go-mode
    :PROPERTIES:
    :created:  2020-02-05 08:31:27 EST
@@ -770,8 +799,13 @@ ring to be large.
 #+END_SRC
 *** ivy-rich
    :PROPERTIES:
+   :header-args+: :tangle no
    :created:  2020-02-18 15:31:59 EST
    :END:
+[2022-08-26 Fri 19:42] Caused an error on loading emacs: error with
+number of arguments passed to =(ivy-rich-set-display-transformer)=. I do
+not recall the use of this section, so am removing it from tangling.
+
 Display more info in ivy. For example, make ~M-x~ display a column of
 documentation alongside the list of candidate functions. 
 #+BEGIN_SRC emacs-lisp
