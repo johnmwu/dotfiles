@@ -327,15 +327,38 @@
   (fset 'jmw/vterm-prefix (make-sparse-keymap))
   (global-set-key (kbd "C-c v") 'jmw/vterm-prefix)
 
-  (define-key 'jmw/vterm-prefix "b" 'vterm)
-  (define-key 'jmw/vterm-prefix "o" 'vterm-other-window)
-
 (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
 
   (add-hook 'vterm-mode-hook
 	    (lambda ()
 	      (set-process-query-on-exit-flag
 	       (get-buffer-process (current-buffer)) nil)))
+
+(defun jmw/vterm--cd-helper (vterm-callback)
+  (let* ((fname (buffer-file-name)))
+    (funcall vterm-callback)
+    (when fname
+      (vterm-send-string
+       (concat "cd "
+               (file-name-directory fname)
+               "\n")))))
+
+(defun jmw/vterm-cd-other-window ()
+  (interactive)
+  (jmw/vterm--cd-helper
+   (lambda ()
+     (other-window 1)
+     (vterm 0)))) 
+(define-key 'jmw/vterm-prefix "o" 'jmw/vterm-cd-other-window)
+
+(defun jmw/vterm-below ()
+  (interactive)
+  (jmw/vterm--cd-helper
+   (lambda ()
+     (split-window-below)
+     (windmove-down)
+     (vterm 0)))) 
+(define-key 'jmw/vterm-prefix "b" 'jmw/vterm-below)
 
   (use-package go-mode
 	  :bind
