@@ -282,10 +282,18 @@
 							("C-c C-b" . elpy-nav-backward-block))
 
 	:config
-	;; Needed to get xref-find-definitions working
-	;; See https://github.com/jorgenschaefer/elpy/issues/948
-	(setq elpy-rpc-backend "jedi")
+  (setq elpy-rpc-backend "jedi")
+  (setq elpy-shell-add-to-shell-history t)
+  (setq elpy-shell-echo-output nil)
 	)
+
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console"
+      python-shell-prompt-detect-failure-warning nil)
+(add-to-list 'python-shell-completion-native-disabled-interpreters
+             "jupyter")
+
+(elpy-shell-toggle-dedicated-shell 1)
 
   (use-package buffer-move
     :bind
@@ -359,6 +367,11 @@
      (windmove-down)
      (vterm 0)))) 
 (define-key 'jmw/vterm-prefix "b" 'jmw/vterm-below)
+
+(defun jmw/vterm-same-window ()
+  (interactive)
+  (vterm t))
+(define-key 'jmw/vterm-prefix "n" 'jmw/vterm-same-window)
 
   (use-package go-mode
 	  :bind
@@ -597,12 +610,14 @@
 		(start-process-shell-command "megasync" nil "sleep 5; megasync")
 		)
 
-(setq jmw/init-file-list (list
-	                        (getenv "JMW_EMACS_CONFIG")
-                          (getenv "JMW_LATEX_CONFIG")
-                          (getenv "JMW_SH_CONFIG")
-                          "/home/michael/core/mind/ob/hum/ex/misc.org"
-	                        ))
+(setq jmw/init-file-list
+      (list
+	     (getenv "JMW_EMACS_CONFIG")
+       (getenv "JMW_LATEX_CONFIG")
+       (getenv "JMW_SH_CONFIG")
+       "/home/michael/core/mind/ob/hum/ex/misc.org"
+       "/home/michael/core/mind/ob/thm/math/mathnotes/main.tex"
+	     ))
 
 (add-hook 'window-setup-hook
 			    (lambda ()

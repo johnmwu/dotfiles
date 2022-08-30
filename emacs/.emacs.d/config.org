@@ -574,9 +574,7 @@ Copied and pasted.
 							<<elpy-mode-map>>)
 
 	:config
-	;; Needed to get xref-find-definitions working
-	;; See https://github.com/jorgenschaefer/elpy/issues/948
-	(setq elpy-rpc-backend "jedi")
+  <<elpy-config>>
 	)
 #+END_SRC
 
@@ -585,6 +583,39 @@ To behave like ~C-M-f~, ~C-M-d~, etc.
 ("C-c C-f" . elpy-nav-forward-block)
 ("C-c C-b" . elpy-nav-backward-block)
 #+END_SRC
+
+Recommended for interactive python [[https://elpy.readthedocs.io/en/latest/ide.html][here]].
+#+begin_src emacs-lisp
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console"
+      python-shell-prompt-detect-failure-warning nil)
+(add-to-list 'python-shell-completion-native-disabled-interpreters
+             "jupyter")
+#+end_src
+
+#+begin_src emacs-lisp
+(elpy-shell-toggle-dedicated-shell 1)
+#+end_src
+*** cfg
+:PROPERTIES:
+:created:  2022-08-27 22:04:33 EDT
+:header-args+: :noweb-ref elpy-config :tangle no
+:END:
+Needed to get xref-find-definitions working. See
+https://github.com/jorgenschaefer/elpy/issues/948
+#+begin_src emacs-lisp
+(setq elpy-rpc-backend "jedi")
+#+end_src
+
+Have lines sent by elpy exist in python shell history for ~M-p~.
+#+begin_src emacs-lisp
+(setq elpy-shell-add-to-shell-history t)
+#+end_src
+
+Never echo python shell output in echo area.
+#+begin_src emacs-lisp
+(setq elpy-shell-echo-output nil)
+#+end_src
 ** buffer-move
 Switches buffers between windows. This is super useful. 
 #+BEGIN_SRC emacs-lisp
@@ -726,6 +757,14 @@ Open vterm buffer (generally for temporary usage) below.
      (windmove-down)
      (vterm 0)))) 
 (define-key 'jmw/vterm-prefix "b" 'jmw/vterm-below)
+#+end_src
+
+Open new vterm buffer same window.
+#+begin_src emacs-lisp
+(defun jmw/vterm-same-window ()
+  (interactive)
+  (vterm t))
+(define-key 'jmw/vterm-prefix "n" 'jmw/vterm-same-window)
 #+end_src
 ** go-mode
    :PROPERTIES:
@@ -1239,6 +1278,7 @@ Raise and lower volume.
 (define-key 'jmw/emms-prefix (kbd "+") 'emms-volume-raise)
 (define-key 'jmw/emms-prefix (kbd "-") 'emms-volume-lower)
 #+end_src
+
 * mode
 Related to a mode, minor or major. 
 ** custom
@@ -1346,12 +1386,14 @@ Applications to run at login.
 
 These are the initial files I want open. 
 #+BEGIN_SRC emacs-lisp
-(setq jmw/init-file-list (list
-	                        (getenv "JMW_EMACS_CONFIG")
-                          (getenv "JMW_LATEX_CONFIG")
-                          (getenv "JMW_SH_CONFIG")
-                          "/home/michael/core/mind/ob/hum/ex/misc.org"
-	                        ))
+(setq jmw/init-file-list
+      (list
+	     (getenv "JMW_EMACS_CONFIG")
+       (getenv "JMW_LATEX_CONFIG")
+       (getenv "JMW_SH_CONFIG")
+       "/home/michael/core/mind/ob/hum/ex/misc.org"
+       "/home/michael/core/mind/ob/thm/math/mathnotes/main.tex"
+	     ))
 #+END_SRC
 
 The main thing. 
