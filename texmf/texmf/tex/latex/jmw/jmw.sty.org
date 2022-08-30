@@ -587,6 +587,11 @@ Quadratic covariation.
     }
 }
 #+end_src
+
+Statistics, machine learning.
+#+begin_src latex
+\DeclareMathOperator{\EPE}{EPE} % estimated prediction error
+#+end_src
 ** other
 :PROPERTIES:
 :created:  2021-05-29 12:42:03 EDT
