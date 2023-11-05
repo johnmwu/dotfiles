@@ -168,6 +168,9 @@ SE answer. [[https://www.texdev.net/2010/05/23/from-newcommand-to-newdocumentcom
 \DeclarePairedDelimiterX\Brace[1]\{\}{
   #1
 }
+\DeclarePairedDelimiterX\Angles[1]\langle\rangle{
+  #1
+}
 \let\implies\relax
 \newcommand{\implies}{\Longrightarrow}
 \let\revimplies\relax
@@ -852,6 +855,7 @@ Evan's boxes and theorem styles.
 \declaretheorem[style=thmbluebox,name=Lemma,numbered=no]{lemma*}
 \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
 \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
+\declaretheorem[style=thmredbox,name=Problem,numbered=no]{problem*}
 #+end_src
 * other
 :PROPERTIES:

@@ -592,10 +592,6 @@ Recommended for interactive python [[https://elpy.readthedocs.io/en/latest/ide.h
 (add-to-list 'python-shell-completion-native-disabled-interpreters
              "jupyter")
 #+end_src
-
-#+begin_src emacs-lisp
-(elpy-shell-toggle-dedicated-shell 1)
-#+end_src
 *** cfg
 :PROPERTIES:
 :created:  2022-08-27 22:04:33 EDT
@@ -615,6 +611,10 @@ Have lines sent by elpy exist in python shell history for ~M-p~.
 Never echo python shell output in echo area.
 #+begin_src emacs-lisp
 (setq elpy-shell-echo-output nil)
+#+end_src
+
+#+begin_src emacs-lisp
+(elpy-shell-toggle-dedicated-shell 1)
 #+end_src
 ** buffer-move
 Switches buffers between windows. This is super useful. 
@@ -1393,6 +1393,7 @@ These are the initial files I want open.
        (getenv "JMW_SH_CONFIG")
        "/home/michael/core/mind/ob/hum/ex/misc.org"
        "/home/michael/core/mind/ob/thm/math/mathnotes/main.tex"
+       "/home/michael/core/state/env/misc.org"
 	     ))
 #+END_SRC
 
@@ -1428,8 +1429,14 @@ The main thing.
 [2020-01-28 Tue] I haven't given this much thought. =manoj-dark= is
 fine. 
 
-[2020-03-17 Tue] trying other stuff. Decided to stick with this. 
+[2020-03-17 Tue] trying other stuff. Decided to stick with this.
+
+[2023-11-05 Sun 00:11] Gave some other themes a try. One bizarre thing
+is that many themes don't seem to display the org mode modeline
+clock. =manoj-dark= does. Using a slightly modified version now that
+changes =ansi-color-blue=. 
 #+BEGIN_SRC emacs-lisp 
+  ;; (load-theme 'wombat)
   (load-theme 'manoj-dark)
 #+END_SRC
 
@@ -1437,7 +1444,9 @@ The default face for the current clocking task isn't very readable.
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'org-mode-line-clock
 		    nil
-		    :foreground "cyan3")
+		    :foreground "cyan"
+        :background nil
+        )
 #+END_SRC
 * other
   :LOGBOOK:

@@ -285,6 +285,7 @@
   (setq elpy-rpc-backend "jedi")
   (setq elpy-shell-add-to-shell-history t)
   (setq elpy-shell-echo-output nil)
+  (elpy-shell-toggle-dedicated-shell 1)
 	)
 
 (setq python-shell-interpreter "jupyter"
@@ -292,8 +293,6 @@
       python-shell-prompt-detect-failure-warning nil)
 (add-to-list 'python-shell-completion-native-disabled-interpreters
              "jupyter")
-
-(elpy-shell-toggle-dedicated-shell 1)
 
   (use-package buffer-move
     :bind
@@ -617,6 +616,7 @@
        (getenv "JMW_SH_CONFIG")
        "/home/michael/core/mind/ob/hum/ex/misc.org"
        "/home/michael/core/mind/ob/thm/math/mathnotes/main.tex"
+       "/home/michael/core/state/env/misc.org"
 	     ))
 
 (add-hook 'window-setup-hook
@@ -642,11 +642,14 @@
 				    (select-window jmw/main-window))
           )
 
+  ;; (load-theme 'wombat)
   (load-theme 'manoj-dark)
 
 (set-face-attribute 'org-mode-line-clock
 		    nil
-		    :foreground "cyan3")
+		    :foreground "cyan"
+        :background nil
+        )
 
   (fset 'jmw/prefix (make-sparse-keymap))
   (global-set-key (kbd "C-c j") 'jmw/prefix)

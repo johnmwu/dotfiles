@@ -76,6 +76,9 @@
 \DeclarePairedDelimiterX\Brace[1]\{\}{
   #1
 }
+\DeclarePairedDelimiterX\Angles[1]\langle\rangle{
+  #1
+}
 \let\implies\relax
 \newcommand{\implies}{\Longrightarrow}
 \let\revimplies\relax
@@ -562,6 +565,7 @@
     \declaretheorem[style=thmbluebox,name=Lemma,numbered=no]{lemma*}
     \declaretheorem[style=thmbluebox,name=Proposition,numbered=no]{proposition*}
     \declaretheorem[style=thmbluebox,name=Corollary,numbered=no]{corollary*}  
+    \declaretheorem[style=thmredbox,name=Problem,numbered=no]{problem*}
   \else
     \newtheorem{theorem}{Theorem}[section]
     \newtheorem{lemma}[theorem]{Lemma}
