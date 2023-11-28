@@ -74,24 +74,6 @@
 
   (add-hook 'org-clock-goto-hook (lambda () (recenter-top-bottom 18)))
 
-  (defun jmw/org-clock-goto ()
-    (interactive)
-    (select-frame-set-input-focus (jmw/main-sched-frame))
-    (select-window (jmw/main-sched-window))
-    (org-clock-goto))
-  (define-key 'jmw/org-prefix "g" 'jmw/org-clock-goto)
-
-  (defun jmw/push-task (task-name)
-    "Push a task onto the stack."
-    (interactive "sTask name: ")
-    (jmw/org-clock-goto)
-    (org-insert-todo-heading-respect-content)
-    (org-do-demote)
-    (move-end-of-line 1)
-    (insert task-name)
-    (org-clock-in))
-  (define-key 'jmw/org-prefix "p" 'jmw/push-task)
-
 (defun jmw/org-find-heading-with-uuid (buffer uuid)
   "Find the heading with a specific UUID."
   (with-current-buffer buffer
@@ -104,6 +86,27 @@
        nil 'file)  ; This searches the entire file
       matching-entry)))
 
+(defun jmw/org-clock-goto ()
+  (interactive)
+  (select-frame-set-input-focus (jmw/main-sched-frame))
+  (select-window (jmw/main-sched-window))
+  (let* ((runstruct (car jmw/run-stack))
+         (uuid (jmw/runstruct-uuid runstruct))
+         (marker (jmw/org-find-heading-with-uuid (jmw/main-sched-buffer) uuid)))
+    (goto-char marker)))
+(define-key 'jmw/org-prefix "g" 'jmw/org-clock-goto)
+
+  (defun jmw/push-task (task-name)
+    "Push a task onto the stack."
+    (interactive "sTask name: ")
+    (jmw/org-clock-goto)
+    (org-insert-todo-heading-respect-content)
+    (org-do-demote)
+    (move-end-of-line 1)
+    (insert task-name)
+    (org-clock-in))
+  (define-key 'jmw/org-prefix "p" 'jmw/push-task)
+
 (defun jmw/org-clock-out-up ()
   "Clock out and go up a process in the stack."
   (interactive)
@@ -112,12 +115,8 @@
 	        (org-clock-out-switch-to-state nil))
 	    (org-clock-out)))
   (pop jmw/run-stack)
-  (let* ((runstruct (car jmw/run-stack))
-	       (uuid (jmw/runstruct-uuid runstruct))
-         (marker (jmw/org-find-heading-with-uuid (jmw/main-sched-buffer) uuid)))
-    (select-window (jmw/main-sched-window))
-    (goto-char marker)
-    (org-clock-in)))
+  (jmw/org-clock-goto)
+  (org-clock-in))
 (define-key 'jmw/org-prefix "o" 'jmw/org-clock-out-up)
 
   (defun jmw/org-done ()
