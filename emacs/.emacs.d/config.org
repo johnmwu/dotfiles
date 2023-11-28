@@ -32,8 +32,8 @@ My scheduling subsystem. Described in =~/core/mind/sys/meta=.
 
 The core class is the run. 
 #+begin_src emacs-lisp
-(cl-defstruct jmw/run
-  process-marker)
+(cl-defstruct jmw/runstruct
+  uuid)
 #+end_src
 
 The run stack. 
@@ -115,7 +115,7 @@ Other:
 The =org-clock= feature. This corresponds to the "live" part of sched. 
 
 The interface is:
-- ~C-c C-x C-i~, =jmw/org-clock-in=. Clock in on process at point and
+- ~C-c C-x C-i~, =org-clock-in=. Clock in on process at point and
   push onto the run stack.
 - ~C-c C-x C-o~, =org-clock-out=. Clock out, not touching the stack. One
   of two ways to clock out without clocking into another function. The
@@ -128,6 +128,29 @@ The interface is:
   task complete, then calls =jmw/org-clock-out-up=. 
 - ~C-c o p~, =jmw/push-subtask=. Push a subtask onto the stack, and clock
   in.
+
+Advice around =org-clock-in=. It should push an entry onto the stack if
+it's different from the current entry on the top of the stack. 
+#+begin_src emacs-lisp
+(defun jmw/org-point-uuid ()
+  (org-entry-get nil "uuid"))
+
+(defun jmw/org--clock-in-advice (&rest args)
+  ;; if uuid property doesn't exist, create it
+  (when (eq (org-entry-get nil "uuid") nil)
+    (org-entry-put nil "uuid" (jmw/generate-uuid)))
+  ;; push entry onto the stack, unless it's identical to the current top
+  ;; of the stack
+  (unless (and
+           (<= 1 (length jmw/run-stack))
+           (equal (jmw/org-point-uuid)
+                  (jmw/runstruct-uuid (car jmw/run-stack))))
+    (push
+     (make-jmw/runstruct
+      :uuid (jmw/org-point-uuid))
+     jmw/run-stack)))
+(advice-add 'org-clock-in :before #'jmw/org--clock-in-advice)
+#+end_src
 
 I want =org-clock-history= to be long. 
 #+BEGIN_SRC emacs-lisp
@@ -183,6 +206,18 @@ it can be done using ordinary TODO insertion.
 Popping a task off the stack. Not called =jmw/pop-task= because calling
 it doesn't mean the task is done.
 #+BEGIN_SRC emacs-lisp
+(defun jmw/org-find-heading-with-uuid (buffer uuid)
+  "Find the heading with a specific UUID."
+  (with-current-buffer buffer
+    (let ((matching-entry nil))
+      (org-map-entries
+       (lambda ()
+         (let ((entry-uuid (org-entry-get (point) "uuid")))
+           (when (equal uuid entry-uuid)
+             (setq matching-entry (point-marker)))))
+       nil 'file)  ; This searches the entire file
+      matching-entry)))
+
 (defun jmw/org-clock-out-up ()
   "Clock out and go up a process in the stack."
   (interactive)
@@ -190,9 +225,10 @@ it doesn't mean the task is done.
     (let ((org-log-note-clock-out nil)
 	        (org-clock-out-switch-to-state nil))
 	    (org-clock-out)))
-  (pop org-clock-history)
-  (let* ((marker (pop org-clock-history))
-	       (buf (marker-buffer marker)))
+  (pop jmw/run-stack)
+  (let* ((runstruct (car jmw/run-stack))
+	       (uuid (jmw/runstruct-uuid runstruct))
+         (marker (jmw/org-find-heading-with-uuid (jmw/main-sched-buffer) uuid)))
     (select-window (jmw/main-sched-window))
     (goto-char marker)
     (org-clock-in)))
@@ -235,10 +271,12 @@ Similarly, pop a task off the stack because we've decided not to do it.
 The window and frame containing =main.org=. 
 #+BEGIN_SRC emacs-lisp
 ;; this uses an internal function, not ideal
+(defun jmw/main-sched-buffer ()
+  jmw/main-sched-buffer)
 (defun jmw/main-sched-frame ()
   jmw/main-frame)
 (defun jmw/main-sched-window ()
-  (get-buffer-window "main.org" (jmw/main-sched-frame)))
+  jmw/main-sched-window)
 #+END_SRC
 ** org-babel
    :PROPERTIES:
@@ -350,6 +388,16 @@ Don't indent when demoting headlines.
 #+BEGIN_SRC emacs-lisp
   (setq org-adapt-indentation nil)
 #+END_SRC
+
+[2023-11-27 Mon 23:37] Insert a uuid for each headline.
+#+begin_src emacs-lisp
+(defun jmw/generate-uuid ()
+  (replace-regexp-in-string "\n\\'" "" (shell-command-to-string "uuidgen")))
+
+(defun jmw/org--insert-uuid-headline ()
+  (org-set-property "uuid" (jmw/generate-uuid)))
+(add-hook 'org-insert-heading-hook 'jmw/org--insert-uuid-headline)
+#+end_src
 ** capture
    :PROPERTIES:
    :created:  2020-03-20 18:18:01 EDT
@@ -1406,9 +1454,10 @@ The main thing.
 				    (balance-windows)
 				    (dolist (fname jmw/init-file-list)
 		          (find-file fname))
-				    (find-file (concat (getenv "PROC_DIR")
-				                       "/main.org"))
-            (setq jmw/main-window (get-buffer-window "main.org"))
+				    (setq jmw/main-sched-buffer
+                  (find-file (concat (getenv "PROC_DIR") "/main.org")))
+            (setq jmw/main-sched-window
+                  (get-buffer-window jmw/main-sched-buffer))
             (setq jmw/main-frame (selected-frame))
 				    (set-window-dedicated-p jmw/main-window
 							                      t) 

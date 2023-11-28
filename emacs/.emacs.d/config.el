@@ -8,8 +8,8 @@
 (fset 'jmw/org-prefix (make-sparse-keymap))
 (global-set-key (kbd "C-c o") 'jmw/org-prefix)
 
-(cl-defstruct jmw/run
-  process-marker)
+(cl-defstruct jmw/runstruct
+  uuid)
 
 (setq jmw/run-stack '())
 
@@ -49,6 +49,25 @@
   (setq org-agenda-files '("~/core/mind/sys/short/proc/main.org"))
   (setq org-habit-show-habits-only-for-today nil)
 
+(defun jmw/org-point-uuid ()
+  (org-entry-get nil "uuid"))
+
+(defun jmw/org--clock-in-advice (&rest args)
+  ;; if uuid property doesn't exist, create it
+  (when (eq (org-entry-get nil "uuid") nil)
+    (org-entry-put nil "uuid" (jmw/generate-uuid)))
+  ;; push entry onto the stack, unless it's identical to the current top
+  ;; of the stack
+  (unless (and
+           (<= 1 (length jmw/run-stack))
+           (equal (jmw/org-point-uuid)
+                  (jmw/runstruct-uuid (car jmw/run-stack))))
+    (push
+     (make-jmw/runstruct
+      :uuid (jmw/org-point-uuid))
+     jmw/run-stack)))
+(advice-add 'org-clock-in :before #'jmw/org--clock-in-advice)
+
   (setq org-clock-history-length 35)
 
   (setq org-clock-mode-line-total 'today)
@@ -73,6 +92,18 @@
     (org-clock-in))
   (define-key 'jmw/org-prefix "p" 'jmw/push-task)
 
+(defun jmw/org-find-heading-with-uuid (buffer uuid)
+  "Find the heading with a specific UUID."
+  (with-current-buffer buffer
+    (let ((matching-entry nil))
+      (org-map-entries
+       (lambda ()
+         (let ((entry-uuid (org-entry-get (point) "uuid")))
+           (when (equal uuid entry-uuid)
+             (setq matching-entry (point-marker)))))
+       nil 'file)  ; This searches the entire file
+      matching-entry)))
+
 (defun jmw/org-clock-out-up ()
   "Clock out and go up a process in the stack."
   (interactive)
@@ -80,9 +111,10 @@
     (let ((org-log-note-clock-out nil)
 	        (org-clock-out-switch-to-state nil))
 	    (org-clock-out)))
-  (pop org-clock-history)
-  (let* ((marker (pop org-clock-history))
-	       (buf (marker-buffer marker)))
+  (pop jmw/run-stack)
+  (let* ((runstruct (car jmw/run-stack))
+	       (uuid (jmw/runstruct-uuid runstruct))
+         (marker (jmw/org-find-heading-with-uuid (jmw/main-sched-buffer) uuid)))
     (select-window (jmw/main-sched-window))
     (goto-char marker)
     (org-clock-in)))
@@ -110,10 +142,12 @@
 (define-key 'jmw/org-prefix "f" 'jmw/org-daily-goto)
 
 ;; this uses an internal function, not ideal
+(defun jmw/main-sched-buffer ()
+  jmw/main-sched-buffer)
 (defun jmw/main-sched-frame ()
   jmw/main-frame)
 (defun jmw/main-sched-window ()
-  (get-buffer-window "main.org" (jmw/main-sched-frame)))
+  jmw/main-sched-window)
 
 (use-package ob-go)
 
@@ -164,6 +198,13 @@
   (setq org-refile-targets '((nil . (:maxlevel . 10))))
 
   (setq org-adapt-indentation nil)
+
+(defun jmw/generate-uuid ()
+  (replace-regexp-in-string "\n\\'" "" (shell-command-to-string "uuidgen")))
+
+(defun jmw/org--insert-uuid-headline ()
+  (org-set-property "uuid" (jmw/generate-uuid)))
+(add-hook 'org-insert-heading-hook 'jmw/org--insert-uuid-headline)
 
   (global-set-key "\C-cc" 'org-capture)
 
@@ -626,9 +667,10 @@
 				    (balance-windows)
 				    (dolist (fname jmw/init-file-list)
 		          (find-file fname))
-				    (find-file (concat (getenv "PROC_DIR")
-				                       "/main.org"))
-            (setq jmw/main-window (get-buffer-window "main.org"))
+				    (setq jmw/main-sched-buffer
+                  (find-file (concat (getenv "PROC_DIR") "/main.org")))
+            (setq jmw/main-sched-window
+                  (get-buffer-window jmw/main-sched-buffer))
             (setq jmw/main-frame (selected-frame))
 				    (set-window-dedicated-p jmw/main-window
 							                      t) 
