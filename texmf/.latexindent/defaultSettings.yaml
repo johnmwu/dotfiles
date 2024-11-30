@@ -1,0 +1,9 @@
+noAdditionalIndent: # creates indent for the `problem` environment, not sure why necessary
+  problem: 0
+modifyLineBreaks:
+  textWrapOptions:
+    columns: 80
+    blocksBeginWith:
+      other: ".*"
+    blocksFollow:
+      other: ".*"
